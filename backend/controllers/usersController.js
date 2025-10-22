@@ -127,6 +127,46 @@ const verifiedEmail = async (req, res) => {
   }
 };
 
+const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+    res.status(200).json({
+      message: "User logged out successfully",
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
+
+const refreshAccessToken = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const newAccessToken = generateAccessToken(userId);
+    res.status(200).json({
+      message: "Access token refreshed successfully",
+      error: false,
+      success: true,
+      data: {
+        accessToken: newAccessToken,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
+
 const editUser = async (req, res) => {
   try {
   } catch (error) {
@@ -146,4 +186,12 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, editUser, deleteUser, verifiedEmail };
+export {
+  registerUser,
+  loginUser,
+  editUser,
+  deleteUser,
+  verifiedEmail,
+  logoutUser,
+  refreshAccessToken,
+};

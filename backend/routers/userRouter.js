@@ -4,22 +4,25 @@ import {
   loginUser,
   editUser,
   deleteUser,
+  logoutUser,
+  refreshAccessToken,
 } from "../controllers/usersController.js";
+import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
 
 const userRouter = Router();
 
 // POST /api/user/register - Đăng ký user mới
 userRouter.post("/register", registerUser);
+userRouter.post("/verify-email", verifiedEmail);
 
 // POST /api/user/login - Đăng nhập user
 userRouter.post("/login", loginUser);
-
-userRouter.post("/verify-email", verifiedEmail);
-
+userRouter.post("/logout", AuthMiddleware ,logoutUser);
+userRouter.post("/refresh-accessToken", AuthMiddleware, refreshAccessToken);
 // PUT /api/user/edit/:id - Chỉnh sửa thông tin user
-userRouter.put("/edit/:id", editUser);
+userRouter.put("/edit/:id", AuthMiddleware ,editUser);
 
 // DELETE /api/user/delete/:id - Xóa user
-userRouter.delete("/delete/:id", deleteUser);
+userRouter.delete("/delete/:id", AuthMiddleware ,deleteUser);
 
 export default userRouter;
