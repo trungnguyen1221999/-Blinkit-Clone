@@ -2,6 +2,8 @@ import { UserModels } from "../models/userModels.js";
 import bcrypt from "bcryptjs";
 import resendEmail from "../resendEmail/resendEmail.js";
 import verifyEmailTemplate from "../utils/verifyEmailTemplet.js";
+import { generateRefreshToken } from "../utils/generateToken.js";
+import { response } from "express";
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -51,13 +53,58 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(400).json({
+        message: "Email and password are required",
+        error: true,
+        success: false,
+      });
+    const user = await UserModels.findOne({ email });
+    if (!user)
+      return res.status(404).json({
+        message: "User or password is incorrect",
+        error: true,
+        success: false,
+      });
+    if (user.role !== "Active")
+      return res.status(403).json({
+        message: "Your account is not active or has been suspended",
+        error: true,
+        success: false,
+      });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid)
+      return res.status(404).json({
+        message: "User or password is incorrect",
+        error: true,
+        success: false,
+      });
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = await generateRefreshToken(user._id);
+    response.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+    res.status(200).json({
+      message: "User logged in successfully",
+      error: false,
+      success: true,
+      data: {
+        accessToken,
+      },
+    });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: error.message || error, error: true, success: false });
+    res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
   }
 };
+
 const verifiedEmail = async (req, res) => {
   try {
     const { id } = req.query;
@@ -67,13 +114,11 @@ const verifiedEmail = async (req, res) => {
         .status(404)
         .json({ message: "User not found", error: true, success: false });
     await UserModels.updateOne({ _id: id }, { verify_email: true });
-    res
-      .status(200)
-      .json({
-        message: "Email verified successfully",
-        error: false,
-        success: true,
-      });
+    res.status(200).json({
+      message: "Email verified successfully",
+      error: false,
+      success: true,
+    });
   } catch (error) {
     console.error(error);
     res
