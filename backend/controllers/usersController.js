@@ -1,5 +1,7 @@
 import { UserModels } from "../models/userModels.js";
 import bcrypt from "bcryptjs";
+import resendEmail from "../resendEmail/resendEmail.js";
+import verifyEmailTemplate from "../utils/verifyEmailTemplet.js";
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -23,13 +25,24 @@ const registerUser = async (req, res) => {
     };
     const newUser = new UserModels(payload);
     await newUser.save();
-    return res
+    const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?id=${newUser?._id}`;
+    resendEmail(
+      email,
+      "Please verify your email",
+      verifyEmailTemplate(name, verifyUrl)
+    );
+    res
       .status(201)
       .json({
-        message: "User registered successfully",
+        message: "Verification email sent",
         error: false,
         success: true,
       });
+    return res.status(201).json({
+      message: "User registered successfully",
+      error: false,
+      success: true,
+    });
   } catch (error) {
     console.error(error);
     res
