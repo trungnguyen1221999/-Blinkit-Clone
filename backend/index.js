@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import helmet from "helmet";
 import { connectDB } from "./database/mongobd.js";
+import userRouter from "./routers/userRouter.js";
 
 // Load environment variables
 dotenv.config();
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
   res.send("✅ Server is running and CORS is enabled!");
 });
 
+app.use("/api/user", userRouter); // User routes
 // Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);

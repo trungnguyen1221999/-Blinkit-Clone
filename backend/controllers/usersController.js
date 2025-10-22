@@ -31,13 +31,11 @@ const registerUser = async (req, res) => {
       "Please verify your email",
       verifyEmailTemplate(name, verifyUrl)
     );
-    res
-      .status(201)
-      .json({
-        message: "Verification email sent",
-        error: false,
-        success: true,
-      });
+    res.status(201).json({
+      message: "Verification email sent",
+      error: false,
+      success: true,
+    });
     return res.status(201).json({
       message: "User registered successfully",
       error: false,
@@ -53,6 +51,29 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
+const verifiedEmail = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const user = await UserModels.findById(id);
+    if (!user)
+      res
+        .status(404)
+        .json({ message: "User not found", error: true, success: false });
+    await UserModels.updateOne({ _id: id }, { verify_email: true });
+    res
+      .status(200)
+      .json({
+        message: "Email verified successfully",
+        error: false,
+        success: true,
+      });
   } catch (error) {
     console.error(error);
     res
@@ -80,4 +101,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, editUser, deleteUser };
+export { registerUser, loginUser, editUser, deleteUser, verifiedEmail };
