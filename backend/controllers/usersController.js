@@ -6,7 +6,6 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/generateToken.js";
-import { response } from "express";
 import uploadImageCloudinary from "../utils/uploadImageClodinary.js";
 const registerUser = async (req, res) => {
   try {
@@ -81,6 +80,8 @@ const loginUser = async (req, res) => {
         error: true,
         success: false,
       });
+    console.log(user._id);
+    console.log(user);
     const accessToken = generateAccessToken(user._id);
     const refreshToken = await generateRefreshToken(user._id);
     res.cookie("refreshToken", refreshToken, {
@@ -194,13 +195,52 @@ const refreshAccessToken = async (req, res) => {
 
 const editUser = async (req, res) => {
   try {
+    const { _id } = req.user; // lấy từ AuthMiddleware
+
+    if (!_id)
+      return res.status(400).json({
+        message: "User id is required",
+        error: true,
+        success: false,
+      });
+
+    const { name, email, mobile, password } = req.body;
+
+    // Nếu tất cả đều rỗng thì báo lỗi
+    if (!name && !email && !mobile && !password)
+      return res.status(400).json({
+        message: "At least one field is required to update",
+        error: true,
+        success: false,
+      });
+
+    // Tạo object update rỗng
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+    if (mobile) updateFields.mobile = mobile;
+    if (password) updateFields.password = bcrypt.hashSync(password, 10);
+
+    const user = await UserModels.findByIdAndUpdate(_id, updateFields, {
+      new: true,
+    });
+
+    res.status(200).json({
+      message: "User updated successfully",
+      error: false,
+      success: true,
+      data: user,
+    });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: error.message || error, error: true, success: false });
+    res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
   }
 };
+
 const deleteUser = async (req, res) => {
   try {
   } catch (error) {

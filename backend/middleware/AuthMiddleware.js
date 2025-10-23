@@ -16,11 +16,16 @@ const AuthMiddleware = (req, res, next) => {
 
     // Verify accessToken
     const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN);
-
+    if (!decoded || !decoded._id) {
+      return res.status(403).json({
+        message: "Invalid access token",
+        error: true,
+        success: false,
+      });
+    }
     // Chỉ lưu data cần thiết, loại bỏ JWT metadata
     req.user = {
-      userId: decoded.userId,
-      email: decoded.email,
+      _id: decoded._id,
       // Có thể thêm role nếu cần: role: decoded.role
     };
     next();
@@ -70,8 +75,7 @@ const RefreshTokenMiddleware = (req, res, next) => {
     }
     // Chỉ lưu data cần thiết, loại bỏ JWT metadata
     req.user = {
-      userId: decoded.userId,
-      email: decoded.email,
+      _id: decoded._id,
     };
     next();
   } catch (error) {

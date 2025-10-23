@@ -23,7 +23,7 @@ userRouter.post("/login", loginUser);
 userRouter.post("/logout", AuthMiddleware, logoutUser);
 userRouter.post("/refresh-accessToken", AuthMiddleware, refreshAccessToken);
 // PUT /api/user/edit/:id - Chỉnh sửa thông tin user
-userRouter.put("/edit/:id", AuthMiddleware, editUser);
+userRouter.put("/edit", AuthMiddleware, editUser);
 userRouter.put(
   "/upload-avatar, authMiddleware",
   upload.single("avatar"),
