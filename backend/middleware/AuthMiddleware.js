@@ -5,7 +5,7 @@ const AuthMiddleware = (req, res, next) => {
   try {
     // Chỉ lấy accessToken từ header
     const accessToken = req.headers.authorization?.split(" ")[1];
-
+    console.log(accessToken);
     if (!accessToken) {
       return res.status(401).json({
         message: "Access token required",
@@ -15,10 +15,7 @@ const AuthMiddleware = (req, res, next) => {
     }
 
     // Verify accessToken
-    const decoded = jwt.verify(
-      accessToken,
-      process.env.JWT_ACCESS_TOKEN_SECRET
-    );
+    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN);
 
     // Chỉ lưu data cần thiết, loại bỏ JWT metadata
     req.user = {
@@ -64,7 +61,7 @@ const RefreshTokenMiddleware = (req, res, next) => {
       refreshToken,
       process.env.JWT_REFRESH_TOKEN_SECRET
     );
-    if(!decoded || !decoded.userId){
+    if (!decoded || !decoded.userId) {
       return res.status(403).json({
         message: "Invalid refresh token",
         error: true,
