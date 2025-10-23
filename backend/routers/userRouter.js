@@ -7,8 +7,10 @@ import {
   logoutUser,
   refreshAccessToken,
   verifiedEmail,
+  uploadAvatar,
 } from "../controllers/usersController.js";
 import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
+import upload from "../middleware/multer.js";
 
 const userRouter = Router();
 
@@ -22,7 +24,11 @@ userRouter.post("/logout", AuthMiddleware, logoutUser);
 userRouter.post("/refresh-accessToken", AuthMiddleware, refreshAccessToken);
 // PUT /api/user/edit/:id - Chỉnh sửa thông tin user
 userRouter.put("/edit/:id", AuthMiddleware, editUser);
-
+userRouter.put(
+  "/upload-avatar, authMiddleware",
+  upload.single("avatar"),
+  uploadAvatar
+);
 // DELETE /api/user/delete/:id - Xóa user
 userRouter.delete("/delete/:id", AuthMiddleware, deleteUser);
 

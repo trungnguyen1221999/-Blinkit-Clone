@@ -7,7 +7,6 @@ import morgan from "morgan";
 import helmet from "helmet";
 import { connectDB } from "./database/mongobd.js";
 import userRouter from "./routers/userRouter.js";
-import uploadImageRouter from "./routers/uploadImagesRouter.js";
 
 // Load environment variables
 dotenv.config();
@@ -40,7 +39,6 @@ app.use(morgan("dev")); // log HTTP requests
 app.get("/", (req, res) => {
   res.send("✅ Server is running and CORS is enabled!");
 });
-app.use("/api/upload", uploadImageRouter);
 
 app.use("/api/user", userRouter); // User routes
 // Start the server

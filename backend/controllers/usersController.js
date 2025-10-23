@@ -7,6 +7,7 @@ import {
   generateRefreshToken,
 } from "../utils/generateToken.js";
 import { response } from "express";
+import uploadImageCloudinary from "../utils/uploadImageClodinary.js";
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -128,6 +129,29 @@ const verifiedEmail = async (req, res) => {
   }
 };
 
+const uploadAvatar = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const image = req.file;
+    const upload = await uploadImageCloudinary(image);
+    const updateUser = await UserModels.findByIdAndUpdate(
+      userId,
+      { avatar: upload.url },
+      { new: true }
+    );
+    return res.status(200).json({
+      message: "Upload avatar successfully",
+      error: false,
+      success: true,
+      data: updateUser,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
 const logoutUser = async (req, res) => {
   try {
     res.clearCookie("refreshToken", {
@@ -195,4 +219,5 @@ export {
   verifiedEmail,
   logoutUser,
   refreshAccessToken,
+  uploadAvatar,
 };
