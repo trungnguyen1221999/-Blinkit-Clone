@@ -33,15 +33,11 @@ const registerUser = async (req, res) => {
       "Please verify your email",
       verifyEmailTemplate(name, verifyUrl)
     );
-    res.status(201).json({
-      message: "Verification email sent",
-      error: false,
-      success: true,
-    });
     return res.status(201).json({
-      message: "User registered successfully",
+      message: "User registered successfully and Verification email sent",
       error: false,
       success: true,
+      data: newUser,
     });
   } catch (error) {
     console.error(error);

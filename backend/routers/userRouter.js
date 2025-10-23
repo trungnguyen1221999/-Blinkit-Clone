@@ -6,6 +6,7 @@ import {
   deleteUser,
   logoutUser,
   refreshAccessToken,
+  verifiedEmail,
 } from "../controllers/usersController.js";
 import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
 
@@ -17,12 +18,12 @@ userRouter.post("/verify-email", verifiedEmail);
 
 // POST /api/user/login - Đăng nhập user
 userRouter.post("/login", loginUser);
-userRouter.post("/logout", AuthMiddleware ,logoutUser);
+userRouter.post("/logout", AuthMiddleware, logoutUser);
 userRouter.post("/refresh-accessToken", AuthMiddleware, refreshAccessToken);
 // PUT /api/user/edit/:id - Chỉnh sửa thông tin user
-userRouter.put("/edit/:id", AuthMiddleware ,editUser);
+userRouter.put("/edit/:id", AuthMiddleware, editUser);
 
 // DELETE /api/user/delete/:id - Xóa user
-userRouter.delete("/delete/:id", AuthMiddleware ,deleteUser);
+userRouter.delete("/delete/:id", AuthMiddleware, deleteUser);
 
 export default userRouter;
