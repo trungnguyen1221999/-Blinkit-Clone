@@ -20,10 +20,11 @@ connectDB();
 
 // Global Middlewares
 app.use(express.json()); // parse JSON body
-app.use(cookieParser());
+
+app.use(cookieParser(process.env.COOKIE_SECRET)); // parse cookies
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // frontend URL (ex: http://localhost:5173)
+    origin: process.env.FRONTEND_URL, // frontend URL
     credentials: true, // allow sending cookies
   })
 );

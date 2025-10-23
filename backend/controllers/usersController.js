@@ -2,7 +2,10 @@ import { UserModels } from "../models/userModels.js";
 import bcrypt from "bcryptjs";
 import resendEmail from "../resendEmail/resendEmail.js";
 import verifyEmailTemplate from "../utils/verifyEmailTemplet.js";
-import { generateRefreshToken } from "../utils/generateToken.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/generateToken.js";
 import { response } from "express";
 const registerUser = async (req, res) => {
   try {
@@ -56,6 +59,7 @@ const loginUser = async (req, res) => {
         error: true,
         success: false,
       });
+
     const user = await UserModels.findOne({ email });
     if (!user)
       return res.status(404).json({
@@ -63,7 +67,7 @@ const loginUser = async (req, res) => {
         error: true,
         success: false,
       });
-    if (user.role !== "Active")
+    if (!user.verify_email || user.status !== "Active")
       return res.status(403).json({
         message: "Your account is not active or has been suspended",
         error: true,
@@ -78,7 +82,7 @@ const loginUser = async (req, res) => {
       });
     const accessToken = generateAccessToken(user._id);
     const refreshToken = await generateRefreshToken(user._id);
-    response.cookie("refreshToken", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "None",
@@ -104,6 +108,7 @@ const loginUser = async (req, res) => {
 const verifiedEmail = async (req, res) => {
   try {
     const { id } = req.query;
+    console.log(id);
     const user = await UserModels.findById(id);
     if (!user)
       res
