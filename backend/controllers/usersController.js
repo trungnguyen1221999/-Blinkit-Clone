@@ -7,6 +7,8 @@ import {
   generateRefreshToken,
 } from "../utils/generateToken.js";
 import uploadImageCloudinary from "../utils/uploadImageClodinary.js";
+import generateOTP from "../utils/generateOTP.js";
+import forgotPasswordEmailTemplet from "../utils/forgotPasswordEmailTemplet.js";
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -250,6 +252,46 @@ const deleteUser = async (req, res) => {
       .json({ message: error.message || error, error: true, success: false });
   }
 };
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email)
+      return res.status(400).json({
+        message: "Email is required",
+        error: true,
+        success: false,
+      });
+    const isEmailExist = await UserModels.findOne({ email });
+    if (!isEmailExist)
+      return res.status(404).json({
+        message: "User does not exist",
+        error: true,
+        success: false,
+      });
+    // Logic gửi email đặt lại mật khẩu sẽ được triển khai ở đây
+    const otp = generateOTP().toString();
+    const expiryTime = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // OTP hợp lệ trong 5 phút
+    await UserModels.updateOne(
+      { email },
+      { forgot_password_opt: otp, forgot_password_expiry: expiryTime }
+    );
+    await resendEmail(
+      email,
+      "Your Password Reset OTP",
+      forgotPasswordEmailTemplet(isEmailExist.name, otp)
+    );
+    return res.status(200).json({
+      message: "OTP sent to email successfully",
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
 
 export {
   registerUser,
@@ -260,4 +302,5 @@ export {
   logoutUser,
   refreshAccessToken,
   uploadAvatar,
+  forgotPassword,
 };

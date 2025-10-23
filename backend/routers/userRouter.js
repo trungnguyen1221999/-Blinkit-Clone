@@ -8,6 +8,7 @@ import {
   refreshAccessToken,
   verifiedEmail,
   uploadAvatar,
+  forgotPassword,
 } from "../controllers/usersController.js";
 import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
 import upload from "../middleware/multer.js";
@@ -29,6 +30,7 @@ userRouter.put(
   upload.single("avatar"),
   uploadAvatar
 );
+userRouter.put("/forgot-password", forgotPassword);
 // DELETE /api/user/delete/:id - Xóa user
 userRouter.delete("/delete/:id", AuthMiddleware, deleteUser);
 
