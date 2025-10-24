@@ -1,19 +1,27 @@
+import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import Search from "./Search";
+import Login from "./Login";
+import Cart from "./Cart";
 const Header = () => {
   return (
-    <header className="h-20 shadow-md">
-      <div className="container mx-auto flex p-5 justify-between items-center">
+    <header className="shadow-md">
+      <div className="container mx-auto flex p-5 justify-between items-center space-x-5">
         {/* logo */}
-        <div>
+        <Link to={"/"}>
           <img src={logo} width={120} alt="logo" />
-        </div>
+        </Link>
         {/* search bar */}
-        <Search />
+        <div>
+          <Search />
+        </div>
         {/* cart */}
-        login and cart
+
+        <div className="flex gap-3 md:gap-5 lg:gap-10">
+          <Login />
+          <Cart />
+        </div>
       </div>
-      ;
     </header>
   );
 };
