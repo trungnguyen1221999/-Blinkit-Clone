@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import registerApi from "../api/userApi/registerApi";
 
 type RegisterFormInputs = {
   name: string;
@@ -43,8 +45,21 @@ const RegisterPage = () => {
     resolver: zodResolver(registerSchema),
   });
 
+  const loginMutaion = useMutation({
+    mutationFn: async (data: RegisterFormInputs) => {
+      await registerApi(data);
+      console.log("Registering user:", data);
+    },
+    onError: (error) => {
+      console.error("Registration error:", error);
+    },
+    onSuccess: () => {
+      console.log("Registration successful");
+    },
+  });
+
   const onSubmit = (data: RegisterFormInputs) => {
-    console.log("Form Data:", data);
+    loginMutaion.mutate(data);
   };
 
   const inputClass =
