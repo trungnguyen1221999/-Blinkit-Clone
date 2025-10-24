@@ -26,7 +26,7 @@ const Search = () => {
         redirectToSearchPage();
         e.preventDefault();
       }}
-      className="relative border border-neutral-400 rounded-md px-2 md:px-3 py-1 w-60 md:w-96 lg:w-3xl flex items-center bg-slate-100"
+      className="relative border border-neutral-400 rounded-md px-2 md:px-3 py-1 w-45  md:w-96 lg:w-3xl flex items-center bg-slate-100 text-sm md:text-base"
     >
       {/* Input */}
       <input
@@ -41,7 +41,7 @@ const Search = () => {
 
       {/* Type animation as placeholder */}
       {value === "" && !isFocused && !isSearchPage && (
-        <div className="absolute left-3 text-neutral-400 pointer-events-none">
+        <div className="absolute left-3 text-neutral-400 pointer-events-none ">
           <TypeAnimation
             sequence={[
               'Search "milk"',
@@ -63,7 +63,7 @@ const Search = () => {
         type="submit"
         className="absolute right-3 flex justify-center items-center cursor-pointer z-20"
       >
-        <IoIosSearch size={22} className="fill-neutral-400" />
+        <IoIosSearch className="fill-neutral-400 h-5 w-5" />
       </button>
     </form>
   );
