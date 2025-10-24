@@ -292,6 +292,89 @@ const forgotPassword = async (req, res) => {
       .json({ message: error.message || error, error: true, success: false });
   }
 };
+const verifyForgotPasswordOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp)
+      return res.status(400).json({
+        message: "Email, OTP and new password are required",
+        error: true,
+        success: false,
+      });
+    const user = await UserModels.findOne({ email });
+    if (!user)
+      return res.status(404).json({
+        message: "User does not exist",
+        error: true,
+        success: false,
+      });
+    if (
+      user.forgot_password_opt !== otp ||
+      new Date() > new Date(user.forgot_password_expiry)
+    ) {
+      return res.status(400).json({
+        message: "Invalid or expired OTP",
+        error: true,
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "OTP verified successfully",
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword, confirmPassword } = req.body;
+    if (!email || !newPassword || !confirmPassword)
+      return res.status(400).json({
+        message: "Email, new password and confirm password are required",
+        error: true,
+        success: false,
+      });
+    const user = await UserModels.findOne({ email });
+    if (!user)
+      return res.status(404).json({
+        message: "User does not exist",
+        error: true,
+        success: false,
+      });
+    if (newPassword !== confirmPassword)
+      return res.status(400).json({
+        message: "Password and confirm password do not match",
+        error: true,
+        success: false,
+      });
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const newUser = await UserModels.updateOne(
+      { email },
+      {
+        password: hashedPassword,
+        forgot_password_opt: null,
+        forgot_password_expiry: null,
+      }
+    );
+    return res.status(200).json({
+      message: "Password updated successfully",
+      data: newUser,
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
 
 export {
   registerUser,
@@ -303,4 +386,6 @@ export {
   refreshAccessToken,
   uploadAvatar,
   forgotPassword,
+  verifyForgotPasswordOTP,
+  resetPassword,
 };
