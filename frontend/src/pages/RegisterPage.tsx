@@ -2,10 +2,53 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+type RegisterFormInputs = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
+const registerSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Invalid email address"),
+    password: z
+      .string()
+      .min(1, "Password is required")
+      .min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormInputs>({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const onSubmit = (data: RegisterFormInputs) => {
+    console.log("Form Data:", data);
+  };
+
+  const inputClass =
+    "w-full border border-gray-300 rounded-md p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-primary-200";
 
   return (
     <div className="flex items-center justify-center py-10 md:py-20">
@@ -17,44 +60,55 @@ const RegisterPage = () => {
         </div>
 
         {/* Form */}
-        <form className="space-y-6">
+        <form className="flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
           {/* Name */}
-          <div>
-            <label className="block text-gray-700 mb-1" htmlFor="name">
+          <div className="flex flex-col">
+            <label className="text-gray-700 mb-1" htmlFor="name">
               Name
             </label>
             <input
               id="name"
               type="text"
               placeholder="Enter your name"
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary-200"
+              className={inputClass}
+              {...register("name")}
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Email */}
-          <div>
-            <label className="block text-gray-700 mb-1" htmlFor="email">
+          <div className="flex flex-col">
+            <label className="text-gray-700 mb-1" htmlFor="email">
               Email
             </label>
             <input
               id="email"
               type="email"
               placeholder="Enter your email"
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary-200"
+              className={inputClass}
+              {...register("email")}
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           {/* Password */}
-          <div>
-            <label className="block text-gray-700 mb-1" htmlFor="password">
+          <div className="flex flex-col">
+            <label className="text-gray-700 mb-1" htmlFor="password">
               Password
             </label>
             <div className="relative">
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Password must be at least 6 characters"
-                className="w-full border border-gray-300 rounded-md p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                placeholder="Enter your password"
+                className={inputClass}
+                {...register("password")}
               />
               <button
                 type="button"
@@ -64,14 +118,16 @@ const RegisterPage = () => {
                 {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           {/* Confirm Password */}
-          <div>
-            <label
-              className="block text-gray-700 mb-1"
-              htmlFor="confirmPassword"
-            >
+          <div className="flex flex-col">
+            <label className="text-gray-700 mb-1" htmlFor="confirmPassword">
               Confirm Password
             </label>
             <div className="relative">
@@ -79,7 +135,8 @@ const RegisterPage = () => {
                 id="confirmPassword"
                 type={showConfirm ? "text" : "password"}
                 placeholder="Confirm your password"
-                className="w-full border border-gray-300 rounded-md p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-primary-200"
+                className={inputClass}
+                {...register("confirmPassword")}
               />
               <button
                 type="button"
@@ -89,6 +146,11 @@ const RegisterPage = () => {
                 {showConfirm ? <FaRegEyeSlash /> : <FaRegEye />}
               </button>
             </div>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}
