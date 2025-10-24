@@ -5,7 +5,7 @@ import Login from "./Login";
 import Cart from "./Cart";
 const Header = () => {
   return (
-    <header className="shadow-md">
+    <header className="shadow-md bg-white">
       <div className="container mx-auto flex p-5 justify-between items-center space-x-5">
         {/* logo */}
         <Link to={"/"} className="w-25 md:w-35">

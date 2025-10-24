@@ -36,12 +36,12 @@ const Search = () => {
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         autoFocus={isSearchPage}
-        className="w-full p-1 outline-none bg-transparent relative z-10"
+        className="w-full p-1 outline-none bg-transparent relative z-10 font-inter"
       />
 
       {/* Type animation as placeholder */}
       {value === "" && !isFocused && !isSearchPage && (
-        <div className="absolute left-3 text-neutral-400 pointer-events-none ">
+        <div className="absolute left-3 text-neutral-400 pointer-events-none font-inter ">
           <TypeAnimation
             sequence={[
               'Search "milk"',
