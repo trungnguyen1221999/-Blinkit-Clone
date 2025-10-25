@@ -1,23 +1,22 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { CheckCircle, Mail, RefreshCw, AlertCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import resendVerifyEmail from "../api/userApi/resendVerifyEmail";
 import { toast } from "react-toastify";
 
 const VerifyEmailPage = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const registeredEmail = queryClient.getQueryData<string>(["register_email"]);
 
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
-  const [countdown, setCountdown] = useState(0); // countdown in seconds
+  const [countdown, setCountdown] = useState(0);
 
-  // Countdown effect
   useEffect(() => {
     if (countdown <= 0) return;
-    const timer = setInterval(() => {
-      setCountdown((prev) => prev - 1);
-    }, 1000);
+    const timer = setInterval(() => setCountdown((prev) => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [countdown]);
 
@@ -27,7 +26,7 @@ const VerifyEmailPage = () => {
     onSuccess: () => {
       setIsResending(false);
       setResendSuccess(true);
-      setCountdown(30); // 30 giây đếm ngược trước khi gửi lại
+      setCountdown(30);
       setTimeout(() => setResendSuccess(false), 3000);
       toast.success(`Verification email resent to ${registeredEmail}`);
     },
@@ -43,9 +42,8 @@ const VerifyEmailPage = () => {
   return (
     <div className="min-h-screen from-blue-50 via-white to-cyan-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        {/* Main Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-          {/* Header with gradient */}
+          {/* Header */}
           <div className="bg-primary-200 px-8 py-10 text-center">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <Mail className="w-10 h-10 text-secondary-200" />
@@ -60,22 +58,19 @@ const VerifyEmailPage = () => {
 
           {/* Content */}
           <div className="px-8 py-8">
+            {/* Steps & Info */}
             <div className="text-center mb-8">
               <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertCircle className="w-8 h-8 text-yellow-600" />
               </div>
-
               <h2 className="text-xl font-semibold text-gray-800 mb-3">
                 Check Your Inbox
               </h2>
-
               <p className="text-gray-600 leading-relaxed mb-6">
                 We've sent a verification link to your email address. Please
                 check your inbox and click on the link to verify your email and
                 complete your registration.
               </p>
-
-              {/* Steps */}
               <div className="space-y-3 mb-8">
                 <div className="flex items-center text-left bg-gray-50 rounded-lg p-3">
                   <div className="w-6 h-6 bg-secondary-200 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
@@ -85,7 +80,6 @@ const VerifyEmailPage = () => {
                     Check your email inbox
                   </span>
                 </div>
-
                 <div className="flex items-center text-left bg-gray-50 rounded-lg p-3">
                   <div className="w-6 h-6 bg-secondary-200 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
                     <span className="text-white text-xs font-bold">2</span>
@@ -94,7 +88,6 @@ const VerifyEmailPage = () => {
                     Click the verification link
                   </span>
                 </div>
-
                 <div className="flex items-center text-left bg-gray-50 rounded-lg p-3">
                   <div className="w-6 h-6 bg-secondary-200 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
                     <span className="text-white text-xs font-bold">3</span>
@@ -107,11 +100,10 @@ const VerifyEmailPage = () => {
             </div>
 
             {/* Resend Section */}
-            <div className="border-t pt-6">
+            <div className="border-t pt-6 space-y-3">
               <p className="text-sm text-gray-500 mb-4 text-center">
                 Didn't receive the email? Check your spam folder or
               </p>
-
               <button
                 onClick={handleClick}
                 disabled={isResending || countdown > 0}
@@ -143,6 +135,14 @@ const VerifyEmailPage = () => {
                     <span>Resend Email</span>
                   </>
                 )}
+              </button>
+
+              {/* Go Back to Register */}
+              <button
+                onClick={() => navigate("/register")}
+                className="w-full mt-2 py-2 px-4 cursor-pointer rounded-lg font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+              >
+                Go back to Register
               </button>
             </div>
           </div>
