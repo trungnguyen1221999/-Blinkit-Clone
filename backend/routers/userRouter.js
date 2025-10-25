@@ -20,7 +20,7 @@ const userRouter = Router();
 
 // POST /api/user/register - Đăng ký user mới
 userRouter.post("/register", registerUser);
-userRouter.post("/verify-email", verifiedEmail);
+userRouter.post("/verify-successfully", verifiedEmail);
 
 // POST /api/user/login - Đăng nhập user
 userRouter.post("/login", loginUser);

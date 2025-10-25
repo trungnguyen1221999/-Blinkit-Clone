@@ -32,7 +32,7 @@ const registerUser = async (req, res) => {
     };
     const newUser = new UserModels(payload);
     await newUser.save();
-    const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?id=${newUser?._id}`;
+    const verifyUrl = `${process.env.FRONTEND_URL}/verify-successfully?id=${newUser?._id}`;
     resendEmail(
       email,
       "Please verify your email",
@@ -82,8 +82,7 @@ const loginUser = async (req, res) => {
         error: true,
         success: false,
       });
-    console.log(user._id);
-    console.log(user);
+   
     const accessToken = generateAccessToken(user._id);
     const refreshToken = await generateRefreshToken(user._id);
     res.cookie("refreshToken", refreshToken, {
@@ -111,7 +110,7 @@ const loginUser = async (req, res) => {
 
 const verifiedEmail = async (req, res) => {
   try {
-    const { id } = req.query;
+    const { id } = req.body;
     console.log(id);
     const user = await UserModels.findById(id);
     if (!user)
@@ -398,7 +397,7 @@ const sendVerificationEmail = async (req, res) => {
         success: false,
       });
     }
-     const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?id=${user?._id}`;
+     const verifyUrl = `${process.env.FRONTEND_URL}/verify-successfully?id=${user?._id}`;
      resendEmail(
        email,
        "Please verify your email",
