@@ -375,6 +375,49 @@ const resetPassword = async (req, res) => {
       .json({ message: error.message || error, error: true, success: false });
   }
 };
+const sendVerificationEmail = async (req, res) => {
+  try{
+    const { email } = req.body;
+    if (!email)
+      return res.status(400).json({
+        message: "Email is required",
+        error: true,
+        success: false,
+      });
+    const user = await UserModels.findOne({ email });
+    if (!user)
+      return res.status(404).json({
+        message: "User does not exist",
+        error: true,
+        success: false,
+      });
+    if(user.verify_email) {
+      return res.status(400).json({
+        message: "Email is already verified",
+        error: true,
+        success: false,
+      });
+    }
+     const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?id=${user?._id}`;
+     resendEmail(
+       email,
+       "Please verify your email",
+       verifyEmailTemplate(user.name, verifyUrl)
+    );
+    return res.status(200).json({
+      message: "Verification email sent successfully",
+      error: false,
+      success: true,
+    });
+
+  }
+  catch (error) {
+   console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+}
 
 export {
   registerUser,
@@ -388,4 +431,5 @@ export {
   forgotPassword,
   verifyForgotPasswordOTP,
   resetPassword,
+  sendVerificationEmail,
 };

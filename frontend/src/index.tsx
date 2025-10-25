@@ -8,6 +8,7 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginHeader from "./components/LoginHeader";
 import LoginPage from "./pages/LoginPage";
 import ForgotPassword from "./pages/ForgotPassword";
+import VerifyEmailPage from "./pages/verifyEmailPage";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,14 @@ const router = createBrowserRouter([
         element: (
           <>
             <LoginHeader /> <ForgotPassword /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/verify-email",
+        element: (
+          <>
+            <LoginHeader /> <VerifyEmailPage /> <Footer />
           </>
         ),
       },

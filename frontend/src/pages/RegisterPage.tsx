@@ -1,12 +1,14 @@
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import registerApi from "../api/userApi/registerApi";
+import { toast } from "react-toastify"; // ✅ Thêm import toast
+import "react-toastify/dist/ReactToastify.css"; // ✅ Import CSS của toastify
 
 type RegisterFormInputs = {
   name: string;
@@ -34,6 +36,7 @@ const registerSchema = z
   });
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -45,21 +48,28 @@ const RegisterPage = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  const loginMutaion = useMutation({
+  const queryClient = useQueryClient();
+
+  const registerMutation = useMutation({
     mutationFn: async (data: RegisterFormInputs) => {
-      await registerApi(data);
-      console.log("Registering user:", data);
+      return await registerApi(data);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Registration error:", error);
+      toast.error(
+        error?.response?.data?.message || "Registration failed. Please try again."
+      ); // ❌ Hiển thị toast lỗi
     },
-    onSuccess: () => {
-      console.log("Registration successful");
+    onSuccess: (data, variables ) => {
+      toast.success("Registration successful! 🎉"); // ✅ Hiển thị toast thành công
+      queryClient.setQueryData(["register_email"], variables .email);
+      navigate("/verify-email");
+ 
     },
   });
 
   const onSubmit = (data: RegisterFormInputs) => {
-    loginMutaion.mutate(data);
+    registerMutation.mutate(data);
   };
 
   const inputClass =
@@ -171,9 +181,10 @@ const RegisterPage = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="font-bold w-full bg-primary-200 py-2 rounded-md hover:bg-primary-100 transition-colors"
+            disabled={registerMutation.isPending}
+            className="font-bold w-full bg-primary-200 py-2 rounded-md hover:bg-primary-100 cursor-pointer transition-colors"
           >
-            Register
+            {registerMutation.isPending ? "Registering..." : "Register"}
           </button>
         </form>
 
