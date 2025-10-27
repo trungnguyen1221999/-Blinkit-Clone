@@ -153,7 +153,7 @@ const ForgotPassword = () => {
 
             <button
               type="submit"
-              className="font-bold w-full bg-primary-200 py-2 rounded-md hover:bg-primary-100 transition-colors"
+              className="font-bold w-full bg-primary-200 py-2 rounded-md hover:bg-primary-100 transition-colors cursor-pointer"
             >
               Send
             </button>
@@ -183,7 +183,7 @@ const ForgotPassword = () => {
               )}
               <button
                 type="submit"
-                className="mt-2 w-full bg-primary-200 py-2 rounded-md hover:bg-primary-100 font-bold transition-colors"
+                className="mt-2 w-full bg-primary-200 py-2 rounded-md cursor-pointer hover:bg-primary-100 font-bold transition-colors"
               >
                 Verify OTP
               </button>
@@ -195,7 +195,7 @@ const ForgotPassword = () => {
               <button
                 onClick={handleResend}
                 disabled={!resendEnabled}
-                className={`mt-2 font-bold py-1 px-3 rounded-md ${
+                className={`mt-2 font-bold py-1 px-3 rounded-md cursor-pointer ${
                   resendEnabled
                     ? "bg-primary-200 hover:bg-primary-100"
                     : "bg-gray-300 cursor-not-allowed"
@@ -209,7 +209,7 @@ const ForgotPassword = () => {
             <div className="text-center mt-2">
               <button
                 onClick={handleChangeEmail}
-                className="text-sm text-primary-200 hover:underline"
+                className="text-sm text-primary-200 hover:underline cursor-pointer"
               >
                 Change Email
               </button>
