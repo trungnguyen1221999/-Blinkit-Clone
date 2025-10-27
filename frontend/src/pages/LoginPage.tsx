@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import loginApi from "../api/userApi/loginApi";
 import { toast } from "react-toastify";
 import { LoginContext } from "../Context/LoginContext";
+import { useAuth } from "../Context/AuthContext";
 
 type LoginFormInputs = {
   email: string;
@@ -27,6 +28,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { setIsLogin } = useContext(LoginContext)!;
   const navigate = useNavigate();
+  const { setAccessToken } = useAuth();
 
   const {
     register,
@@ -54,7 +56,11 @@ const LoginPage = () => {
   });
 
   const onSubmit = (data: LoginFormInputs) => {
-    loginMutation.mutate(data);
+    loginMutation.mutate(data, {
+      onSuccess: (res) => {
+        setAccessToken(res.data.accessToken); // lưu vào context
+      },
+    });
   };
 
   const inputClass =

@@ -33,7 +33,7 @@ const registerUser = async (req, res) => {
     const newUser = new UserModels(payload);
     await newUser.save();
     const verifyUrl = `${process.env.FRONTEND_URL}/verify-successfully?id=${newUser?._id}`;
-    resendEmail(
+    await resendEmail(
       email,
       "Please verify your email",
       verifyEmailTemplate(name, verifyUrl)
@@ -82,7 +82,7 @@ const loginUser = async (req, res) => {
         error: true,
         success: false,
       });
-   
+
     const accessToken = generateAccessToken(user._id);
     const refreshToken = await generateRefreshToken(user._id);
     res.cookie("refreshToken", refreshToken, {
@@ -375,7 +375,7 @@ const resetPassword = async (req, res) => {
   }
 };
 const sendVerificationEmail = async (req, res) => {
-  try{
+  try {
     const { email } = req.body;
     if (!email)
       return res.status(400).json({
@@ -390,33 +390,31 @@ const sendVerificationEmail = async (req, res) => {
         error: true,
         success: false,
       });
-    if(user.verify_email) {
+    if (user.verify_email) {
       return res.status(400).json({
         message: "Email is already verified",
         error: true,
         success: false,
       });
     }
-     const verifyUrl = `${process.env.FRONTEND_URL}/verify-successfully?id=${user?._id}`;
-     resendEmail(
-       email,
-       "Please verify your email",
-       verifyEmailTemplate(user.name, verifyUrl)
+    const verifyUrl = `${process.env.FRONTEND_URL}/verify-successfully?id=${user?._id}`;
+    resendEmail(
+      email,
+      "Please verify your email",
+      verifyEmailTemplate(user.name, verifyUrl)
     );
     return res.status(200).json({
       message: "Verification email sent successfully",
       error: false,
       success: true,
     });
-
-  }
-  catch (error) {
-   console.error(error);
+  } catch (error) {
+    console.error(error);
     res
       .status(500)
       .json({ message: error.message || error, error: true, success: false });
   }
-}
+};
 
 export {
   registerUser,

@@ -21,7 +21,7 @@ const VerifyEmailPage = () => {
   }, [countdown]);
 
   const resendEmailMutation = useMutation({
-    mutationFn: (email: string) => resendVerifyEmail(email),
+    mutationFn: async (email: string) => await resendVerifyEmail(email),
     onMutate: () => setIsResending(true),
     onSuccess: () => {
       setIsResending(false);

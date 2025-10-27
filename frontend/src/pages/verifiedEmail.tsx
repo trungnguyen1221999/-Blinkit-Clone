@@ -1,12 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CheckCircle, Home, ArrowRight } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import verifyEmail from "../api/userApi/verifyEmail";
-import { LoginContext } from "../Context/LoginContext";
 
 const VerifiedEmail = () => {
-  const { setIsLogin } = useContext(LoginContext)!;
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(2);
   const location = useLocation();
@@ -35,12 +33,11 @@ const VerifiedEmail = () => {
     if (id) {
       // Gọi API verify với ID này
       verifyEmailMutation.mutate(id);
-      setIsLogin(true);
     }
   }, [id]);
 
   const handleRedirectNow = () => {
-    navigate("/");
+    navigate("/login");
   };
 
   return (
