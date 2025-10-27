@@ -17,3 +17,20 @@ export const verifyOtpForgotPasswordApi = async (
   });
   return response.data;
 };
+
+export const resetPasswordApi = async ({
+  email,
+  newPassword,
+  confirmPassword,
+}: {
+  email: string;
+  newPassword: string;
+  confirmPassword: string;
+}) => {
+  const response = await api.put("/user/reset-password", {
+    email,
+    newPassword,
+    confirmPassword,
+  });
+  return response.data;
+};
