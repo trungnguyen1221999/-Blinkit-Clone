@@ -1,10 +1,14 @@
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import loginApi from "../api/userApi/loginApi";
+import { toast } from "react-toastify";
+import { LoginContext } from "../Context/LoginContext";
 
 type LoginFormInputs = {
   email: string;
@@ -21,6 +25,8 @@ const loginSchema = z.object({
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { setIsLogin } = useContext(LoginContext)!;
+  const navigate = useNavigate();
 
   const {
     register,
@@ -30,8 +36,25 @@ const LoginPage = () => {
     resolver: zodResolver(loginSchema),
   });
 
+  const loginMutation = useMutation({
+    mutationFn: async ({ email, password }: LoginFormInputs) => {
+      return await loginApi(email, password);
+    },
+    onError: (error: any) => {
+      console.error("Login error:", error);
+      toast.error(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
+    },
+    onSuccess: () => {
+      toast.success("Login successful!");
+      navigate("/");
+      setIsLogin(true);
+    },
+  });
+
   const onSubmit = (data: LoginFormInputs) => {
-    console.log("Login Data:", data);
+    loginMutation.mutate(data);
   };
 
   const inputClass =
@@ -68,24 +91,33 @@ const LoginPage = () => {
           </div>
 
           {/* Password */}
-          <div className="flex flex-col relative">
+          <div className="flex flex-col">
             <label className="text-gray-700 mb-1" htmlFor="password">
               Password
             </label>
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              className={inputClass}
-              {...register("password")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 p-1"
-            >
-              {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
-            </button>
+
+            {/* ✅ bọc input + icon trong relative container */}
+            <div className="relative flex items-center">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                className={inputClass}
+                {...register("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 text-gray-500"
+              >
+                {showPassword ? (
+                  <FaRegEyeSlash size={18} />
+                ) : (
+                  <FaRegEye size={18} />
+                )}
+              </button>
+            </div>
+
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}

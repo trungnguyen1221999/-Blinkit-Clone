@@ -1,11 +1,14 @@
 import { Outlet } from "react-router-dom";
+import { LoginProvider } from "./Context/LoginContext";
 
 function App() {
   return (
     <>
-      <main>
-        <Outlet />
-      </main>
+      <LoginProvider>
+        <main>
+          <Outlet />
+        </main>
+      </LoginProvider>
     </>
   );
 }

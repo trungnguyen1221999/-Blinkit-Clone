@@ -1,7 +1,7 @@
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import registerApi from "../api/userApi/registerApi";
 import { toast } from "react-toastify"; // ✅ Thêm import toast
 import "react-toastify/dist/ReactToastify.css"; // ✅ Import CSS của toastify
+import { LoginContext } from "../Context/LoginContext";
 
 type RegisterFormInputs = {
   name: string;
@@ -39,6 +40,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { setUser } = useContext(LoginContext)!;
 
   const {
     register,
@@ -57,14 +59,15 @@ const RegisterPage = () => {
     onError: (error: any) => {
       console.error("Registration error:", error);
       toast.error(
-        error?.response?.data?.message || "Registration failed. Please try again."
+        error?.response?.data?.message ||
+          "Registration failed. Please try again."
       ); // ❌ Hiển thị toast lỗi
     },
-    onSuccess: (data, variables ) => {
+    onSuccess: (data, variables) => {
       toast.success("Registration successful! 🎉"); // ✅ Hiển thị toast thành công
-      queryClient.setQueryData(["register_email"], variables .email);
+      queryClient.setQueryData(["register_email"], variables.email);
+      setUser(data.data);
       navigate("/verify-email");
- 
     },
   });
 
@@ -79,9 +82,13 @@ const RegisterPage = () => {
     <div className="flex items-center justify-center py-10 md:py-20">
       <div className="bg-white rounded-lg shadow-md w-full max-w-md p-6 md:p-10">
         {/* Header */}
-        <div className="flex items-center gap-3 justify-center mb-6 bg-primary-100 py-2 rounded-md">
-          <FaRegUserCircle size={25} />
-          <h1 className="text-xl font-semibold">Create a customer account</h1>
+        <div className="flex flex-col md:flex-row items-center gap-3 justify-center mb-6 bg-primary-100 py-2 rounded-md">
+          <div className="scale-90 md:scale-100">
+            <FaRegUserCircle size={25} />
+          </div>
+          <h1 className="text-[16px] md:text-xl font-semibold">
+            Create a customer account
+          </h1>
         </div>
 
         {/* Form */}

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+import logoMobo from "../assets/logo_mobile.png";
 import Search from "./Search";
 import Login from "./Login";
 import Cart from "./Cart";
@@ -8,8 +9,11 @@ const Header = () => {
     <header className="shadow-md bg-white">
       <div className="container mx-auto flex p-5 justify-between items-center space-x-5">
         {/* logo */}
-        <Link to={"/"} className="w-25 md:w-35">
+        <Link to={"/"} className="hidden sm:block  sm:w-30 md:w-35">
           <img src={logo} alt="logo" />
+        </Link>
+        <Link to={"/"} className="block sm:hidden w-20">
+          <img src={logoMobo} alt="logo" />
         </Link>
         {/* search bar */}
         <div>

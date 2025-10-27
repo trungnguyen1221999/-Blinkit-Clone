@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyEmailPage from "./pages/verifyEmailPage";
 import VerifiedEmail from "./pages/verifiedEmail";
+import ResetPassword from "./pages/resetPassword";
 
 const router = createBrowserRouter([
   {
@@ -69,6 +70,14 @@ const router = createBrowserRouter([
         element: (
           <>
             <LoginHeader /> <VerifiedEmail /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/reset-password",
+        element: (
+          <>
+            <LoginHeader /> <ResetPassword /> <Footer />
           </>
         ),
       },
