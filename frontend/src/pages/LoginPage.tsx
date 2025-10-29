@@ -1,14 +1,13 @@
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import loginApi from "../api/userApi/loginApi";
 import { toast } from "react-toastify";
-import { LoginContext } from "../Context/LoginContext";
 import { useAuth } from "../Context/AuthContext";
 
 type LoginFormInputs = {
@@ -26,10 +25,8 @@ const loginSchema = z.object({
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { setIsLogin } = useContext(LoginContext)!;
   const navigate = useNavigate();
-  const { setAccessToken } = useAuth();
-
+  const { loading, setLoading, setIsAuthenticated } = useAuth();
   const {
     register,
     handleSubmit,
@@ -47,18 +44,19 @@ const LoginPage = () => {
       toast.error(
         error.response?.data?.message || "Login failed. Please try again."
       );
+      setLoading(false);
     },
     onSuccess: () => {
       toast.success("Login successful!");
       navigate("/");
-      setIsLogin(true);
+      setLoading(false);
     },
   });
 
   const onSubmit = (data: LoginFormInputs) => {
     loginMutation.mutate(data, {
       onSuccess: (res) => {
-        setAccessToken(res.data.accessToken); // lưu vào context
+        setIsAuthenticated(true);
       },
     });
   };
@@ -136,7 +134,7 @@ const LoginPage = () => {
             type="submit"
             className="font-bold w-full bg-primary-200 py-2 rounded-md hover:bg-primary-100 transition-colors cursor-pointer"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

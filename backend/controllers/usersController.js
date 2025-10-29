@@ -85,6 +85,11 @@ const loginUser = async (req, res) => {
 
     const accessToken = generateAccessToken(user._id);
     const refreshToken = await generateRefreshToken(user._id);
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
@@ -96,6 +101,7 @@ const loginUser = async (req, res) => {
       success: true,
       data: {
         accessToken,
+        id: user._id,
       },
     });
   } catch (error) {
@@ -118,6 +124,18 @@ const verifiedEmail = async (req, res) => {
         .status(404)
         .json({ message: "User not found", error: true, success: false });
     await UserModels.updateOne({ _id: id }, { verify_email: true });
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = await generateRefreshToken(user._id);
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
     res.status(200).json({
       message: "Email verified successfully",
       error: false,
@@ -157,6 +175,11 @@ const uploadAvatar = async (req, res) => {
 const logoutUser = async (req, res) => {
   try {
     res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+    res.clearCookie("accessToken", {
       httpOnly: true,
       secure: true,
       sameSite: "None",
@@ -416,6 +439,31 @@ const sendVerificationEmail = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await UserModels.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        error: true,
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "User fetched successfully",
+      error: false,
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -429,4 +477,5 @@ export {
   verifyForgotPasswordOTP,
   resetPassword,
   sendVerificationEmail,
+  getUser,
 };

@@ -12,6 +12,7 @@ import {
   verifyForgotPasswordOTP,
   resetPassword,
   sendVerificationEmail,
+  getUser,
 } from "../controllers/usersController.js";
 import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
 import upload from "../middleware/multer.js";
@@ -40,5 +41,14 @@ userRouter.put("/reset-password", resetPassword);
 userRouter.delete("/delete/:id", AuthMiddleware, deleteUser);
 
 userRouter.post("/resend-verification-email", sendVerificationEmail);
+userRouter.get("/check-auth", AuthMiddleware, (req, res) => {
+  return res.status(200).json({
+    message: "User is authenticated",
+    error: false,
+    success: true,
+    userId: req.user._id, // ✅ thêm userId riêng
+  });
+});
+userRouter.get("/user-info/:id", getUser);
 
 export default userRouter;

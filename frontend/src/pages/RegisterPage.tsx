@@ -1,7 +1,7 @@
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import registerApi from "../api/userApi/registerApi";
 import { toast } from "react-toastify"; // ✅ Thêm import toast
 import "react-toastify/dist/ReactToastify.css"; // ✅ Import CSS của toastify
-import { LoginContext } from "../Context/LoginContext";
 
 type RegisterFormInputs = {
   name: string;
@@ -40,7 +39,6 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const { setUser } = useContext(LoginContext)!;
 
   const {
     register,
@@ -66,7 +64,6 @@ const RegisterPage = () => {
     onSuccess: (data, variables) => {
       toast.success("Registration successful! 🎉"); // ✅ Hiển thị toast thành công
       queryClient.setQueryData(["register_email"], variables.email);
-      setUser(data.data);
       navigate("/verify-email");
     },
   });

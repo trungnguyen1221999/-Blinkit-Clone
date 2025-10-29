@@ -10,7 +10,9 @@ import LoginPage from "./pages/LoginPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import VerifyEmailPage from "./pages/verifyEmailPage";
 import VerifiedEmail from "./pages/verifiedEmail";
-import ResetPassword from "./pages/resetPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
+import UserLayout from "./layout/UserLayout";
 
 const router = createBrowserRouter([
   {
@@ -78,6 +80,18 @@ const router = createBrowserRouter([
         element: (
           <>
             <LoginHeader /> <ResetPassword /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <>
+            <Header />
+            <UserLayout>
+              <Profile />
+            </UserLayout>
+            <Footer />
           </>
         ),
       },
