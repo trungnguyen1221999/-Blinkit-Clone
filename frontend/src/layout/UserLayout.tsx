@@ -57,7 +57,9 @@ const UserLayout = ({ children }: UserLayoutProps) => {
           <h2 className="font-semibold text-lg">{user?.name || "User Name"}</h2>
           <button className="flex items-center mt-2 text-sm text-primary-200 hover:underline cursor-pointer">
             <span>✏️</span>
-            <span className="ml-1">Edit Profile</span>
+            <Link to="/user/account/profile" className="ml-1">
+              Edit Profile
+            </Link>
           </button>
         </div>
 

@@ -1,4 +1,7 @@
+import { useAuth } from "../Context/AuthContext";
+
 const Profile = () => {
+  const { user, setUser } = useAuth();
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -15,6 +18,7 @@ const Profile = () => {
             <p className="mb-1 font-medium">Name</p>
             <input
               type="text"
+              placeholder={user?.name || "Your Name"}
               className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary-200"
             />
           </label>
@@ -24,7 +28,7 @@ const Profile = () => {
             <p className="mb-1 font-medium">Avatar</p>
             <div className="flex items-center gap-4">
               <img
-                src=""
+                src={user?.avatar || ""}
                 alt="avatar"
                 className="w-20 h-20 rounded-full border border-gray-300 object-cover"
               />
@@ -32,7 +36,7 @@ const Profile = () => {
                 <input type="file" hidden id="avatar-upload" />
                 <label
                   htmlFor="avatar-upload"
-                  className="px-3 py-1 bg-primary-200 text-white rounded cursor-pointer hover:bg-primary-300 text-sm"
+                  className="px-3 py-1 bg-secondary-200 text-white rounded cursor-pointer hover:bg-primary-300 text-sm"
                 >
                   Select Image
                 </label>
