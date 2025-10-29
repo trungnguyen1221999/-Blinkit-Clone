@@ -522,7 +522,7 @@ const editName = async (req, res) => {
   const { name } = req.body;
 
   try {
-    if (!id)
+    if (!_id)
       return res.status(400).json({
         message: "User id is required",
         error: true,

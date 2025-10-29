@@ -13,7 +13,7 @@ export type User = {
   name: string;
   email: string;
   avatar: string;
-  // thêm field khác tùy backend (ví dụ: role, avatar, ...)
+  // thêm field khác tùy backend
 };
 
 type AuthContextType = {
@@ -29,23 +29,38 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  // Lấy user từ localStorage
+  const initUser = localStorage.getItem("user");
+  console.log(initUser);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(
+    initUser ? JSON.parse(initUser) : null
+  );
+  console.log(user);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Hàm lấy thông tin user bằng userId
+  // Đồng bộ user vào localStorage khi thay đổi
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
+  // Hàm fetch user từ backend
   const fetchUser = async (userId: string) => {
     try {
       const res = await getUserApi(userId);
-      // backend trả về { data: user }
-      setUser(res.data?.data || res.data);
+      const fetchedUser = res.data?.data || res.data;
+      if (fetchedUser) setUser(fetchedUser);
     } catch (err) {
       console.error("❌ Fetch user error:", err);
       setUser(null);
     }
   };
 
-  // 🔹 Kiểm tra login khi mở web
+  // Kiểm tra auth khi load trang
   useEffect(() => {
     const checkAuth = async () => {
       try {

@@ -3,12 +3,13 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { set, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import loginApi from "../api/userApi/loginApi";
 import { toast } from "react-toastify";
 import { useAuth } from "../Context/AuthContext";
+import getUserApi from "../api/userApi/getUserApi";
 
 type LoginFormInputs = {
   email: string;
@@ -57,6 +58,7 @@ const LoginPage = () => {
     loginMutation.mutate(data, {
       onSuccess: (res) => {
         setIsAuthenticated(true);
+        getUserApi(res.data.id);
       },
     });
   };
