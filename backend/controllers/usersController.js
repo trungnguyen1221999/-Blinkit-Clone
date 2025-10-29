@@ -517,6 +517,42 @@ const changePassword = async (req, res) => {
       .json({ message: error.message || error, error: true, success: false });
   }
 };
+const editName = async (req, res) => {
+  const { _id } = req.user;
+  const { name } = req.body;
+
+  try {
+    if (!id)
+      return res.status(400).json({
+        message: "User id is required",
+        error: true,
+        success: false,
+      });
+    if (!name)
+      return res.status(400).json({
+        message: "Name is required",
+        error: true,
+        success: false,
+      });
+
+    const user = await UserModels.findByIdAndUpdate(
+      _id,
+      { name },
+      { new: true }
+    );
+    res.status(200).json({
+      message: "Name updated successfully",
+      error: false,
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
 export {
   registerUser,
   loginUser,
@@ -532,4 +568,5 @@ export {
   sendVerificationEmail,
   getUser,
   changePassword,
+  editName,
 };

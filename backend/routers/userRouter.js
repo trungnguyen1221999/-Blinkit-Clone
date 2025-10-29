@@ -14,6 +14,7 @@ import {
   sendVerificationEmail,
   getUser,
   changePassword,
+  editName,
 } from "../controllers/usersController.js";
 import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
 import upload from "../middleware/multer.js";
@@ -52,5 +53,13 @@ userRouter.get("/check-auth", AuthMiddleware, (req, res) => {
 });
 userRouter.get("/user-info/:id", getUser);
 userRouter.put("/change-password", AuthMiddleware, changePassword);
+userRouter.put(
+  "/upload-avatar",
+  AuthMiddleware,
+  upload.single("avatar"),
+  uploadAvatar
+);
+
+userRouter.put("/change-name", AuthMiddleware, editName);
 
 export default userRouter;

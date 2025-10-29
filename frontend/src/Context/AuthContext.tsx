@@ -8,7 +8,7 @@ import {
 import api from "../api/api";
 import getUserApi from "../api/userApi/getUserApi";
 
-type User = {
+export type User = {
   _id: string;
   name: string;
   email: string;
