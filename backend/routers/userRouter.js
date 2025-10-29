@@ -13,6 +13,7 @@ import {
   resetPassword,
   sendVerificationEmail,
   getUser,
+  changePassword,
 } from "../controllers/usersController.js";
 import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
 import upload from "../middleware/multer.js";
@@ -50,5 +51,6 @@ userRouter.get("/check-auth", AuthMiddleware, (req, res) => {
   });
 });
 userRouter.get("/user-info/:id", getUser);
+userRouter.put("/change-password", AuthMiddleware, changePassword);
 
 export default userRouter;

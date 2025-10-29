@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { useMutation } from "@tanstack/react-query";
+import changePasswordApi from "../api/userApi/changePasswordApi";
 // import changePasswordApi from "../api/userApi/changePasswordApi"; // giả sử mày có api này
 
 type ChangePasswordFormInputs = {
@@ -40,7 +42,19 @@ const ChangePassword = () => {
   } = useForm<ChangePasswordFormInputs>({
     resolver: zodResolver(changePasswordSchema),
   });
-
+  const changePasswordMutation = useMutation({
+    mutationFn: async ({
+      userId,
+      oldPassword,
+      newPassword,
+    }: {
+      userId: string;
+      oldPassword: string;
+      newPassword: string;
+    }) => {
+      await changePasswordApi({ userId, oldPassword, newPassword });
+    },
+  });
   const onSubmit = async (data: ChangePasswordFormInputs) => {
     try {
       //   await changePasswordApi(data);

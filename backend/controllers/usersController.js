@@ -464,6 +464,59 @@ const getUser = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const { userId } = req.user;
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    const user = await UserModels.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        error: true,
+        success: false,
+      });
+    }
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        message: "Current password is incorrect",
+        error: true,
+        success: false,
+      });
+    }
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        message: "Current password and new password are required",
+        error: true,
+        success: false,
+      });
+    }
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        message: "New password must be different from current password",
+        error: true,
+        success: false,
+      });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).json({
+      message: "Password changed successfully",
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
 export {
   registerUser,
   loginUser,
@@ -478,4 +531,5 @@ export {
   resetPassword,
   sendVerificationEmail,
   getUser,
+  changePassword,
 };
