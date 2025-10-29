@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { useMutation } from "@tanstack/react-query";
 import changePasswordApi from "../api/userApi/changePasswordApi";
+import { useAuth } from "../Context/AuthContext";
 // import changePasswordApi from "../api/userApi/changePasswordApi"; // giả sử mày có api này
 
 type ChangePasswordFormInputs = {
@@ -33,7 +34,7 @@ const ChangePassword = () => {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
+  const { user, setUser } = useAuth();
   const {
     register,
     handleSubmit,
@@ -44,25 +45,31 @@ const ChangePassword = () => {
   });
   const changePasswordMutation = useMutation({
     mutationFn: async ({
-      userId,
-      oldPassword,
+      currentPassword,
       newPassword,
     }: {
-      userId: string;
-      oldPassword: string;
+      currentPassword: string;
       newPassword: string;
     }) => {
-      await changePasswordApi({ userId, oldPassword, newPassword });
+      await changePasswordApi(user?._id || "", currentPassword, newPassword);
+    },
+    onSuccess: () => {
+      toast.success("Password changed successfully");
+      setUser({ ...user, passwordChangedAt: new Date() } as any);
+      reset();
+      console.log(user);
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to change password"
+      );
     },
   });
   const onSubmit = async (data: ChangePasswordFormInputs) => {
-    try {
-      //   await changePasswordApi(data);
-      toast.success("Password changed successfully! 🎉");
-      reset();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to change password");
-    }
+    changePasswordMutation.mutate({
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+    });
   };
 
   const inputClass =

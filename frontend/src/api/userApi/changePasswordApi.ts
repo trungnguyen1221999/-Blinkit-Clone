@@ -1,13 +1,13 @@
 import api from "../api";
 
 const changePasswordApi = async (
-  userId: string,
-  oldPassword: string,
+  _id: string,
+  currentPassword: string,
   newPassword: string
 ) => {
-  const response = await api.put(`/users/change-password`, {
-    userId,
-    oldPassword,
+  const response = await api.put(`/user/change-password`, {
+    _id,
+    currentPassword,
     newPassword,
   });
   return response.data;

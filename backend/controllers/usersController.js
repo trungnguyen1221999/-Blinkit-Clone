@@ -465,11 +465,11 @@ const getUser = async (req, res) => {
 };
 
 const changePassword = async (req, res) => {
-  const { userId } = req.user;
+  const { _id } = req.user;
   const { currentPassword, newPassword } = req.body;
 
   try {
-    const user = await UserModels.findById(userId);
+    const user = await UserModels.findById(_id);
     if (!user) {
       return res.status(404).json({
         message: "User not found",
