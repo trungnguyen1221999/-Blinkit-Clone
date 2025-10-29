@@ -12,6 +12,7 @@ type User = {
   _id: string;
   name: string;
   email: string;
+  avatar: string;
   // thêm field khác tùy backend (ví dụ: role, avatar, ...)
 };
 

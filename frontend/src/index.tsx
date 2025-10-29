@@ -13,6 +13,8 @@ import VerifiedEmail from "./pages/verifiedEmail";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
 import UserLayout from "./layout/UserLayout";
+import Purchase from "./pages/Purchase";
+import ChangePassword from "./pages/ChangePassword";
 
 const router = createBrowserRouter([
   {
@@ -84,12 +86,36 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/profile",
+        path: "/user/account/profile",
         element: (
           <>
             <Header />
             <UserLayout>
               <Profile />
+            </UserLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/user/account/change-password",
+        element: (
+          <>
+            <Header />
+            <UserLayout>
+              <ChangePassword />
+            </UserLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/user/purchases",
+        element: (
+          <>
+            <Header />
+            <UserLayout>
+              <Purchase />
             </UserLayout>
             <Footer />
           </>

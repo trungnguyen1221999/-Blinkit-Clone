@@ -43,13 +43,13 @@ const LoginDropdown = () => {
       {isOpen && (
         <div className="absolute top-full right-0 w-48 bg-white border rounded shadow-lg z-50">
           <Link
-            to="/profile"
+            to="/user/account/profile"
             className="block px-4 py-2 hover:bg-gray-100 transition-colors"
           >
             My Account
           </Link>
           <Link
-            to="/purchases"
+            to="/user/purchases"
             className="block px-4 py-2 hover:bg-gray-100 transition-colors"
           >
             My Purchase
