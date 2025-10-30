@@ -1,34 +1,30 @@
-import React from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import getAllUsersApi from "../../api/adminApi/getAllUserApi";
 
 const AdminUsers = () => {
-  const users = [
-    {
-      id: "1",
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Admin",
-      createdAt: "2025-10-01",
-      avatar: "https://via.placeholder.com/60x60.png?text=JD",
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      email: "jane@example.com",
-      role: "Customer",
-      createdAt: "2025-10-10",
-      avatar: "https://via.placeholder.com/60x60.png?text=JS",
-    },
-    {
-      id: "3",
-      name: "Mike Johnson",
-      email: "mike@example.com",
-      role: "Moderator",
-      createdAt: "2025-09-25",
-      avatar: "https://via.placeholder.com/60x60.png?text=MJ",
-    },
-  ];
-
+  const [users, setUsers] = useState<
+    Array<{
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+      createdAt: string;
+      avatar: string;
+    }>
+  >([]);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await getAllUsersApi();
+        setUsers(data.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
+  console.log(users);
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       {/* HEADER */}
@@ -77,7 +73,9 @@ const AdminUsers = () => {
                 <td className="p-3 font-medium text-gray-800">{user.name}</td>
                 <td className="p-3 text-gray-600">{user.email}</td>
                 <td className="p-3 text-gray-600">{user.role}</td>
-                <td className="p-3 text-gray-600">{user.createdAt}</td>
+                <td className="p-3 text-gray-600">
+                  {new Date(user.createdAt).toLocaleDateString("en-GB")}
+                </td>{" "}
                 <td className="p-3 text-right">
                   <button className="text-blue-600 hover:text-blue-800 mr-3">
                     <Pencil size={18} />

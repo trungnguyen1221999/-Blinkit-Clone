@@ -25,8 +25,10 @@ const AuthMiddleware = (req, res, next) => {
     // Chỉ lưu data cần thiết, loại bỏ JWT metadata
     req.user = {
       _id: decoded._id,
+
       // Có thể thêm role nếu cần: role: decoded.role
     };
+    console.log(req.user);
     next();
   } catch (error) {
     console.error("AuthMiddleware Error:", error);

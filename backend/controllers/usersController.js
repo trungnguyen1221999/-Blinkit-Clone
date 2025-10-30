@@ -553,6 +553,46 @@ const editName = async (req, res) => {
       .json({ message: error.message || error, error: true, success: false });
   }
 };
+const getAllUsers = async (req, res) => {
+  try {
+   
+    const {_id} = req.user;
+    if(!_id){
+      return res.status(400).json({
+        message: "User id is required",
+        error: true,
+        success: false,
+      });
+    }
+    const user = await UserModels.findById(_id);
+    if(user.role !== "ADMIN"){
+      return res.status(403).json({
+        message: "Access denied. Admins only.",
+        error: true,
+        success: false,
+      });
+    }
+    const users = await UserModels.find().select("-password");
+    if (!users || users.length === 0) {
+      return res.status(404).json({
+        message: "No users found",
+        error: true,
+        success: false,
+      });
+    }
+    res.status(200).json({
+      message: "Users fetched successfully",
+      error: false,
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
 export {
   registerUser,
   loginUser,
@@ -569,4 +609,5 @@ export {
   getUser,
   changePassword,
   editName,
+  getAllUsers,
 };

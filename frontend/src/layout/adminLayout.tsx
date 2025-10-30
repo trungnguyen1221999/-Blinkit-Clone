@@ -1,4 +1,4 @@
-import React, { type ReactNode } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -7,14 +7,16 @@ import {
   ListOrdered,
   ShoppingBag,
   UserCircle,
-} from "lucide-react"; // icon đẹp, dễ dùng
+} from "lucide-react";
+import { useAuth } from "../Context/AuthContext";
 
 interface AdminLayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { user } = useAuth();
 
   const menuItems = [
     {
@@ -38,13 +40,33 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="container flex min-h-screen bg-gray-100 mx-auto my-10 border">
+    <div className="container mx-auto my-10 min-h-screen flex bg-gray-100 rounded">
       {/* NAV LEFT */}
       <aside className="w-64 bg-white shadow-md border-r flex flex-col">
-        <div className="p-4 border-b">
-          <h1 className="text-xl font-bold text-gray-800">Admin Panel</h1>
+        {/* Admin profile */}
+        <div className="flex flex-col items-center p-4 border-b">
+          <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-200">
+            <img
+              src={
+                user?.avatar ||
+                "https://static.vecteezy.com/system/resources/previews/020/911/750/non_2x/user-profile-icon-profile-avatar-user-icon-male-icon-face-icon-free-png.png"
+              }
+              alt="admin avatar"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <h2 className="mt-2 font-semibold text-base text-center">
+            {user?.name || "Admin Name"}
+          </h2>
+          <Link
+            to="/admin/profile"
+            className="text-sm text-primary-200 hover:underline mt-1"
+          >
+            Edit Profile
+          </Link>
         </div>
 
+        {/* Menu */}
         <nav className="flex-1 p-4 space-y-2">
           {menuItems.map((item) => {
             const isActive = location.pathname.startsWith(item.path);

@@ -99,7 +99,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Chỉ chạy checkAuth nếu bạn muốn; nếu chắc chắn login -> localStorage, bạn có thể comment dòng dưới
     checkAuth();
   }, []);
-  console.log(user);
 
   return (
     <AuthContext.Provider
