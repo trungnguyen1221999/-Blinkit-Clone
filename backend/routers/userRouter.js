@@ -41,7 +41,7 @@ userRouter.put("/forgot-password", forgotPassword);
 userRouter.put("/verify-forgot-password-otp", verifyForgotPasswordOTP);
 userRouter.put("/reset-password", resetPassword);
 // DELETE /api/user/delete/:id - Xóa user
-userRouter.delete("/delete/:id", AuthMiddleware, deleteUser);
+userRouter.delete("/admin/delete/:id", AuthMiddleware, deleteUser);
 
 userRouter.post("/resend-verification-email", sendVerificationEmail);
 userRouter.get("/check-auth", AuthMiddleware, (req, res) => {

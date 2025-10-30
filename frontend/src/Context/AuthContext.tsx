@@ -8,6 +8,8 @@ import {
 } from "react";
 import api from "../api/api";
 import getUserApi from "../api/userApi/getUserApi";
+import logoutApi from "../api/userApi/logoutApi";
+import { useNavigate } from "react-router-dom";
 
 export type User = {
   _id: string;
@@ -15,6 +17,8 @@ export type User = {
   email: string;
   avatar: string;
   role: "USER " | "ADMIN";
+  status: "Active" | "Inactive" | "Suspended";
+  verify_email: boolean;
 };
 
 type AuthContextType = {
@@ -30,6 +34,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const navigate = useNavigate();
   // lazy init để tránh gọi localStorage trên server hoặc parse sai
   const initUser = (): User | null => {
     try {
@@ -70,6 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log(fetchUser);
       if (fetchedUser) setUser(fetchedUser);
     } catch (err) {
+      await logoutApi(); // logout nếu fetch user fail (token invalid...)
       console.error("fetchUser error:", err);
     }
   };
@@ -90,6 +96,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (err) {
         console.warn("checkAuth failed (keeps local user):", err);
+        navigate("/login");
+
         // không setUser(null) — giữ user từ localStorage
       } finally {
         setLoading(false);

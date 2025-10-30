@@ -267,6 +267,21 @@ const editUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
+    const { _id } = req.user;
+    if (!_id) {
+      return res.status(400).json({
+        message: "User id is required",
+        error: true,
+        success: false,
+      });
+    }
+    const idToDelete = req.params.id;
+    await UserModels.findByIdAndDelete(idToDelete);
+    res.status(200).json({
+      message: "User deleted successfully",
+      error: false,
+      success: true,
+    });
   } catch (error) {
     console.error(error);
     res
@@ -555,9 +570,8 @@ const editName = async (req, res) => {
 };
 const getAllUsers = async (req, res) => {
   try {
-   
-    const {_id} = req.user;
-    if(!_id){
+    const { _id } = req.user;
+    if (!_id) {
       return res.status(400).json({
         message: "User id is required",
         error: true,
@@ -565,7 +579,7 @@ const getAllUsers = async (req, res) => {
       });
     }
     const user = await UserModels.findById(_id);
-    if(user.role !== "ADMIN"){
+    if (user.role !== "ADMIN") {
       return res.status(403).json({
         message: "Access denied. Admins only.",
         error: true,
