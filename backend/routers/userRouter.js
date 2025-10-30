@@ -16,6 +16,7 @@ import {
   changePassword,
   editName,
   getAllUsers,
+  addUser,
 } from "../controllers/usersController.js";
 import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
 import upload from "../middleware/multer.js";
@@ -63,5 +64,6 @@ userRouter.put(
 
 userRouter.put("/change-name", AuthMiddleware, editName);
 userRouter.get("/admin/all-users", AuthMiddleware, getAllUsers);
+userRouter.post("/admin/add-user", AuthMiddleware, addUser);
 
 export default userRouter;

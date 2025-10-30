@@ -6,6 +6,8 @@ import deleteUserApi from "../../api/adminApi/deleteUserApi";
 import { toast } from "react-toastify";
 import Pagination from "../../components/Pagination";
 import DeletePopup from "../../components/DeletePopup";
+import addUserApi from "../../api/adminApi/addUserApi";
+import AddUserPopup from "../../components/AddUserPopupProps";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<
@@ -27,6 +29,7 @@ const AdminUsers = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [usersToDelete, setUsersToDelete] = useState<string[]>([]); // lưu id user(s) sẽ xóa
+  const [showAddUserPopup, setShowAddUserPopup] = useState(false);
 
   // Fetch users
   useEffect(() => {
@@ -58,6 +61,21 @@ const AdminUsers = () => {
     startIndex,
     startIndex + usersPerPage
   );
+  const addUserMutation = useMutation({
+    mutationFn: async (userData: {
+      name: string;
+      email: string;
+      password: string;
+      role: "ADMIN" | "USER";
+    }) => await addUserApi(userData),
+    onSuccess: () => {
+      toast.success("User added successfully");
+      setNeededRerender((prev) => !prev);
+    },
+    onError: () => {
+      toast.error("Failed to add user");
+    },
+  });
 
   // Delete user mutation
   const deleteUserMutation = useMutation({
@@ -110,6 +128,16 @@ const AdminUsers = () => {
       prev.includes(id) ? prev.filter((u) => u !== id) : [...prev, id]
     );
   };
+  const handleAddUser = (userData: {
+    name: string;
+    email: string;
+    password: string;
+    role: "ADMIN" | "USER";
+  }) => {
+    addUserMutation.mutate(userData);
+    setShowAddUserPopup(false);
+    setNeededRerender((prev) => !prev);
+  };
 
   useEffect(() => {
     const allSelected =
@@ -137,7 +165,10 @@ const AdminUsers = () => {
             <option value="User">User</option>
           </select>
 
-          <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          <button
+            onClick={() => setShowAddUserPopup(true)}
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+          >
             <Plus size={18} />
             <span>Create User</span>
           </button>
@@ -153,7 +184,7 @@ const AdminUsers = () => {
           </span>
           <button
             onClick={confirmDeleteSelected}
-            className="flex items-center gap-2 text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+            className="flex items-center gap-2 text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 cursor-pointer"
           >
             <Trash2 size={16} />
             Delete Selected
@@ -224,12 +255,12 @@ const AdminUsers = () => {
                 <td className="p-3 text-gray-600">
                   {new Date(user.createdAt).toLocaleDateString("en-GB")}
                 </td>
-                <td className="p-3 text-right flex justify-end gap-3">
-                  <button className="text-blue-600 hover:text-blue-800">
+                <td className="p-3 text-right">
+                  <button className="text-blue-600 hover:text-blue-800 mr-3">
                     <Pencil size={18} />
                   </button>
                   <button
-                    onClick={() => confirmDeleteUser(user._id)}
+                    onClick={() => handleDeleteUser(user._id)}
                     className="text-red-600 hover:text-red-800"
                   >
                     <Trash2 size={18} />
@@ -256,6 +287,12 @@ const AdminUsers = () => {
           count={usersToDelete.length}
           onCancel={() => setShowDeletePopup(false)}
           onConfirm={() => deleteUserMutation.mutate(usersToDelete)}
+        />
+      )}
+      {showAddUserPopup && (
+        <AddUserPopup
+          onCancel={() => setShowAddUserPopup(false)}
+          onConfirm={handleAddUser}
         />
       )}
     </div>

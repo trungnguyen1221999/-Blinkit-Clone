@@ -607,6 +607,36 @@ const getAllUsers = async (req, res) => {
       .json({ message: error.message || error, error: true, success: false });
   }
 };
+const addUser = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    if (!name || !email || !password || !role)
+      return res.status(400).json({
+        message: "name, email, password, role cant be empty",
+        error: true,
+        success: false,
+      });
+    const isExistUser = await UserModels.findOne({ email });
+    if (isExistUser)
+      return res
+        .status(400)
+        .json({ message: "User already exists", error: true, success: false });
+    const user = new UserModels({ name, email, password, role });
+    await user.save();
+    res.status(201).json({
+      message: "User created successfully",
+      error: false,
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: error.message || error, error: true, success: false });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -624,4 +654,5 @@ export {
   changePassword,
   editName,
   getAllUsers,
+  addUser,
 };
