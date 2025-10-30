@@ -255,12 +255,12 @@ const AdminUsers = () => {
                 <td className="p-3 text-gray-600">
                   {new Date(user.createdAt).toLocaleDateString("en-GB")}
                 </td>
-                <td className="p-3 text-right">
-                  <button className="text-blue-600 hover:text-blue-800 mr-3">
+                <td className="p-3 flex items-center justify-end gap-3">
+                  <button className="text-blue-600 hover:text-blue-800">
                     <Pencil size={18} />
                   </button>
                   <button
-                    onClick={() => handleDeleteUser(user._id)}
+                    onClick={() => confirmDeleteUser(user._id)}
                     className="text-red-600 hover:text-red-800"
                   >
                     <Trash2 size={18} />
