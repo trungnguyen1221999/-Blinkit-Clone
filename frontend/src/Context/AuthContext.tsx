@@ -14,6 +14,7 @@ export type User = {
   name: string;
   email: string;
   avatar: string;
+  role: "USER " | "ADMIN";
 };
 
 type AuthContextType = {

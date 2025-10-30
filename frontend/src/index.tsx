@@ -15,6 +15,13 @@ import Profile from "./pages/Profile";
 import UserLayout from "./layout/UserLayout";
 import Purchase from "./pages/Purchase";
 import ChangePassword from "./pages/ChangePassword";
+import AdminLayout from "./layout/adminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminCustomer from "./pages/admin/AdminCustomer";
+import AdminOrder from "./pages/admin/AdminOrder";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminCategory from "./pages/admin/AdminCategory";
 
 const router = createBrowserRouter([
   {
@@ -117,6 +124,78 @@ const router = createBrowserRouter([
             <UserLayout>
               <Purchase />
             </UserLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/admin/dashboard",
+        element: (
+          <>
+            <LoginHeader />
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/admin/customers",
+        element: (
+          <>
+            <LoginHeader />
+            <AdminLayout>
+              <AdminCustomer />
+            </AdminLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/admin/orders",
+        element: (
+          <>
+            <LoginHeader />
+            <AdminLayout>
+              <AdminOrder />
+            </AdminLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/admin/products",
+        element: (
+          <>
+            <LoginHeader />
+            <AdminLayout>
+              <AdminProducts />
+            </AdminLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/admin/users",
+        element: (
+          <>
+            <LoginHeader />
+            <AdminLayout>
+              <AdminUsers />
+            </AdminLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/admin/categories",
+        element: (
+          <>
+            <LoginHeader />
+            <AdminLayout>
+              <AdminCategory />
+            </AdminLayout>
             <Footer />
           </>
         ),
