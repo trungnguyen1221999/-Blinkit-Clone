@@ -4,6 +4,7 @@ import getAllUsersApi from "../../api/adminApi/getAllUserApi";
 import { useMutation } from "@tanstack/react-query";
 import deleteUserApi from "../../api/adminApi/deleteUserApi";
 import { toast } from "react-toastify";
+import Pagination from "../../components/Pagination";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<
@@ -18,9 +19,11 @@ const AdminUsers = () => {
       verify_email: boolean;
     }>
   >([]);
+
   const [roleFilter, setRoleFilter] = useState<"All" | "Admin" | "User">("All");
   const [neededRerender, setNeededRerender] = useState(false);
 
+  // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -41,7 +44,8 @@ const AdminUsers = () => {
           (user) => user.role.toLowerCase() === roleFilter.toLowerCase()
         );
 
-  const deleteUserMuation = useMutation({
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
     mutationFn: async (id: string) => await deleteUserApi(id),
     onSuccess: () => {
       toast.success("User deleted successfully");
@@ -51,9 +55,21 @@ const AdminUsers = () => {
       toast.error("Failed to delete user");
     },
   });
+
   const handleDeleteUser = (id: string) => {
-    deleteUserMuation.mutate(id);
+    deleteUserMutation.mutate(id);
   };
+
+  // Pagination logic
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const startIndex = (currentPage - 1) * usersPerPage;
+  const currentUsers = filteredUsers.slice(
+    startIndex,
+    startIndex + usersPerPage
+  );
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       {/* HEADER */}
@@ -85,6 +101,7 @@ const AdminUsers = () => {
         <table className="w-full text-sm text-left border-collapse">
           <thead>
             <tr className="bg-gray-100 text-gray-700">
+              <th className="p-3 w-10 text-center">No.</th>
               <th className="p-3 w-10">
                 <input type="checkbox" />
               </th>
@@ -98,8 +115,9 @@ const AdminUsers = () => {
               <th className="p-3 text-right">Actions</th>
             </tr>
           </thead>
+
           <tbody>
-            {filteredUsers.map((user, idx) => (
+            {currentUsers.map((user, idx) => (
               <tr
                 key={user._id}
                 className={`border-b hover:bg-gray-100 transition-colors ${
@@ -110,6 +128,11 @@ const AdminUsers = () => {
                     : "bg-gray-50"
                 }`}
               >
+                {/* Number column */}
+                <td className="p-3 text-center text-gray-700 font-medium">
+                  {startIndex + idx + 1}
+                </td>
+
                 <td className="p-3">
                   <input type="checkbox" />
                 </td>
@@ -143,10 +166,11 @@ const AdminUsers = () => {
                 </td>
               </tr>
             ))}
-            {filteredUsers.length === 0 && (
+
+            {currentUsers.length === 0 && (
               <tr>
                 <td
-                  colSpan={9}
+                  colSpan={10}
                   className="text-center py-6 text-gray-500 italic"
                 >
                   No users found.
@@ -156,6 +180,15 @@ const AdminUsers = () => {
           </tbody>
         </table>
       </div>
+
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -9,12 +9,21 @@ import {
   UserCircle,
 } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
+import Pagination from "../components/Pagination";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
+  totalPages?: number; // tổng số trang
+  currentPage?: number; // trang hiện tại
+  onPageChange?: (page: number) => void; // hàm khi đổi trang
 }
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({
+  children,
+  totalPages = 1,
+  currentPage = 1,
+  onPageChange,
+}) => {
   const location = useLocation();
   const { user } = useAuth();
 
@@ -38,6 +47,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       icon: <UserCircle size={18} />,
     },
   ];
+
+  const handlePrev = () => {
+    if (currentPage > 1 && onPageChange) onPageChange(currentPage - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages && onPageChange) onPageChange(currentPage + 1);
+  };
 
   return (
     <div className="container mx-auto my-10 min-h-screen flex bg-gray-100 rounded border">
@@ -89,7 +106,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 flex flex-col p-6">
+        <div className="flex-1">{children}</div>
+      </main>
     </div>
   );
 };
