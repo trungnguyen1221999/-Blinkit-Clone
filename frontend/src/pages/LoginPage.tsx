@@ -27,7 +27,7 @@ const loginSchema = z.object({
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { loading, setLoading, setIsAuthenticated } = useAuth();
+  const { loading, setLoading, setIsAuthenticated, user, setUser } = useAuth();
   const {
     register,
     handleSubmit,
@@ -56,9 +56,21 @@ const LoginPage = () => {
 
   const onSubmit = (data: LoginFormInputs) => {
     loginMutation.mutate(data, {
-      onSuccess: (res) => {
-        setIsAuthenticated(true);
-        getUserApi(res.data.id);
+      onSuccess: async (res) => {
+        try {
+          // 1. Set authenticated
+          setIsAuthenticated(true);
+
+          // 2. Lấy user từ server
+          const userData = await getUserApi(res.data.id);
+          // 3. Lưu user vào context
+          setUser(userData.data);
+          console.log(user);
+          // 4. Navigate sau khi đã set user
+          navigate("/");
+        } catch (err) {
+          console.error("Failed to fetch user after login:", err);
+        }
       },
     });
   };

@@ -151,7 +151,7 @@ const verifiedEmail = async (req, res) => {
 
 const uploadAvatar = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.user._id;
     const image = req.file;
     const upload = await uploadImageCloudinary(image);
     const updateUser = await UserModels.findByIdAndUpdate(

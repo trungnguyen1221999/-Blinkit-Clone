@@ -15,6 +15,7 @@ const LoginDropdown = () => {
     setIsAuthenticated(false);
     setUser(null);
     navigate("/login");
+    localStorage.removeItem("user");
   };
 
   if (!isAuthenticated) {

@@ -41,9 +41,9 @@ const Profile = () => {
       try {
         const data = await getUserApi(user._id);
         if (data) {
-          setUser(data);
+          setUser(data.data);
           setPreview(
-            data.avatar ||
+            data.data.avatar ||
               "https://static.vecteezy.com/system/resources/previews/020/911/750/non_2x/user-profile-icon-profile-avatar-user-icon-male-icon-face-icon-profile-icon-free-png.png"
           );
           reset({ name: data.name });
@@ -53,7 +53,7 @@ const Profile = () => {
       }
     };
     fetchUser();
-  }, [user]);
+  }, []);
 
   // Mutation đổi tên
   const changeNameMutation = useMutation({
@@ -81,6 +81,7 @@ const Profile = () => {
         const updatedUser = { ...user, avatar: data.data.avatar };
         setUser(updatedUser);
         setPreview(data.data.avatar);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
       }
     },
     onError: (err: any) => {
