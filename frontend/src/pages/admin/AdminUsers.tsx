@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import deleteUserApi from "../../api/adminApi/deleteUserApi";
 import { toast } from "react-toastify";
 import Pagination from "../../components/Pagination";
+import DeletePopup from "../../components/DeletePopup";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<
@@ -22,6 +23,10 @@ const AdminUsers = () => {
 
   const [roleFilter, setRoleFilter] = useState<"All" | "Admin" | "User">("All");
   const [neededRerender, setNeededRerender] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [usersToDelete, setUsersToDelete] = useState<string[]>([]); // lưu id user(s) sẽ xóa
 
   // Fetch users
   useEffect(() => {
@@ -44,23 +49,7 @@ const AdminUsers = () => {
           (user) => user.role.toLowerCase() === roleFilter.toLowerCase()
         );
 
-  // Delete user mutation
-  const deleteUserMutation = useMutation({
-    mutationFn: async (id: string) => await deleteUserApi(id),
-    onSuccess: () => {
-      toast.success("User deleted successfully");
-      setNeededRerender((prev) => !prev);
-    },
-    onError: () => {
-      toast.error("Failed to delete user");
-    },
-  });
-
-  const handleDeleteUser = (id: string) => {
-    deleteUserMutation.mutate(id);
-  };
-
-  // Pagination logic
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
@@ -69,6 +58,65 @@ const AdminUsers = () => {
     startIndex,
     startIndex + usersPerPage
   );
+
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: async (id: string | string[]) => {
+      if (Array.isArray(id)) {
+        await Promise.all(id.map((_id) => deleteUserApi(_id)));
+      } else {
+        await deleteUserApi(id);
+      }
+    },
+    onSuccess: () => {
+      toast.success("User(s) deleted successfully");
+      setSelectedUsers([]);
+      setSelectAll(false);
+      setNeededRerender((prev) => !prev);
+      setShowDeletePopup(false);
+    },
+    onError: () => {
+      toast.error("Failed to delete user(s)");
+      setShowDeletePopup(false);
+    },
+  });
+
+  // Open popup để xóa 1 user
+  const confirmDeleteUser = (id: string) => {
+    setUsersToDelete([id]);
+    setShowDeletePopup(true);
+  };
+
+  // Open popup để xóa nhiều user
+  const confirmDeleteSelected = () => {
+    if (selectedUsers.length === 0) return;
+    setUsersToDelete(selectedUsers);
+    setShowDeletePopup(true);
+  };
+
+  // Handle select logic
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedUsers([]);
+      setSelectAll(false);
+    } else {
+      setSelectedUsers(currentUsers.map((u) => u._id));
+      setSelectAll(true);
+    }
+  };
+
+  const handleSelectUser = (id: string) => {
+    setSelectedUsers((prev) =>
+      prev.includes(id) ? prev.filter((u) => u !== id) : [...prev, id]
+    );
+  };
+
+  useEffect(() => {
+    const allSelected =
+      currentUsers.length > 0 &&
+      currentUsers.every((u) => selectedUsers.includes(u._id));
+    setSelectAll(allSelected);
+  }, [currentUsers, selectedUsers]);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -96,14 +144,35 @@ const AdminUsers = () => {
         </div>
       </div>
 
+      {/* SELECTED INFO */}
+      {selectedUsers.length > 0 && (
+        <div className="flex justify-between items-center mb-4 bg-blue-50 border border-blue-200 px-4 py-2 rounded">
+          <span className="text-sm text-gray-700">
+            Selected: <strong>{selectedUsers.length}</strong> user
+            {selectedUsers.length > 1 ? "s" : ""}
+          </span>
+          <button
+            onClick={confirmDeleteSelected}
+            className="flex items-center gap-2 text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+          >
+            <Trash2 size={16} />
+            Delete Selected
+          </button>
+        </div>
+      )}
+
       {/* TABLE */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto border rounded-lg">
         <table className="w-full text-sm text-left border-collapse">
           <thead>
-            <tr className="bg-gray-100 text-gray-700">
+            <tr className="bg-gray-100 text-gray-700 border-b">
               <th className="p-3 w-10 text-center">No.</th>
-              <th className="p-3 w-10">
-                <input type="checkbox" />
+              <th className="p-3 w-10 text-center">
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                />
               </th>
               <th className="p-3">Avatar</th>
               <th className="p-3">Name</th>
@@ -128,13 +197,15 @@ const AdminUsers = () => {
                     : "bg-gray-50"
                 }`}
               >
-                {/* Number column */}
                 <td className="p-3 text-center text-gray-700 font-medium">
                   {startIndex + idx + 1}
                 </td>
-
-                <td className="p-3">
-                  <input type="checkbox" />
+                <td className="p-3 text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.includes(user._id)}
+                    onChange={() => handleSelectUser(user._id)}
+                  />
                 </td>
                 <td className="p-3">
                   <img
@@ -153,12 +224,12 @@ const AdminUsers = () => {
                 <td className="p-3 text-gray-600">
                   {new Date(user.createdAt).toLocaleDateString("en-GB")}
                 </td>
-                <td className="p-3 text-right">
-                  <button className="text-blue-600 hover:text-blue-800 mr-3">
+                <td className="p-3 text-right flex justify-end gap-3">
+                  <button className="text-blue-600 hover:text-blue-800">
                     <Pencil size={18} />
                   </button>
                   <button
-                    onClick={() => handleDeleteUser(user._id)}
+                    onClick={() => confirmDeleteUser(user._id)}
                     className="text-red-600 hover:text-red-800"
                   >
                     <Trash2 size={18} />
@@ -166,17 +237,6 @@ const AdminUsers = () => {
                 </td>
               </tr>
             ))}
-
-            {currentUsers.length === 0 && (
-              <tr>
-                <td
-                  colSpan={10}
-                  className="text-center py-6 text-gray-500 italic"
-                >
-                  No users found.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
@@ -187,6 +247,15 @@ const AdminUsers = () => {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
+        />
+      )}
+
+      {/* DELETE POPUP */}
+      {showDeletePopup && (
+        <DeletePopup
+          count={usersToDelete.length}
+          onCancel={() => setShowDeletePopup(false)}
+          onConfirm={() => deleteUserMutation.mutate(usersToDelete)}
         />
       )}
     </div>
