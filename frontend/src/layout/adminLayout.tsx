@@ -59,7 +59,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             {user?.name || "Admin Name"}
           </h2>
           <Link
-            to="/admin/profile"
+            to="/user/account/profile"
             className="text-sm text-primary-200 hover:underline mt-1"
           >
             Edit Profile

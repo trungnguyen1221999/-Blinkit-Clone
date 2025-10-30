@@ -93,6 +93,13 @@ const UserLayout = ({ children }: UserLayoutProps) => {
               My Purchase
             </Link>
           </li>
+          {user?.role === "ADMIN" && (
+            <li>
+              <Link className={getMenuClass("purchases")} to="/admin/dashboard">
+                Admin
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
 
