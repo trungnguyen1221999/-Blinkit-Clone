@@ -35,7 +35,14 @@ const LoginDropdown = () => {
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
-      <FaRegUserCircle size={25} className="cursor-pointer" />
+      <div className="w-10 h-10 rounded-full overflow-hidden bg-white flex items-center justify-center">
+        <img
+          src={user?.avatar}
+          alt="avatar"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
       <span className="hidden md:inline-block text-lg font-medium">
         {user?.name || "My Account"}
       </span>
