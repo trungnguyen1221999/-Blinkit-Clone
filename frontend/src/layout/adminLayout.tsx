@@ -40,7 +40,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="container mx-auto my-10 min-h-screen flex bg-gray-100 rounded">
+    <div className="container mx-auto my-10 min-h-screen flex bg-gray-100 rounded border">
       {/* NAV LEFT */}
       <aside className="w-64 bg-white shadow-md border-r flex flex-col">
         {/* Admin profile */}
@@ -67,7 +67,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-6 space-y-2">
           {menuItems.map((item) => {
             const isActive = location.pathname.startsWith(item.path);
             return (
