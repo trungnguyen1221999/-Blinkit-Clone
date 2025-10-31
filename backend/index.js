@@ -7,6 +7,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import { connectDB } from "./database/mongobd.js";
 import userRouter from "./routers/userRouter.js";
+import routerCategory from "./routers/categoryRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -41,6 +42,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", userRouter); // User routes
+app.use("/api/category", routerCategory); // Category routes
 // Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);
