@@ -67,7 +67,9 @@ const AdminUsers = () => {
       setShowAddUserPopup(false);
       setNeededRerender((p) => !p);
     },
-    onError: () => toast.error("Failed to add user"),
+    onError: (error: any) => {
+      toast.error(error.response?.data.message || "Failed to add user");
+    },
   });
 
   const handleAddUser = (userData: {
