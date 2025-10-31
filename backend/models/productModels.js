@@ -33,7 +33,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: null,
     },
-    discout: {
+    discount: {
       type: Number,
       default: null,
     },

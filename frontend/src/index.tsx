@@ -22,6 +22,7 @@ import AdminOrder from "./pages/admin/AdminOrder";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminCategory from "./pages/admin/AdminCategory";
+import AdminSubCategory from "./pages/admin/AdminSubCategory";
 
 const router = createBrowserRouter([
   {
@@ -195,6 +196,18 @@ const router = createBrowserRouter([
             <LoginHeader />
             <AdminLayout>
               <AdminCategory />
+            </AdminLayout>
+            <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/admin/sub-categories",
+        element: (
+          <>
+            <LoginHeader />
+            <AdminLayout>
+              <AdminSubCategory />
             </AdminLayout>
             <Footer />
           </>

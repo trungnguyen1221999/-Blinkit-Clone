@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -7,23 +7,15 @@ import {
   ListOrdered,
   ShoppingBag,
   UserCircle,
+  ChartColumnStacked,
 } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
-import Pagination from "../components/Pagination";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  totalPages?: number; // tổng số trang
-  currentPage?: number; // trang hiện tại
-  onPageChange?: (page: number) => void; // hàm khi đổi trang
 }
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({
-  children,
-  totalPages = 1,
-  currentPage = 1,
-  onPageChange,
-}) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { user } = useAuth();
 
@@ -40,6 +32,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
       path: "/admin/categories",
       icon: <ListOrdered size={18} />,
     },
+    {
+      name: "SubCategories",
+      path: "/admin/sub-categories",
+      icon: <ChartColumnStacked size={18} />,
+    },
     { name: "Orders", path: "/admin/orders", icon: <ShoppingBag size={18} /> },
     {
       name: "Customers",
@@ -47,14 +44,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({
       icon: <UserCircle size={18} />,
     },
   ];
-
-  const handlePrev = () => {
-    if (currentPage > 1 && onPageChange) onPageChange(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages && onPageChange) onPageChange(currentPage + 1);
-  };
 
   return (
     <div className="container mx-auto my-10 min-h-screen flex bg-gray-100 rounded border">
