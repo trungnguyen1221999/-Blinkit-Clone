@@ -220,6 +220,14 @@ const refreshAccessToken = async (req, res) => {
 const editUser = async (req, res) => {
   try {
     const { _id } = req.user; // lấy từ AuthMiddleware
+    const userId = req.params.id; // id của user cần chỉnh sửa
+    if (!userId) {
+      return res.status(400).json({
+        message: "User id to edit is required",
+        error: true,
+        success: false,
+      });
+    }
 
     if (!_id)
       return res.status(400).json({
@@ -227,11 +235,19 @@ const editUser = async (req, res) => {
         error: true,
         success: false,
       });
-
-    const { name, email, mobile, password } = req.body;
+    const foundUser = await UserModels.findById(_id);
+    if (foundUser.role !== "ADMIN") {
+      return res.status(403).json({
+        message: "Access denied. Admins only.",
+        error: true,
+        success: false,
+      });
+    }
+    const { name, email, mobile, password, avatar, role, verify_email } =
+      req.body;
 
     // Nếu tất cả đều rỗng thì báo lỗi
-    if (!name && !email && !mobile && !password)
+    if (!name && !email && !mobile && !password && !role && !verify_email)
       return res.status(400).json({
         message: "At least one field is required to update",
         error: true,
@@ -244,8 +260,10 @@ const editUser = async (req, res) => {
     if (email) updateFields.email = email;
     if (mobile) updateFields.mobile = mobile;
     if (password) updateFields.password = bcrypt.hashSync(password, 10);
+    if (role) updateFields.role = role;
+    if (verify_email !== undefined) updateFields.verify_email = verify_email;
 
-    const user = await UserModels.findByIdAndUpdate(_id, updateFields, {
+    const user = await UserModels.findByIdAndUpdate(userId, updateFields, {
       new: true,
     });
 

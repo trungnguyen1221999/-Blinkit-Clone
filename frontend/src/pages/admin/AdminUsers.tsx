@@ -8,30 +8,24 @@ import Pagination from "../../components/Pagination";
 import DeletePopup from "../../components/DeletePopup";
 import addUserApi from "../../api/adminApi/addUserApi";
 import AddUserPopup from "../../components/AddUserPopupProps";
+import EditUserPopup, {
+  type EditUserFormData,
+} from "../../components/EditUserPopup";
+import editUserApi from "../../api/adminApi/editUserApi";
 
 const AdminUsers = () => {
-  const [users, setUsers] = useState<
-    Array<{
-      _id: string;
-      name: string;
-      email: string;
-      role: string;
-      createdAt: string;
-      avatar: string;
-      status: "Active" | "Inactive" | "Suspended";
-      verify_email: boolean;
-    }>
-  >([]);
-
+  const [users, setUsers] = useState<any[]>([]);
   const [roleFilter, setRoleFilter] = useState<"All" | "Admin" | "User">("All");
   const [neededRerender, setNeededRerender] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [usersToDelete, setUsersToDelete] = useState<string[]>([]); // lưu id user(s) sẽ xóa
+  const [usersToDelete, setUsersToDelete] = useState<string[]>([]);
   const [showAddUserPopup, setShowAddUserPopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [editingUser, setEditingUser] = useState<any>(null);
 
-  // Fetch users
+  // Fetch all users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -44,15 +38,13 @@ const AdminUsers = () => {
     fetchUsers();
   }, [neededRerender]);
 
-  // Filter users by role
+  // Filter by role
   const filteredUsers =
     roleFilter === "All"
       ? users
-      : users.filter(
-          (user) => user.role.toLowerCase() === roleFilter.toLowerCase()
-        );
+      : users.filter((u) => u.role.toLowerCase() === roleFilter.toLowerCase());
 
-  // Pagination
+  // Pagination setup
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
@@ -61,6 +53,8 @@ const AdminUsers = () => {
     startIndex,
     startIndex + usersPerPage
   );
+
+  // ADD USER
   const addUserMutation = useMutation({
     mutationFn: async (userData: {
       name: string;
@@ -70,28 +64,32 @@ const AdminUsers = () => {
     }) => await addUserApi(userData),
     onSuccess: () => {
       toast.success("User added successfully");
-      setNeededRerender((prev) => !prev);
+      setShowAddUserPopup(false);
+      setNeededRerender((p) => !p);
     },
-    onError: () => {
-      toast.error("Failed to add user");
-    },
+    onError: () => toast.error("Failed to add user"),
   });
 
-  // Delete user mutation
+  const handleAddUser = (userData: {
+    name: string;
+    email: string;
+    password: string;
+    role: "ADMIN" | "USER";
+  }) => addUserMutation.mutate(userData);
+
+  // DELETE USER
   const deleteUserMutation = useMutation({
-    mutationFn: async (id: string | string[]) => {
-      if (Array.isArray(id)) {
-        await Promise.all(id.map((_id) => deleteUserApi(_id)));
-      } else {
-        await deleteUserApi(id);
-      }
+    mutationFn: async (ids: string | string[]) => {
+      if (Array.isArray(ids))
+        await Promise.all(ids.map((_id) => deleteUserApi(_id)));
+      else await deleteUserApi(ids);
     },
     onSuccess: () => {
       toast.success("User(s) deleted successfully");
       setSelectedUsers([]);
       setSelectAll(false);
-      setNeededRerender((prev) => !prev);
       setShowDeletePopup(false);
+      setNeededRerender((p) => !p);
     },
     onError: () => {
       toast.error("Failed to delete user(s)");
@@ -99,20 +97,18 @@ const AdminUsers = () => {
     },
   });
 
-  // Open popup để xóa 1 user
   const confirmDeleteUser = (id: string) => {
     setUsersToDelete([id]);
     setShowDeletePopup(true);
   };
 
-  // Open popup để xóa nhiều user
   const confirmDeleteSelected = () => {
     if (selectedUsers.length === 0) return;
     setUsersToDelete(selectedUsers);
     setShowDeletePopup(true);
   };
 
-  // Handle select logic
+  // SELECT logic
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedUsers([]);
@@ -128,16 +124,6 @@ const AdminUsers = () => {
       prev.includes(id) ? prev.filter((u) => u !== id) : [...prev, id]
     );
   };
-  const handleAddUser = (userData: {
-    name: string;
-    email: string;
-    password: string;
-    role: "ADMIN" | "USER";
-  }) => {
-    addUserMutation.mutate(userData);
-    setShowAddUserPopup(false);
-    setNeededRerender((prev) => !prev);
-  };
 
   useEffect(() => {
     const allSelected =
@@ -146,13 +132,35 @@ const AdminUsers = () => {
     setSelectAll(allSelected);
   }, [currentUsers, selectedUsers]);
 
+  // EDIT USER
+  const handleEditUser = (user: any) => {
+    setEditingUser(user);
+    setShowEditPopup(true);
+  };
+
+  const updateUserMutation = useMutation({
+    mutationFn: async ({
+      _id,
+      data,
+    }: {
+      _id: string;
+      data: EditUserFormData;
+    }) => await editUserApi(_id, data),
+    onSuccess: () => {
+      toast.success("User updated successfully");
+      setShowEditPopup(false);
+      setNeededRerender((p) => !p);
+    },
+    onError: () => toast.error("Failed to update user"),
+  });
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-800">User List</h2>
         <div className="flex gap-4 items-center">
-          {/* FILTER */}
+          {/* Filter */}
           <select
             value={roleFilter}
             onChange={(e) =>
@@ -228,9 +236,7 @@ const AdminUsers = () => {
                     : "bg-gray-50"
                 }`}
               >
-                <td className="p-3 text-center text-gray-700 font-medium">
-                  {startIndex + idx + 1}
-                </td>
+                <td className="p-3 text-center">{startIndex + idx + 1}</td>
                 <td className="p-3 text-center">
                   <input
                     type="checkbox"
@@ -255,8 +261,11 @@ const AdminUsers = () => {
                 <td className="p-3 text-gray-600">
                   {new Date(user.createdAt).toLocaleDateString("en-GB")}
                 </td>
-                <td className="p-3 flex items-center justify-end gap-3 my-3">
-                  <button className="text-blue-600 hover:text-blue-800">
+                <td className="p-3 flex items-center justify-end gap-3 mt-3">
+                  <button
+                    onClick={() => handleEditUser(user)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
                     <Pencil size={18} />
                   </button>
                   <button
@@ -281,7 +290,7 @@ const AdminUsers = () => {
         />
       )}
 
-      {/* DELETE POPUP */}
+      {/* POPUPS */}
       {showDeletePopup && (
         <DeletePopup
           count={usersToDelete.length}
@@ -289,10 +298,21 @@ const AdminUsers = () => {
           onConfirm={() => deleteUserMutation.mutate(usersToDelete)}
         />
       )}
+
       {showAddUserPopup && (
         <AddUserPopup
           onCancel={() => setShowAddUserPopup(false)}
           onConfirm={handleAddUser}
+        />
+      )}
+
+      {showEditPopup && editingUser && (
+        <EditUserPopup
+          user={editingUser}
+          onCancel={() => setShowEditPopup(false)}
+          onConfirm={(data) =>
+            updateUserMutation.mutate({ _id: editingUser._id, data })
+          }
         />
       )}
     </div>
