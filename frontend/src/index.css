@@ -15,6 +15,9 @@ body {
   font-optical-sizing: auto;
   font-style: normal;
 }
+button {
+  cursor: pointer;
+}
 /* Chrome, Edge, Safari */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear,
