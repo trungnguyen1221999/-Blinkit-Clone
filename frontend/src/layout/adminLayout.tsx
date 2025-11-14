@@ -10,7 +10,6 @@ import {
   ChartColumnStacked,
   Settings,
   LogOut,
-  Bell,
   Search,
 } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
@@ -138,13 +137,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
         {/* Bottom Actions */}
         <div className="p-4 border-t border-slate-200 space-y-2">
-          <button className="w-full flex items-center gap-3 px-3 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-800 rounded-xl transition-colors group">
-            <div className="p-2 rounded-lg bg-slate-100 group-hover:bg-slate-200">
-              <Bell size={16} />
-            </div>
-            <span className="font-medium text-sm">Notifications</span>
-            <span className="ml-auto bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">3</span>
-          </button>
           <button className="w-full flex items-center gap-3 px-3 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors group">
             <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200">
               <LogOut size={16} />
@@ -182,12 +174,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                   className="pl-10 pr-4 py-2 w-64 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 transition-colors text-sm"
                 />
               </div>
-              
-              {/* Notifications */}
-              <button className="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors">
-                <Bell size={20} />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
               
               {/* Profile Dropdown */}
               <div className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer">
