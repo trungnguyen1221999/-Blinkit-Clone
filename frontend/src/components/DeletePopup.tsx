@@ -22,31 +22,42 @@ const DeletePopup: React.FC<DeletePopupProps> = ({
 
   return (
     <div
-      onClick={onCancel} // click vào nền -> đóng popup
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      onClick={onCancel}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <div
-        onClick={(e) => e.stopPropagation()} // ngăn sự kiện click lan ra ngoài
-        className="bg-white rounded-lg shadow-lg p-6 w-96"
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto border border-slate-200 animate-in slide-in-from-bottom-4 duration-300"
       >
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Confirm Delete
-        </h3>
-        <p className="text-gray-600 mb-6">
-          Are you sure you want to delete {count} user{count > 1 ? "s" : ""}?
-        </p>
-        <div className="flex justify-end gap-3">
+        {/* Icon */}
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Trash2 className="text-red-600" size={28} />
+        </div>
+
+        {/* Content */}
+        <div className="text-center mb-8">
+          <h3 className="text-2xl font-bold text-slate-800 mb-3">
+            Confirm Deletion
+          </h3>
+          <p className="text-slate-600 leading-relaxed">
+            Are you sure you want to delete <strong>{count}</strong> user{count > 1 ? "s" : ""}? 
+            This action cannot be undone and will permanently remove all associated data.
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100"
+            className="flex-1 px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 font-medium"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-red-600 text-white hover:bg-red-700 hover:shadow-lg transition-all duration-200 font-medium"
           >
-            <Trash2 size={16} />
+            <Trash2 size={18} />
             Delete
           </button>
         </div>

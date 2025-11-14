@@ -133,7 +133,6 @@ const router = createBrowserRouter([
         path: "/admin/dashboard",
         element: (
           <>
-            <LoginHeader />
             <AdminLayout>
               <AdminDashboard />
             </AdminLayout>
@@ -145,7 +144,6 @@ const router = createBrowserRouter([
         path: "/admin/customers",
         element: (
           <>
-            <LoginHeader />
             <AdminLayout>
               <AdminCustomer />
             </AdminLayout>
@@ -157,7 +155,6 @@ const router = createBrowserRouter([
         path: "/admin/orders",
         element: (
           <>
-            <LoginHeader />
             <AdminLayout>
               <AdminOrder />
             </AdminLayout>
@@ -169,7 +166,6 @@ const router = createBrowserRouter([
         path: "/admin/products",
         element: (
           <>
-            <LoginHeader />
             <AdminLayout>
               <AdminProducts />
             </AdminLayout>
@@ -181,7 +177,6 @@ const router = createBrowserRouter([
         path: "/admin/users",
         element: (
           <>
-            <LoginHeader />
             <AdminLayout>
               <AdminUsers />
             </AdminLayout>
@@ -193,7 +188,6 @@ const router = createBrowserRouter([
         path: "/admin/categories",
         element: (
           <>
-            <LoginHeader />
             <AdminLayout>
               <AdminCategory />
             </AdminLayout>
@@ -205,7 +199,6 @@ const router = createBrowserRouter([
         path: "/admin/sub-categories",
         element: (
           <>
-            <LoginHeader />
             <AdminLayout>
               <AdminSubCategory />
             </AdminLayout>

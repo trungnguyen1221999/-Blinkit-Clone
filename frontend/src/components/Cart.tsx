@@ -1,15 +1,22 @@
-import { TiShoppingCart } from "react-icons/ti";
+import { ShoppingCart } from "lucide-react";
 
 const Cart = () => {
+  const cartItemCount = 3; // This would come from your cart context/state
+
   return (
-    <div>
-      <button className="cursor-pointer flex space-x-2 items-center md:bg-primary-200 md:px-2 md:py-2.5 md:rounded-md">
-        <div className="scale-90 md:scale-100 md:animate-bounce">
-          <TiShoppingCart size={28} />
-        </div>
-        <p className="text-lg font-medium hidden md:block">Cart</p>
-      </button>
-    </div>
+    <button className="relative flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200 transition-all duration-200 hover:shadow-md group">
+      <div className="relative">
+        <ShoppingCart size={20} className="text-slate-600 group-hover:text-slate-800 transition-colors" />
+        {cartItemCount > 0 && (
+          <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse">
+            {cartItemCount > 9 ? '9+' : cartItemCount}
+          </span>
+        )}
+      </div>
+      <span className="hidden md:inline-block text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
+        Cart
+      </span>
+    </button>
   );
 };
 

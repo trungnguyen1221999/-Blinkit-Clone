@@ -3,11 +3,17 @@ import { Link } from "react-router-dom";
 
 const LoginHeader = () => {
   return (
-    <header className="shadow-md bg-white">
-      <div className="container mx-auto flex justify-center py-4">
-        {/* logo */}
-        <Link to="/">
-          <img src={logo} alt="logo" className="h-8 md:h-10" />
+    <header className="bg-white shadow-lg border-b border-slate-200">
+      <div className="container mx-auto flex justify-center py-6 md:py-8">
+        <Link 
+          to="/" 
+          className="hover:scale-105 transition-transform duration-200 group"
+        >
+          <img 
+            src={logo} 
+            alt="Blinkit Logo" 
+            className="h-10 md:h-12 group-hover:brightness-110 transition-all duration-200" 
+          />
         </Link>
       </div>
     </header>

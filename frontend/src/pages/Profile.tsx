@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import changeNameApi from "../api/userApi/changeNameApi";
 import changeAvatarApi from "../api/userApi/changeAvatarApi";
 import getUserApi from "../api/userApi/getUserApi";
+import { User2, Camera, Save, Shield } from "lucide-react";
 
 // Zod Schema
 const profileSchema = z.object({
@@ -118,68 +119,144 @@ const Profile = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold mb-1">My Profile</h1>
-        <p className="text-gray-600">Manage and protect your account</p>
+    <div className="space-y-8">
+      {/* HEADER SECTION */}
+      <div className="bg-gradient-to-r from-white to-slate-50 rounded-2xl shadow-sm border border-slate-200 p-8">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-primary-200 to-primary-100 rounded-2xl flex items-center justify-center shadow-lg">
+            <User2 className="text-white" size={28} />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">My Profile</h1>
+            <p className="text-slate-600 flex items-center gap-2">
+              <Shield size={16} className="text-slate-400" />
+              Manage and protect your account information
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="bg-gray-50 p-6 rounded shadow-sm">
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {/* Name */}
-          <label className="block">
-            <p className="mb-1 font-medium">Name</p>
+      {/* PROFILE FORM */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-8 py-6 border-b border-slate-200">
+          <h2 className="text-xl font-semibold text-slate-800">Account Information</h2>
+          <p className="text-sm text-slate-500 mt-1">Update your personal details and profile picture</p>
+        </div>
+        
+        <form className="p-8 space-y-8" onSubmit={handleSubmit(onSubmit)}>
+          {/* Name Section */}
+          <div className="space-y-3">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wide">
+              <User2 size={16} className="text-slate-500" />
+              Full Name
+            </label>
             <input
               type="text"
               {...register("name")}
-              className={`w-full border ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              } rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-primary-200`}
+              className={`w-full border-2 ${
+                errors.name ? "border-red-300 focus:border-red-400" : "border-slate-200 focus:border-primary-200"
+              } rounded-xl px-4 py-3 focus:outline-none focus:ring-4 ${
+                errors.name ? "focus:ring-red-100" : "focus:ring-primary-200/20"
+              } transition-all duration-200 text-slate-800 placeholder-slate-400`}
+              placeholder="Enter your full name"
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+              <div className="flex items-center gap-2 text-red-600 text-sm mt-2">
+                <div className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                </div>
+                {errors.name.message}
+              </div>
             )}
-          </label>
+          </div>
 
-          {/* Avatar */}
-          <label className="block">
-            <p className="mb-1 font-medium">Avatar</p>
-            <div className="flex items-center gap-4">
-              <img
-                src={preview || "/default-avatar.png"}
-                alt="avatar preview"
-                className="w-20 h-20 rounded-full border border-gray-300 object-cover"
-              />
-              <div className="flex flex-col gap-1">
-                <input
-                  type="file"
-                  id="avatar-upload"
-                  accept="image/jpeg, image/png"
-                  hidden
-                  onChange={handleImageChange}
-                />
-                <label
-                  htmlFor="avatar-upload"
-                  className="px-3 py-1 bg-primary-200 text-white rounded cursor-pointer hover:bg-primary-300 text-sm"
-                >
-                  Select Image
-                </label>
-                <div className="text-gray-500 text-xs">
-                  <p>File size: max 1 MB</p>
-                  <p>File extension: .JPEG, .PNG</p>
+          {/* Avatar Section */}
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wide">
+              <Camera size={16} className="text-slate-500" />
+              Profile Picture
+            </label>
+            
+            <div className="flex items-start gap-6">
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-2xl border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+                  <img
+                    src={preview || "/default-avatar.png"}
+                    alt="avatar preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary-200 rounded-full flex items-center justify-center shadow-lg border-2 border-white group-hover:scale-110 transition-transform duration-200">
+                  <Camera size={14} className="text-white" />
+                </div>
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                <div className="space-y-3">
+                  <input
+                    type="file"
+                    id="avatar-upload"
+                    accept="image/jpeg, image/png"
+                    hidden
+                    onChange={handleImageChange}
+                  />
+                  <label
+                    htmlFor="avatar-upload"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-200 to-primary-100 text-white rounded-xl cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium"
+                  >
+                    <Camera size={16} />
+                    Choose New Picture
+                  </label>
+                </div>
+                
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <h4 className="font-medium text-slate-700 mb-2">Upload Requirements</h4>
+                  <ul className="space-y-1 text-sm text-slate-500">
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+                      Maximum file size: 1 MB
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+                      Supported formats: JPEG, PNG
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+                      Recommended: Square aspect ratio
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
-          </label>
+          </div>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-4 py-2 bg-primary-200 text-white rounded hover:bg-primary-300 transition-colors"
-          >
-            {isSubmitting ? "Saving..." : "Save Changes"}
-          </button>
+          {/* Submit Button */}
+          <div className="flex items-center justify-between pt-6 border-t border-slate-200">
+            <div className="text-sm text-slate-500">
+              <p>Changes will be saved to your account immediately</p>
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                isSubmitting
+                  ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-primary-200 to-primary-100 text-white hover:shadow-lg hover:scale-105"
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save size={16} />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { Pencil, User, Mail, Lock, Shield, Phone, CheckCircle, Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -70,105 +70,161 @@ const EditUserPopup: React.FC<EditUserPopupProps> = ({
   return (
     <div
       onClick={onCancel}
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-lg shadow-lg p-6 w-96"
+        className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg mx-auto border border-slate-200 animate-in slide-in-from-bottom-4 duration-300"
       >
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Edit User</h3>
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-r from-primary-200 to-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Pencil className="text-white" size={28} />
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800 mb-2">Edit User</h3>
+          <p className="text-slate-600">Update user information and permissions</p>
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Name */}
-          <div>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <User size={16} className="text-slate-500" />
+              Full Name
+            </label>
             <input
               type="text"
-              placeholder="Name"
+              placeholder="Enter full name"
               {...register("name")}
-              className="border rounded px-3 py-2 w-full"
+              className={`w-full border-2 ${errors.name ? 'border-red-300 focus:border-red-400' : 'border-slate-200 focus:border-primary-200'} rounded-xl px-4 py-3 focus:outline-none focus:ring-4 ${errors.name ? 'focus:ring-red-100' : 'focus:ring-primary-200/20'} transition-all duration-200 text-slate-800 placeholder-slate-400`}
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+              <div className="flex items-center gap-2 text-red-600 text-sm mt-2">
+                <div className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                </div>
+                {errors.name.message}
+              </div>
             )}
           </div>
 
           {/* Email */}
-          <div>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <Mail size={16} className="text-slate-500" />
+              Email Address
+            </label>
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Enter email address"
               {...register("email")}
-              className="border rounded px-3 py-2 w-full"
+              className={`w-full border-2 ${errors.email ? 'border-red-300 focus:border-red-400' : 'border-slate-200 focus:border-primary-200'} rounded-xl px-4 py-3 focus:outline-none focus:ring-4 ${errors.email ? 'focus:ring-red-100' : 'focus:ring-primary-200/20'} transition-all duration-200 text-slate-800 placeholder-slate-400`}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">
+              <div className="flex items-center gap-2 text-red-600 text-sm mt-2">
+                <div className="w-4 h-4 rounded-full bg-red-100 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                </div>
                 {errors.email.message}
-              </p>
+              </div>
             )}
           </div>
 
           {/* Password */}
-          <div>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <Lock size={16} className="text-slate-500" />
+              New Password
+              <span className="text-xs text-slate-500">(Leave empty to keep current)</span>
+            </label>
             <input
               type="password"
-              placeholder="New Password (optional)"
+              placeholder="Enter new password (optional)"
               {...register("password")}
-              className="border rounded px-3 py-2 w-full"
+              className="w-full border-2 border-slate-200 focus:border-primary-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-primary-200/20 transition-all duration-200 text-slate-800 placeholder-slate-400"
             />
           </div>
 
           {/* Role */}
-          <div>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <Shield size={16} className="text-slate-500" />
+              User Role
+            </label>
             <select
               {...register("role")}
-              className="border rounded px-3 py-2 w-full"
+              className="w-full border-2 border-slate-200 focus:border-primary-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-primary-200/20 transition-all duration-200 text-slate-800 bg-white"
             >
-              <option value="USER">User</option>
-              <option value="ADMIN">Admin</option>
+              <option value="USER">Regular User</option>
+              <option value="ADMIN">Administrator</option>
             </select>
           </div>
 
           {/* Mobile */}
-          <div>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <Phone size={16} className="text-slate-500" />
+              Mobile Number
+              <span className="text-xs text-slate-500">(Optional)</span>
+            </label>
             <input
               type="text"
-              placeholder="Mobile (optional)"
+              placeholder="Enter mobile number"
               {...register("mobile")}
-              className="border rounded px-3 py-2 w-full"
+              className="w-full border-2 border-slate-200 focus:border-primary-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-primary-200/20 transition-all duration-200 text-slate-800 placeholder-slate-400"
             />
           </div>
 
-          {/* Verify email */}
-          <div className="flex items-center gap-2">
-            <input type="checkbox" {...register("verify_email")} />
-            <label className="text-sm text-gray-700">Email verified</label>
+          {/* Email Verification */}
+          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <input 
+              type="checkbox" 
+              {...register("verify_email")} 
+              className="w-5 h-5 text-primary-200 border-2 border-slate-300 rounded focus:ring-primary-200/20 focus:ring-4"
+            />
+            <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+              <CheckCircle size={16} className="text-slate-500" />
+              Email Verified
+              <span className="text-xs text-slate-500">(Account verification status)</span>
+            </label>
           </div>
 
           {/* API Error */}
           {apiError && (
-            <p className="text-red-600 text-sm font-medium mt-2">{apiError}</p>
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div className="flex items-center gap-2 text-red-700">
+                <div className="w-5 h-5 rounded-full bg-red-200 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                </div>
+                <span className="font-medium text-sm">{apiError}</span>
+              </div>
+            </div>
           )}
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 mt-4">
+          {/* Actions */}
+          <div className="flex gap-4 pt-6 border-t border-slate-200">
             <button
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+              className="flex-1 px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-200 to-primary-100 text-white hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {loading ? (
-                "Saving..."
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Saving Changes...
+                </>
               ) : (
                 <>
-                  <Pencil size={16} /> Save
+                  <Pencil size={18} />
+                  Save Changes
                 </>
               )}
             </button>
