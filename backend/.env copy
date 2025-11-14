@@ -1,0 +1,13 @@
+PORT=5000
+FRONTEND_URL=http://localhost:5173
+DATABASE_URL=mongodb+srv://trungnguyen1221999_db_user:vxqXDcmLcca0ByME@cluster0.fvtt0mb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+RESEND_API_KEY=re_CX3g6ZfW_Lb98CkmpimZvEySzXKxYsTQR
+JWT_ACCESS_TOKEN=trungna
+JWT_REFRESH_SECRET=trungnana
+RESEND_EMAIL='Trung <onboarding@resend.dev>'
+COOKIE_SECRET=trungna
+CLOUDINARY_URL=cloudinary://126994978512895:ZmENqyy4PQxddD6I19TU5aonpP8
+
+CLOUD_NAME=dlamtan5y
+CLOUD_API_KEY=126994978512895
+CLOUD_API_SECRET=ZmENqyy4PQxddD6I19TU5aonpP8
