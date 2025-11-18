@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { X } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { createCategoryApi } from "../../api/categoryApi/categoryApi";
+import { toast } from "react-toastify";
 
 export interface Category {
   _id: string;
   name: string;
-  image: string;
+  image: {
+    url: string;
+    public_id: string;
+  };
 }
 
 interface CategoryPopupProps {
@@ -19,14 +25,49 @@ interface FormData {
   image: FileList;
 }
 
-const CategoryPopup = ({
+const AddCategoryPopup = ({
   initialData,
   onClose,
   onSubmit,
 }: CategoryPopupProps) => {
   const { register, handleSubmit, watch, reset } = useForm<FormData>();
-  const [imagePreview, setImagePreview] = useState(initialData?.image || "");
+  const [imagePreview, setImagePreview] = useState(
+    initialData?.image?.url || ""
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const addCategoryMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const data = new window.FormData();
+      data.append("name", formData.name);
+      if (formData.image && formData.image.length > 0) {
+        data.append("image", formData.image[0]);
+      }
+      return await createCategoryApi(data);
+    },
+    onSuccess: (newCat) => {
+      toast.success("Category created successfully");
+      onSubmit(newCat); // return đúng category mới
+      onClose();
+    },
+    onError: (err: any) => {
+      const msg =
+        err?.response?.data?.message ||
+        err.message ||
+        "Failed to create category";
+
+      toast.error(msg);
+    },
+  });
+
+  useEffect(() => {
+    reset({
+      name: initialData?.name || "",
+      image: undefined as any,
+    });
+    setImagePreview(initialData?.image?.url || "");
+    setSelectedFile(null);
+  }, [initialData, reset]);
 
   const watchImage = watch("image");
 
@@ -35,18 +76,16 @@ const CategoryPopup = ({
       const file = watchImage[0];
       setSelectedFile(file);
       setImagePreview(URL.createObjectURL(file));
-    } else {
-      setSelectedFile(null);
+    } else if (!selectedFile && initialData?.image) {
+      setImagePreview(initialData.image.url);
+    } else if (!selectedFile) {
+      setImagePreview("");
     }
   }, [watchImage]);
 
-  const onSubmitForm = () => {
-    if (!watch("name")) return;
-    onSubmit({
-      _id: initialData?._id || Date.now().toString(),
-      name: watch("name"),
-      image: imagePreview,
-    });
+  const onSubmitForm = (data: FormData) => {
+    if (!data.name) return;
+    addCategoryMutation.mutate(data);
   };
 
   return (
@@ -64,9 +103,11 @@ const CategoryPopup = ({
         >
           <X size={20} />
         </button>
+
         <h3 className="text-2xl font-semibold mb-6">
           {initialData ? "Edit Category" : "Add Category"}
         </h3>
+
         <form
           className="flex flex-col gap-4"
           onSubmit={handleSubmit(onSubmitForm)}
@@ -75,14 +116,10 @@ const CategoryPopup = ({
             type="text"
             placeholder="Category Name"
             {...register("name", { required: true })}
-            defaultValue={initialData?.name}
             className="border rounded px-3 py-2 w-full"
           />
 
-          <div
-            className="w-32 h-32 border rounded flex items-center justify-center overflow-hidden mt-2 cursor-pointer"
-            onClick={() => imagePreview && setImagePreview(imagePreview)}
-          >
+          <div className="w-32 h-32 border rounded flex items-center justify-center overflow-hidden mt-2 cursor-pointer">
             {imagePreview ? (
               <img
                 src={imagePreview}
@@ -130,4 +167,4 @@ const CategoryPopup = ({
   );
 };
 
-export default CategoryPopup;
+export default AddCategoryPopup;

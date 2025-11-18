@@ -1,3 +1,5 @@
+import { v2 as cloudinary } from "cloudinary";
+
 import CategoryModels from "../models/categoryModels.js";
 // Lấy danh sách tất cả category
 const getCategories = async (req, res) => {
@@ -13,15 +15,46 @@ const getCategories = async (req, res) => {
 // Thêm category mới
 const createCategory = async (req, res) => {
   try {
-    const { name, image } = req.body;
+    const { name } = req.body;
+
     if (!name) {
       return res.status(400).json({ message: "Name is required" });
     }
 
-    const newCategory = new CategoryModels({ name, image });
-    await newCategory.save();
+    const existedCategory = await CategoryModels.findOne({ name });
+    if (existedCategory) {
+      return res.status(400).json({ message: "Category name already exists" });
+    }
 
-    res.status(201).json(newCategory);
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required" });
+    }
+
+    // Upload ảnh lên Cloudinary
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: "categories" }, // optional: tổ chức folder
+      async (error, result) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).json({ message: "Image upload failed" });
+        }
+
+        // Lưu vào database
+        const newCategory = new CategoryModels({
+          name,
+          image: {
+            url: result.secure_url,
+            public_id: result.public_id,
+          },
+        });
+
+        await newCategory.save();
+        return res.status(201).json(newCategory);
+      }
+    );
+
+    // Gửi buffer vào Cloudinary stream
+    result.end(req.file.buffer);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

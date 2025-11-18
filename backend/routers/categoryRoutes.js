@@ -6,11 +6,17 @@ import {
   deleteCategory,
 } from "../controllers/categoryController.js";
 import { AuthMiddleware } from "../middleware/AuthMiddleware.js";
+import { uploadSingleImage } from "../middleware/uploadMiddleware.js";
 
 const routerCategory = Router();
 
 routerCategory.get("/", AuthMiddleware, getCategories);
-routerCategory.post("/create", AuthMiddleware, createCategory);
+routerCategory.post(
+  "/create",
+  AuthMiddleware,
+  uploadSingleImage("image"),
+  createCategory
+);
 routerCategory.put("/edit/:id", AuthMiddleware, updateCategory);
 routerCategory.delete("/delete/:id", AuthMiddleware, deleteCategory);
 
