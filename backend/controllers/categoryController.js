@@ -89,11 +89,19 @@ const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedCategory = await CategoryModels.findByIdAndDelete(id);
+    const category = await CategoryModels.findById(id);
 
-    if (!deletedCategory) {
+    if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
+
+    // Xóa ảnh nếu có
+    if (category.image && category.image.public_id) {
+      await cloudinary.uploader.destroy(category.image.public_id);
+    }
+
+    // Xóa category trong DB
+    await CategoryModels.findByIdAndDelete(id);
 
     res.status(200).json({ message: "Category deleted successfully" });
   } catch (error) {

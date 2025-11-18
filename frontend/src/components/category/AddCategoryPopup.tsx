@@ -36,6 +36,7 @@ const AddCategoryPopup = ({
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // Mutation
   const addCategoryMutation = useMutation({
     mutationFn: async (formData: FormData) => {
       const data = new window.FormData();
@@ -47,7 +48,7 @@ const AddCategoryPopup = ({
     },
     onSuccess: (newCat) => {
       toast.success("Category created successfully");
-      onSubmit(newCat); // return đúng category mới
+      onSubmit(newCat);
       onClose();
     },
     onError: (err: any) => {
@@ -55,10 +56,11 @@ const AddCategoryPopup = ({
         err?.response?.data?.message ||
         err.message ||
         "Failed to create category";
-
       toast.error(msg);
     },
   });
+
+  const isLoading = addCategoryMutation.isPending;
 
   useEffect(() => {
     reset({
@@ -84,7 +86,7 @@ const AddCategoryPopup = ({
   }, [watchImage]);
 
   const onSubmitForm = (data: FormData) => {
-    if (!data.name) return;
+    if (!data.name || isLoading) return;
     addCategoryMutation.mutate(data);
   };
 
@@ -99,7 +101,8 @@ const AddCategoryPopup = ({
       >
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          disabled={isLoading}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 disabled:opacity-50"
         >
           <X size={20} />
         </button>
@@ -117,6 +120,7 @@ const AddCategoryPopup = ({
             placeholder="Category Name"
             {...register("name", { required: true })}
             className="border rounded px-3 py-2 w-full"
+            disabled={isLoading}
           />
 
           <div className="w-32 h-32 border rounded flex items-center justify-center overflow-hidden mt-2 cursor-pointer">
@@ -137,11 +141,16 @@ const AddCategoryPopup = ({
             {...register("image")}
             id="catFileInput"
             className="hidden"
+            disabled={isLoading}
           />
+
           <button
             type="button"
-            onClick={() => document.getElementById("catFileInput")?.click()}
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            disabled={isLoading}
+            onClick={() =>
+              !isLoading && document.getElementById("catFileInput")?.click()
+            }
+            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Upload Image
           </button>
@@ -150,15 +159,18 @@ const AddCategoryPopup = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+              disabled={isLoading}
+              className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
+
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+              disabled={isLoading}
+              className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {initialData ? "Update" : "Add"}
+              {isLoading ? "Processing..." : initialData ? "Update" : "Add"}
             </button>
           </div>
         </form>

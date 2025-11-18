@@ -23,7 +23,9 @@ const DeletePopup = ({ itemName, onCancel, onConfirm }: DeletePopupProps) => {
           <X size={20} />
         </button>
         <h3 className="text-2xl font-semibold mb-6">Delete Category</h3>
-        <p className="mb-6">Are you sure you want to delete "{itemName}"?</p>
+        <p className="mb-6">
+          Are you sure you want to delete "{itemName} category"?
+        </p>
         <div className="flex justify-end gap-3">
           <button
             onClick={onCancel}

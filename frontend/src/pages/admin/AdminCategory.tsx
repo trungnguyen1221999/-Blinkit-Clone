@@ -4,7 +4,10 @@ import type { Category } from "../../components/category/AddCategoryPopup";
 import AddCategoryPopup from "../../components/category/AddCategoryPopup";
 import DeletePopup from "../../components/category/DeletePopup";
 import { useMutation } from "@tanstack/react-query";
-import { getCategoriesApi } from "../../api/categoryApi/categoryApi";
+import {
+  deleteCategoryApi,
+  getCategoriesApi,
+} from "../../api/categoryApi/categoryApi";
 import { toast } from "react-toastify";
 import EditCategoryPopup from "../../components/category/EditCategoryPopupProps";
 
@@ -33,6 +36,23 @@ const AdminCategory = () => {
     },
   });
 
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (categoryId: string) => {
+      await deleteCategoryApi(categoryId);
+    },
+    onSuccess: () => {
+      toast.success("Category deleted successfully");
+    },
+    onError: (err: any) => {
+      const msg =
+        err?.response?.data?.message ||
+        err.message ||
+        "Failed to delete category";
+
+      toast.error(msg);
+    },
+  });
+
   useEffect(() => {
     setLoading(true);
     getCategoriesMutation.mutate(undefined, {
@@ -51,7 +71,7 @@ const AdminCategory = () => {
     if (deleteCat) {
       setCategories((prev) => prev.filter((c) => c._id !== deleteCat._id));
       setDeleteCat(null);
-      // Bạn sẽ thêm API delete sau
+      deleteCategoryMutation.mutate(deleteCat._id);
     }
   };
 
@@ -179,7 +199,7 @@ const AdminCategory = () => {
           }}
           onSubmit={handleEditCategory}
         />
-      )}
+      )} */}
 
       {deleteCat && (
         <DeletePopup
@@ -187,7 +207,7 @@ const AdminCategory = () => {
           onCancel={cancelDelete}
           onConfirm={confirmDelete}
         />
-      )} */}
+      )}
     </div>
   );
 };
