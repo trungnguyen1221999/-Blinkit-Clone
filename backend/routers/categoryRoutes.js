@@ -17,7 +17,12 @@ routerCategory.post(
   uploadSingleImage("image"),
   createCategory
 );
-routerCategory.put("/edit/:id", AuthMiddleware, updateCategory);
+routerCategory.put(
+  "/edit/:id",
+  AuthMiddleware,
+  uploadSingleImage("image"),
+  updateCategory
+);
 routerCategory.delete("/delete/:id", AuthMiddleware, deleteCategory);
 
 export default routerCategory;

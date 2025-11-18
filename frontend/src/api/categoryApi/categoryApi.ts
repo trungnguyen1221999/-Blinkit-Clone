@@ -6,7 +6,7 @@ export const createCategoryApi = async (formData: FormData) => {
       "Content-Type": "multipart/form-data",
     },
   });
-  return response.data; // now returns full category object
+  return response.data; // returns full category object
 };
 
 export const getCategoriesApi = async () => {
@@ -17,4 +17,17 @@ export const getCategoriesApi = async () => {
 export const deleteCategoryApi = async (categoryId: string) => {
   const response = await api.delete(`/category/delete/${categoryId}`);
   return response.data;
+};
+
+// ✅ Update category API
+export const updateCategoryApi = async (
+  categoryId: string,
+  formData: FormData
+) => {
+  const response = await api.put(`/category/edit/${categoryId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data; // returns updated category object
 };

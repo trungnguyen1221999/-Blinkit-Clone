@@ -1,17 +1,13 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { X } from "lucide-react";
-
-export interface Category {
-  _id: string;
-  name: string;
-  image: string;
-}
+import type { Category } from "./AddCategoryPopup";
 
 interface EditCategoryPopupProps {
   initialData: Category;
   onClose: () => void;
-  onSubmit: (cat: Category) => void;
+  onSubmit: (cat: Category, newImage?: File) => void;
+  loading?: boolean;
 }
 
 interface FormData {
@@ -23,18 +19,18 @@ const EditCategoryPopup = ({
   initialData,
   onClose,
   onSubmit,
+  loading = false,
 }: EditCategoryPopupProps) => {
   const { register, handleSubmit, reset, watch } = useForm<FormData>();
-  const [imagePreview, setImagePreview] = useState<string>(initialData.image);
+  const [imagePreview, setImagePreview] = useState(initialData.image.url);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // Khi initialData thay đổi, reset form về dữ liệu cũ
   useEffect(() => {
     reset({
       name: initialData.name,
       image: undefined as any,
     });
-    setImagePreview(initialData.image);
+    setImagePreview(initialData.image.url);
     setSelectedFile(null);
   }, [initialData, reset]);
 
@@ -46,17 +42,20 @@ const EditCategoryPopup = ({
       setSelectedFile(file);
       setImagePreview(URL.createObjectURL(file));
     } else if (!selectedFile) {
-      setImagePreview(initialData.image);
+      setImagePreview(initialData.image.url);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchImage]);
+  }, [watchImage, initialData.image.url, selectedFile]);
 
   const onSubmitForm = (data: FormData) => {
-    onSubmit({
-      _id: initialData._id,
-      name: data.name,
-      image: imagePreview,
-    });
+    if (!data.name) return;
+    onSubmit(
+      {
+        _id: initialData._id,
+        name: data.name,
+        image: initialData.image, // giữ object cũ nếu không đổi
+      },
+      selectedFile || undefined
+    );
   };
 
   return (
@@ -71,10 +70,13 @@ const EditCategoryPopup = ({
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          disabled={loading}
         >
           <X size={20} />
         </button>
+
         <h3 className="text-2xl font-semibold mb-6">Edit Category</h3>
+
         <form
           className="flex flex-col gap-4"
           onSubmit={handleSubmit(onSubmitForm)}
@@ -87,7 +89,10 @@ const EditCategoryPopup = ({
             defaultValue={initialData.name}
           />
 
-          <div className="w-32 h-32 border rounded flex items-center justify-center overflow-hidden mt-2 cursor-pointer">
+          <div
+            className="w-32 h-32 border rounded flex items-center justify-center overflow-hidden mt-2 cursor-pointer"
+            onClick={() => document.getElementById("editCatFileInput")?.click()}
+          >
             {imagePreview ? (
               <img
                 src={imagePreview}
@@ -110,6 +115,7 @@ const EditCategoryPopup = ({
             type="button"
             onClick={() => document.getElementById("editCatFileInput")?.click()}
             className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            disabled={loading}
           >
             Upload Image
           </button>
@@ -119,12 +125,14 @@ const EditCategoryPopup = ({
               type="button"
               onClick={onClose}
               className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+              disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+              className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+              disabled={loading}
             >
               Update
             </button>

@@ -65,21 +65,34 @@ const createCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, image } = req.body;
+    const { name } = req.body;
 
-    const updatedCategory = await CategoryModels.findByIdAndUpdate(
-      id,
-      { name, image },
-      { new: true }
-    );
-
-    if (!updatedCategory) {
+    const category = await CategoryModels.findById(id);
+    if (!category)
       return res.status(404).json({ message: "Category not found" });
+
+    // CHỈ upload khi có file
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "categories",
+      });
+
+      if (category.image?.public_id) {
+        await cloudinary.uploader.destroy(category.image.public_id);
+      }
+
+      category.image = {
+        url: result.secure_url,
+        public_id: result.public_id,
+      };
     }
 
+    if (name) category.name = name;
+
+    const updatedCategory = await category.save();
     res.status(200).json(updatedCategory);
   } catch (error) {
-    console.error(error);
+    console.error("Update category error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { Edit, Trash2, Plus, Search } from "lucide-react";
 import type { Category } from "../../components/category/AddCategoryPopup";
 import AddCategoryPopup from "../../components/category/AddCategoryPopup";
+import EditCategoryPopup from "../../components/category/EditCategoryPopupProps";
 import DeletePopup from "../../components/category/DeletePopup";
 import { useMutation } from "@tanstack/react-query";
 import {
-  deleteCategoryApi,
   getCategoriesApi,
+  deleteCategoryApi,
+  updateCategoryApi,
 } from "../../api/categoryApi/categoryApi";
 import { toast } from "react-toastify";
-import EditCategoryPopup from "../../components/category/EditCategoryPopupProps";
 
 const AdminCategory = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -20,36 +21,50 @@ const AdminCategory = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleAddClick = () => setShowAddPopup(true);
-
-  const getCategoriesMutation = useMutation({
-    mutationFn: async () => {
-      const data = await getCategoriesApi();
-      return data;
-    },
-    onSuccess: (data: Category[]) => {
+  // Load categories
+  const getCategoriesMutation = useMutation<Category[], any>({
+    mutationFn: getCategoriesApi,
+    onSuccess: (data) => {
       setCategories(data);
       toast.success("Categories loaded successfully");
     },
-    onError: () => {
-      toast.error("Failed to load categories");
+    onError: () => toast.error("Failed to load categories"),
+  });
+
+  // Delete category
+  const deleteCategoryMutation = useMutation<void, any, string>({
+    mutationFn: deleteCategoryApi,
+    onSuccess: () => toast.success("Category deleted successfully"),
+    onError: (err: any) => {
+      toast.error(
+        err?.response?.data?.message ||
+          err.message ||
+          "Failed to delete category"
+      );
     },
   });
 
-  const deleteCategoryMutation = useMutation({
-    mutationFn: async (categoryId: string) => {
-      await deleteCategoryApi(categoryId);
-    },
-    onSuccess: () => {
-      toast.success("Category deleted successfully");
+  // Update category
+  const updateCategoryMutation = useMutation<
+    Category, // result type
+    any, // error type
+    { id: string; formData: FormData } // variables type
+  >({
+    mutationFn: ({ id, formData }) => updateCategoryApi(id, formData),
+    onSuccess: (updatedCat) => {
+      setCategories((prev) =>
+        prev.map((c) => (c._id === updatedCat._id ? updatedCat : c))
+      );
+      toast.success("Category updated successfully");
+      setShowEditPopup(false);
+      setEditingCat(null);
     },
     onError: (err: any) => {
-      const msg =
+      toast.error(
         err?.response?.data?.message ||
-        err.message ||
-        "Failed to delete category";
-
-      toast.error(msg);
+          err.message ||
+          "Failed to update category"
+      );
     },
   });
 
@@ -60,6 +75,11 @@ const AdminCategory = () => {
     });
   }, []);
 
+  const handleAddCategory = (cat: Category) => {
+    setCategories((prev) => [...prev, cat]);
+    setShowAddPopup(false);
+  };
+
   const handleEdit = (cat: Category) => {
     setEditingCat(cat);
     setShowEditPopup(true);
@@ -68,34 +88,19 @@ const AdminCategory = () => {
   const handleDelete = (cat: Category) => setDeleteCat(cat);
 
   const confirmDelete = () => {
-    if (deleteCat) {
-      setCategories((prev) => prev.filter((c) => c._id !== deleteCat._id));
-      setDeleteCat(null);
-      deleteCategoryMutation.mutate(deleteCat._id);
-    }
+    if (!deleteCat) return;
+    setCategories((prev) => prev.filter((c) => c._id !== deleteCat._id));
+    deleteCategoryMutation.mutate(deleteCat._id);
+    setDeleteCat(null);
   };
 
   const cancelDelete = () => setDeleteCat(null);
-
-  const handleAddCategory = (cat: Category) => {
-    setCategories((prev) => [...prev, cat]); // cat là object trả về từ backend
-    setShowAddPopup(false);
+  const handleEditCategory = (cat: Category, newImage?: File) => {
+    const formData = new FormData();
+    formData.append("name", cat.name);
+    if (newImage) formData.append("image", newImage); // append only when newImage exists
+    updateCategoryMutation.mutate({ id: cat._id, formData });
   };
-
-  const handleEditCategory = (cat: Category) => {
-    setCategories((prev) => {
-      const index = prev.findIndex((c) => c._id === cat._id);
-      if (index > -1) {
-        const newArr = [...prev];
-        newArr[index] = cat;
-        return newArr;
-      }
-      return prev;
-    });
-    setShowEditPopup(false);
-    setEditingCat(null);
-  };
-
   const filteredCategories = categories.filter((cat) =>
     cat.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -107,10 +112,9 @@ const AdminCategory = () => {
         <h2 className="text-2xl font-bold">Category Management</h2>
         <button
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={handleAddClick}
+          onClick={() => setShowAddPopup(true)}
         >
-          <Plus size={18} />
-          Add Category
+          <Plus size={18} /> Add Category
         </button>
       </div>
 
@@ -146,7 +150,7 @@ const AdminCategory = () => {
                   <td className="px-4 py-2 border text-center">{idx + 1}</td>
                   <td className="px-4 py-2 border text-center">
                     <img
-                      src={cat.image.url} // ✅ sửa ở đây
+                      src={cat.image.url}
                       alt={cat.name}
                       className="w-12 h-12 object-cover rounded"
                     />
@@ -190,7 +194,7 @@ const AdminCategory = () => {
         />
       )}
 
-      {/* {showEditPopup && editingCat && (
+      {showEditPopup && editingCat && (
         <EditCategoryPopup
           initialData={editingCat}
           onClose={() => {
@@ -199,7 +203,7 @@ const AdminCategory = () => {
           }}
           onSubmit={handleEditCategory}
         />
-      )} */}
+      )}
 
       {deleteCat && (
         <DeletePopup
