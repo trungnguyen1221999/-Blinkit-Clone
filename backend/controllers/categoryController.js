@@ -67,29 +67,69 @@ const updateCategory = async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
 
+    console.log("Update category request:", { id, name, hasFile: !!req.file });
+
     const category = await CategoryModels.findById(id);
     if (!category)
       return res.status(404).json({ message: "Category not found" });
 
-    // CHỈ upload khi có file
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "categories",
-      });
-
-      if (category.image?.public_id) {
-        await cloudinary.uploader.destroy(category.image.public_id);
+    // Kiểm tra tên trùng lặp (nếu thay đổi tên)
+    if (name && name !== category.name) {
+      const existedCategory = await CategoryModels.findOne({ name });
+      if (existedCategory) {
+        return res.status(400).json({ message: "Category name already exists" });
       }
-
-      category.image = {
-        url: result.secure_url,
-        public_id: result.public_id,
-      };
     }
 
-    if (name) category.name = name;
+    // CHỈ upload khi có file
+    if (req.file) {
+      console.log("Uploading new image, file size:", req.file.size);
+      
+      // Sử dụng upload_stream cho memory storage
+      const uploadPromise = new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { 
+            folder: "categories",
+            resource_type: "image"
+          },
+          (error, result) => {
+            if (error) {
+              console.error("Cloudinary upload error:", error);
+              reject(error);
+            } else {
+              console.log("Cloudinary upload success:", result.public_id);
+              resolve(result);
+            }
+          }
+        );
+        uploadStream.end(req.file.buffer);
+      });
+
+      try {
+        const result = await uploadPromise;
+        
+        // Xóa ảnh cũ nếu có
+        if (category.image?.public_id) {
+          console.log("Deleting old image:", category.image.public_id);
+          await cloudinary.uploader.destroy(category.image.public_id);
+        }
+
+        category.image = {
+          url: result.secure_url,
+          public_id: result.public_id,
+        };
+      } catch (uploadError) {
+        console.error("Image upload failed:", uploadError);
+        return res.status(500).json({ message: "Image upload failed" });
+      }
+    }
+
+    if (name) {
+      category.name = name;
+    }
 
     const updatedCategory = await category.save();
+    console.log("Category updated successfully:", updatedCategory._id);
     res.status(200).json(updatedCategory);
   } catch (error) {
     console.error("Update category error:", error);

@@ -10,34 +10,54 @@ const DeletePopup = ({ itemName, onCancel, onConfirm }: DeletePopupProps) => {
   return (
     <div
       onClick={onCancel}
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-lg shadow-lg p-8 w-[400px] max-w-[90%] flex flex-col relative"
+        className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 w-[480px] max-w-full flex flex-col relative transform transition-all duration-200 scale-100"
       >
         <button
           onClick={onCancel}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
-        <h3 className="text-2xl font-semibold mb-6">Delete Category</h3>
-        <p className="mb-6">
-          Are you sure you want to delete "{itemName} category"?
-        </p>
-        <div className="flex justify-end gap-3">
+        
+        <div className="mb-8">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-500 text-2xl">⚠️</span>
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800 mb-2 text-center">Delete Category</h3>
+          <p className="text-slate-600 text-center">
+            Are you sure you want to delete this category?
+          </p>
+        </div>
+        
+        <div className="bg-slate-50 rounded-xl p-4 mb-6">
+          <div className="text-center">
+            <p className="text-slate-500 text-sm mb-1">Category Name</p>
+            <p className="font-semibold text-slate-800 text-lg">"{itemName}"</p>
+          </div>
+        </div>
+        
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+          <p className="text-amber-800 text-sm">
+            <strong>Warning:</strong> This action cannot be undone. All products in this category will need to be reassigned.
+          </p>
+        </div>
+        
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+            className="px-6 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 hover:border-slate-400 transition-colors font-medium"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium min-w-[100px]"
           >
-            Delete
+            Delete Category
           </button>
         </div>
       </div>

@@ -61,80 +61,91 @@ const EditCategoryPopup = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-lg shadow-lg p-8 w-[400px] max-w-[90%] flex flex-col relative"
+        className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 w-[480px] max-w-full flex flex-col relative transform transition-all duration-200 scale-100"
       >
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
           disabled={loading}
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
-        <h3 className="text-2xl font-semibold mb-6">Edit Category</h3>
+        <div className="mb-8">
+          <h3 className="text-2xl font-bold text-slate-800 mb-2">Edit Category</h3>
+          <p className="text-slate-600 text-sm">
+            Update category information and image
+          </p>
+        </div>
 
         <form
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-6"
           onSubmit={handleSubmit(onSubmitForm)}
         >
-          <input
-            type="text"
-            placeholder="Category Name"
-            {...register("name", { required: true })}
-            className="border rounded px-3 py-2 w-full"
-            defaultValue={initialData.name}
-          />
-
-          <div
-            className="w-32 h-32 border rounded flex items-center justify-center overflow-hidden mt-2 cursor-pointer"
-            onClick={() => document.getElementById("editCatFileInput")?.click()}
-          >
-            {imagePreview ? (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span className="text-gray-400 text-sm">Preview</span>
-            )}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">Category Name</label>
+            <input
+              type="text"
+              placeholder="Enter category name..."
+              {...register("name", { required: true })}
+              className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 transition-colors disabled:bg-slate-50 disabled:text-slate-500"
+              defaultValue={initialData.name}
+              disabled={loading}
+            />
           </div>
 
-          <input
-            type="file"
-            accept="image/*"
-            {...register("image")}
-            id="editCatFileInput"
-            className="hidden"
-          />
-          <button
-            type="button"
-            onClick={() => document.getElementById("editCatFileInput")?.click()}
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-            disabled={loading}
-          >
-            Upload Image
-          </button>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">Category Image</label>
+            <div
+              className="w-full h-40 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center overflow-hidden cursor-pointer hover:border-slate-400 transition-colors"
+              onClick={() => !loading && document.getElementById("editCatFileInput")?.click()}
+            >
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              ) : (
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <span className="text-slate-400 text-lg">📷</span>
+                  </div>
+                  <span className="text-slate-500 text-sm font-medium">Click to upload new image</span>
+                  <p className="text-slate-400 text-xs mt-1">PNG, JPG up to 10MB</p>
+                </div>
+              )}
+            </div>
 
-          <div className="flex justify-end gap-3 mt-4">
+            <input
+              type="file"
+              accept="image/*"
+              {...register("image")}
+              id="editCatFileInput"
+              className="hidden"
+              disabled={loading}
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+              className="px-6 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 hover:border-slate-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-200 to-primary-100 text-white hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none font-medium min-w-[100px]"
               disabled={loading}
             >
-              Update
+              {loading ? "Updating..." : "Update"}
             </button>
           </div>
         </form>
