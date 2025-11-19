@@ -259,14 +259,6 @@ const AdminProducts = () => {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                <th className="p-4 text-center font-semibold text-slate-700 w-12">
-                  <div className="flex items-center justify-center">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 text-primary-200 bg-gray-100 border-gray-300 rounded focus:ring-primary-200 focus:ring-2"
-                    />
-                  </div>
-                </th>
                 <th className="p-4 text-left font-semibold text-slate-700">Product</th>
                 <th className="p-4 text-left font-semibold text-slate-700">Price</th>
                 <th className="p-4 text-left font-semibold text-slate-700">Stock</th>
@@ -282,12 +274,6 @@ const AdminProducts = () => {
                   key={product._id}
                   className="hover:bg-slate-50 transition-all duration-200 group"
                 >
-                  <td className="p-4 text-center">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 text-primary-200 bg-gray-100 border-gray-300 rounded focus:ring-primary-200 focus:ring-2"
-                    />
-                  </td>
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="relative">

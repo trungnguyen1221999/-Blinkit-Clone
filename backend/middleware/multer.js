@@ -8,8 +8,8 @@ const upload = multer({
     console.log('File field name:', file.fieldname);
     console.log('File mimetype:', file.mimetype);
     
-    // Accept only image files from 'images' field
-    if (file.fieldname === 'images' && file.mimetype.startsWith('image/')) {
+    // Accept image files from 'image' (single) or 'images' (multiple) fields
+    if ((file.fieldname === 'image' || file.fieldname === 'images') && file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
       cb(new Error(`Unexpected field: ${file.fieldname}`), false);

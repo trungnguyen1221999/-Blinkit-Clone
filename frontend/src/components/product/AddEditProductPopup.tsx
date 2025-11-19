@@ -76,6 +76,7 @@ const AddEditProductPopup = ({
   const [activeTab, setActiveTab] = useState<'basic' | 'details' | 'media'>('basic');
   const [showCreateCategory, setShowCreateCategory] = useState(false);
   const [showCreateSubCategory, setShowCreateSubCategory] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   if (!isOpen) return null;
 
@@ -91,6 +92,44 @@ const AddEditProductPopup = ({
     const newPreviews = imagePreviewUrls.filter((_, i) => i !== index);
     setSelectedImages(newImages);
     setImagePreviewUrls(newPreviews);
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.currentTarget.outerHTML);
+    (e.currentTarget as HTMLElement).style.opacity = '0.5';
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    (e.currentTarget as HTMLElement).style.opacity = '1';
+    setDraggedIndex(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex) return;
+    
+    const newImages = [...selectedImages];
+    const newPreviews = [...imagePreviewUrls];
+    
+    // Remove dragged items
+    const [draggedImage] = newImages.splice(draggedIndex, 1);
+    const [draggedPreview] = newPreviews.splice(draggedIndex, 1);
+    
+    // Insert at new position
+    newImages.splice(dropIndex, 0, draggedImage);
+    newPreviews.splice(dropIndex, 0, draggedPreview);
+    
+    setSelectedImages(newImages);
+    setImagePreviewUrls(newPreviews);
+    setDraggedIndex(null);
   };
 
   const filteredSubCategories = subCategories.filter((subCat: any) =>
@@ -609,44 +648,111 @@ const AddEditProductPopup = ({
                   {/* Image Previews */}
                   {(imagePreviewUrls.length > 0 || (product && product.images.length > 0)) && (
                     <div className="mt-6">
-                      <h5 className="text-sm font-semibold text-slate-700 mb-4">
-                        {imagePreviewUrls.length > 0 ? 'New Images' : 'Current Images'}
-                      </h5>
+                      <div className="flex items-center justify-between mb-4">
+                        <h5 className="text-sm font-semibold text-slate-700">
+                          {imagePreviewUrls.length > 0 ? 'New Images' : 'Current Images'}
+                        </h5>
+                        {imagePreviewUrls.length > 1 && (
+                          <p className="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                            💡 Drag images to reorder
+                          </p>
+                        )}
+                      </div>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                         {imagePreviewUrls.length > 0 
                           ? imagePreviewUrls.map((url, index) => (
-                              <div key={index} className="relative group">
-                                <img 
-                                  src={url} 
-                                  alt={`Preview ${index + 1}`} 
-                                  className="w-full h-32 object-cover rounded-xl border-2 border-slate-200 group-hover:border-primary-200 transition-colors duration-200" 
-                                />
+                              <div 
+                                key={index} 
+                                className={`relative group cursor-move transition-all duration-200 ${
+                                  draggedIndex === index ? 'scale-105 shadow-lg' : 'hover:scale-102'
+                                }`}
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, index)}
+                                onDragEnd={handleDragEnd}
+                                onDragOver={handleDragOver}
+                                onDrop={(e) => handleDrop(e, index)}
+                              >
+                                <div className="relative overflow-hidden rounded-xl border-2 border-slate-200 group-hover:border-primary-200 transition-colors duration-200">
+                                  <img 
+                                    src={url} 
+                                    alt={`Preview ${index + 1}`} 
+                                    className="w-full h-32 object-cover" 
+                                  />
+                                  
+                                  {/* Drag Handle Overlay */}
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center">
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                      <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
+                                        <div className="flex flex-col gap-1">
+                                          <div className="w-4 h-0.5 bg-slate-400 rounded"></div>
+                                          <div className="w-4 h-0.5 bg-slate-400 rounded"></div>
+                                          <div className="w-4 h-0.5 bg-slate-400 rounded"></div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                
                                 <button
                                   type="button"
                                   onClick={() => removeImage(index)}
-                                  className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                                  className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100 z-10"
                                 >
                                   <X size={16} />
                                 </button>
-                                <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                                  #{index + 1}
+                                
+                                <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                                  <span>#{index + 1}</span>
+                                  {index === 0 && (
+                                    <span className="text-yellow-300">⭐</span>
+                                  )}
                                 </div>
+                                
+                                {/* Drop Zone Indicator */}
+                                {draggedIndex !== null && draggedIndex !== index && (
+                                  <div className="absolute inset-0 border-2 border-dashed border-primary-300 bg-primary-50/50 rounded-xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                                    <span className="text-primary-400 font-medium text-sm">Drop here</span>
+                                  </div>
+                                )}
                               </div>
                             ))
                           : product?.images.map((img, index) => (
-                              <div key={index} className="relative">
+                              <div key={index} className="relative group">
                                 <img 
                                   src={img.url} 
                                   alt={`Current ${index + 1}`} 
-                                  className="w-full h-32 object-cover rounded-xl border-2 border-slate-200" 
+                                  className="w-full h-32 object-cover rounded-xl border-2 border-slate-200 group-hover:border-primary-200 transition-colors duration-200" 
                                 />
-                                <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                                  #{index + 1}
+                                <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                                  <span>#{index + 1}</span>
+                                  {index === 0 && (
+                                    <span className="text-yellow-300">⭐</span>
+                                  )}
                                 </div>
                               </div>
                             ))
                         }
                       </div>
+                      
+                      {imagePreviewUrls.length > 0 && (
+                        <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                          <div className="flex items-start gap-3">
+                            <div className="text-blue-500 mt-0.5">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div>
+                              <h6 className="text-sm font-medium text-blue-700 mb-1">Image Order Tips</h6>
+                              <ul className="text-xs text-blue-600 space-y-1">
+                                <li>• First image (⭐) will be the main product image</li>
+                                <li>• Drag and drop to reorder images</li>
+                                <li>• Best quality images should be first</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
