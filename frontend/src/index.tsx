@@ -136,7 +136,6 @@ const router = createBrowserRouter([
             <AdminLayout>
               <AdminDashboard />
             </AdminLayout>
-            <Footer />
           </>
         ),
       },
@@ -147,7 +146,6 @@ const router = createBrowserRouter([
             <AdminLayout>
               <AdminCustomer />
             </AdminLayout>
-            <Footer />
           </>
         ),
       },
@@ -158,7 +156,6 @@ const router = createBrowserRouter([
             <AdminLayout>
               <AdminOrder />
             </AdminLayout>
-            <Footer />
           </>
         ),
       },
@@ -169,7 +166,6 @@ const router = createBrowserRouter([
             <AdminLayout>
               <AdminProducts />
             </AdminLayout>
-            <Footer />
           </>
         ),
       },
@@ -180,7 +176,6 @@ const router = createBrowserRouter([
             <AdminLayout>
               <AdminUsers />
             </AdminLayout>
-            <Footer />
           </>
         ),
       },
@@ -191,7 +186,6 @@ const router = createBrowserRouter([
             <AdminLayout>
               <AdminCategory />
             </AdminLayout>
-            <Footer />
           </>
         ),
       },
@@ -202,7 +196,6 @@ const router = createBrowserRouter([
             <AdminLayout>
               <AdminSubCategory />
             </AdminLayout>
-            <Footer />
           </>
         ),
       },

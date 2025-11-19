@@ -10,7 +10,7 @@ import {
   ChartColumnStacked,
   Settings,
   LogOut,
-  Search,
+  Home,
 } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
 
@@ -49,9 +49,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex">
+    <div className="h-screen max-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex overflow-hidden">
       {/* Modern Sidebar */}
-      <aside className="w-72 bg-white shadow-xl border-r border-slate-200 flex flex-col relative">
+      <aside className="w-72 bg-white shadow-xl border-r border-slate-200 flex flex-col relative overflow-hidden">
         {/* Header with logo */}
         <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-primary-200 to-primary-100">
           <div className="flex items-center gap-3">
@@ -100,7 +100,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 px-3">
             Main Menu
           </h4>
@@ -137,6 +137,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
         {/* Bottom Actions */}
         <div className="p-4 border-t border-slate-200 space-y-2">
+          <Link to="/" className="w-full flex items-center gap-3 px-3 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors group">
+            <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200">
+              <Home size={16} />
+            </div>
+            <span className="font-medium text-sm">Home</span>
+          </Link>
           <button className="w-full flex items-center gap-3 px-3 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors group">
             <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200">
               <LogOut size={16} />
@@ -147,12 +153,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col max-h-screen overflow-hidden">
         {/* Top Header Bar */}
         <header className="bg-white shadow-sm border-b border-slate-200 px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl font-semibold text-slate-800">Dashboard</h2>
               <div className="w-px h-6 bg-slate-200"></div>
               <div className="text-sm text-slate-500">
                 {new Date().toLocaleDateString('en-US', { 
@@ -165,16 +170,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             </div>
             
             <div className="flex items-center gap-4">
-              {/* Search Bar */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="pl-10 pr-4 py-2 w-64 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 transition-colors text-sm"
-                />
-              </div>
-              
               {/* Profile Dropdown */}
               <div className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer">
                 <div className="w-8 h-8 rounded-full overflow-hidden">
@@ -191,8 +186,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </header>
 
         {/* Content */}
-        <div className="flex-1 p-8 bg-gradient-to-br from-slate-50/50 to-white">
-          <div className="max-w-7xl mx-auto">
+        <div className="flex-1 p-8 bg-gradient-to-br from-slate-50/50 to-white overflow-y-auto">
+          <div className="max-w-7xl mx-auto h-full">
             {children}
           </div>
         </div>

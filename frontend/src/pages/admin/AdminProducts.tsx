@@ -143,18 +143,18 @@ const AdminProducts = () => {
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
     setProductForm({
-      name: product.name,
-      category: product.category.map(c => c._id),
-      SubCategory: product.SubCategory.map(s => s._id),
-      unit: product.unit,
-      stock: product.stock,
-      price: product.price,
+      name: product.name || '',
+      category: (product.category || []).map(c => c._id),
+      SubCategory: (product.SubCategory || []).map(s => s._id),
+      unit: product.unit || '',
+      stock: product.stock || 0,
+      price: product.price || 0,
       discount: product.discount || 0,
-      description: product.description,
-      more_details: product.more_details,
-      publish: product.publish
+      description: product.description || '',
+      more_details: product.more_details || {},
+      publish: product.publish === true
     });
-    setImagePreviewUrls(product.images.map(img => img.url));
+    setImagePreviewUrls((product.images || []).map(img => img.url));
     setShowProductPopup(true);
   };
 
@@ -282,19 +282,21 @@ const AdminProducts = () => {
                           alt={product.name}
                           className="w-14 h-14 object-cover rounded-xl border-2 border-white shadow-sm"
                         />
-                        {product.stock < 10 && (
+                        {(product.stock || product.stock === 0) && product.stock < 10 && (
                           <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
                         )}
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-800">{product.name}</p>
-                        <p className="text-xs text-slate-500">Unit: {product.unit}</p>
+                        <p className="font-semibold text-slate-800">{product.name || 'Unnamed Product'}</p>
+                        <p className="text-xs text-slate-500">Unit: {product.unit || 'N/A'}</p>
                       </div>
                     </div>
                   </td>
                   <td className="p-4">
                     <div>
-                      <p className="font-semibold text-slate-800">${product.price.toFixed(2)}</p>
+                      <p className="font-semibold text-slate-800">
+                        ${product.price ? product.price.toFixed(2) : '0.00'}
+                      </p>
                       {product.discount && product.discount > 0 && (
                         <p className="text-xs text-green-600">-{product.discount}% off</p>
                       )}
@@ -303,38 +305,42 @@ const AdminProducts = () => {
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                        product.stock > 50 
+                        (product.stock || 0) > 50 
                           ? 'bg-green-100 text-green-800 border border-green-200' 
-                          : product.stock > 10
+                          : (product.stock || 0) > 10
                           ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
                           : 'bg-red-100 text-red-800 border border-red-200'
                       }`}>
-                        {product.stock} units
+                        {product.stock || 0} units
                       </span>
                     </div>
                   </td>
                   <td className="p-4">
                     <div className="flex flex-wrap gap-1">
-                      {product.category.map((cat, index) => (
+                      {(product.category || []).map((cat, index) => (
                         <span key={index} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                          {cat.name}
+                          {cat?.name || 'Unknown Category'}
                         </span>
                       ))}
                     </div>
                   </td>
                   <td className="p-4">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                      product.publish
+                      product.publish === true
                         ? 'bg-green-100 text-green-800 border border-green-200'
                         : 'bg-gray-100 text-gray-800 border border-gray-200'
                     }`}>
-                      {product.publish ? 'Published' : 'Draft'}
+                      {product.publish === true ? 'Published' : 'Draft'}
                     </span>
                   </td>
                   <td className="p-4 text-slate-600">
                     <div>
-                      <p className="font-medium">{new Date(product.createdAt).toLocaleDateString("en-US")}</p>
-                      <p className="text-xs text-slate-500">{new Date(product.createdAt).toLocaleDateString("en-US", { weekday: 'short' })}</p>
+                      <p className="font-medium">
+                        {product.createdAt ? new Date(product.createdAt).toLocaleDateString("en-US") : 'N/A'}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {product.createdAt ? new Date(product.createdAt).toLocaleDateString("en-US", { weekday: 'short' }) : 'N/A'}
+                      </p>
                     </div>
                   </td>
                   <td className="p-4">

@@ -1,6 +1,5 @@
 import { Pencil, Trash2, Plus, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import getAllUsersApi from "../../api/adminApi/getAllUserApi";
 import { useMutation } from "@tanstack/react-query";
 import deleteUserApi from "../../api/adminApi/deleteUserApi";
 import { toast } from "react-toastify";
@@ -12,6 +11,7 @@ import EditUserPopup, {
   type EditUserFormData,
 } from "../../components/EditUserPopup";
 import editUserApi from "../../api/adminApi/editUserApi";
+import { getAllUserApi } from "../../api/adminApi/getAllUserApi";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -29,7 +29,7 @@ const AdminUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data = await getAllUsersApi();
+        const data = await getAllUserApi();
         setUsers(data.data);
       } catch (error) {
         console.error("Error fetching users:", error);

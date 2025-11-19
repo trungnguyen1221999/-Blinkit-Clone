@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { X, Upload, Image as ImageIcon, Plus, Minus } from "lucide-react";
 import { toast } from "react-toastify";
 import AddCategoryPopup from "../category/AddCategoryPopup";
@@ -77,6 +77,18 @@ const AddEditProductPopup = ({
   const [showCreateCategory, setShowCreateCategory] = useState(false);
   const [showCreateSubCategory, setShowCreateSubCategory] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [localCategories, setLocalCategories] = useState(categories);
+  const [localSubCategories, setLocalSubCategories] = useState(subCategories);
+
+  // Update local categories when props change
+  useEffect(() => {
+    setLocalCategories(categories);
+  }, [categories]);
+
+  // Update local subcategories when props change
+  useEffect(() => {
+    setLocalSubCategories(subCategories);
+  }, [subCategories]);
 
   if (!isOpen) return null;
 
@@ -132,12 +144,12 @@ const AddEditProductPopup = ({
     setDraggedIndex(null);
   };
 
-  const filteredSubCategories = subCategories.filter((subCat: any) =>
+  const filteredSubCategories = localSubCategories.filter((subCat: any) =>
     productForm.category.some(catId => subCat.category.some((c: any) => c._id === catId))
   );
 
   // Sort categories alphabetically and split A-M, N-Z
-  const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedCategories = [...localCategories].sort((a, b) => a.name.localeCompare(b.name));
   const categoriesAM = sortedCategories.filter(cat => cat.name.toLowerCase()[0] <= 'm');
   const categoriesNZ = sortedCategories.filter(cat => cat.name.toLowerCase()[0] >= 'n');
 
@@ -145,6 +157,50 @@ const AddEditProductPopup = ({
   const sortedSubCategories = [...filteredSubCategories].sort((a, b) => a.name.localeCompare(b.name));
   const subCategoriesAM = sortedSubCategories.filter(subCat => subCat.name.toLowerCase()[0] <= 'm');
   const subCategoriesNZ = sortedSubCategories.filter(subCat => subCat.name.toLowerCase()[0] >= 'n');
+
+  // Handle category toggle (select/deselect)
+  const toggleCategory = (categoryId: string) => {
+    const currentSelected = productForm.category;
+    let newSelection;
+    
+    if (currentSelected.includes(categoryId)) {
+      // Remove if already selected
+      newSelection = currentSelected.filter(id => id !== categoryId);
+    } else {
+      // Add if not selected
+      newSelection = [...currentSelected, categoryId];
+    }
+    
+    setProductForm({...productForm, category: newSelection, SubCategory: []});
+  };
+
+  // Handle subcategory toggle (select/deselect)
+  const toggleSubCategory = (subCategoryId: string) => {
+    const currentSelected = productForm.SubCategory;
+    let newSelection;
+    
+    if (currentSelected.includes(subCategoryId)) {
+      // Remove if already selected
+      newSelection = currentSelected.filter(id => id !== subCategoryId);
+    } else {
+      // Add if not selected
+      newSelection = [...currentSelected, subCategoryId];
+    }
+    
+    setProductForm({...productForm, SubCategory: newSelection});
+  };
+
+  // Remove category selection
+  const removeCategory = (categoryId: string) => {
+    const newCategories = productForm.category.filter(id => id !== categoryId);
+    setProductForm({...productForm, category: newCategories, SubCategory: []});
+  };
+
+  // Remove subcategory selection
+  const removeSubCategory = (subCategoryId: string) => {
+    const newSubCategories = productForm.SubCategory.filter(id => id !== subCategoryId);
+    setProductForm({...productForm, SubCategory: newSubCategories});
+  };
 
   const addMoreDetail = () => {
     const key = `detail_${Date.now()}`;
@@ -291,23 +347,26 @@ const AddEditProductPopup = ({
                       <input
                         type="text"
                         readOnly
-                        value={productForm.discount > 0 
-                          ? (productForm.price * (1 - productForm.discount / 100)).toFixed(2)
-                          : productForm.price.toFixed(2)
-                        }
+                        value={(() => {
+                          const price = productForm.price || 0;
+                          const discount = productForm.discount || 0;
+                          return discount > 0 
+                            ? (price * (1 - discount / 100)).toFixed(2)
+                            : price.toFixed(2);
+                        })()}
                         className="w-full pl-8 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 text-slate-700 font-semibold cursor-not-allowed"
                       />
-                      {productForm.discount > 0 && (
+                      {productForm.discount > 0 && productForm.price > 0 && (
                         <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                           <span className="text-xs text-green-600 font-medium">
-                            Save €{(productForm.price * (productForm.discount / 100)).toFixed(2)}
+                            Save €{((productForm.price || 0) * ((productForm.discount || 0) / 100)).toFixed(2)}
                           </span>
                         </div>
                       )}
                     </div>
-                    {productForm.discount > 0 && (
+                    {productForm.discount > 0 && productForm.price > 0 && (
                       <p className="text-xs text-green-600 mt-2">
-                        Customer saves {productForm.discount}% (€{(productForm.price * (productForm.discount / 100)).toFixed(2)})
+                        Customer saves {productForm.discount}% (€{((productForm.price || 0) * ((productForm.discount || 0) / 100)).toFixed(2)})
                       </p>
                     )}
                   </div>
@@ -360,47 +419,87 @@ const AddEditProductPopup = ({
                       New Category
                     </button>
                   </div>
+                  {/* Selected Categories Display */}
+                  {productForm.category.length > 0 && (
+                    <div className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200">
+                      <p className="text-xs font-medium text-blue-700 mb-2">Selected Categories:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {productForm.category.map((categoryId) => {
+                          const category = localCategories.find((c: any) => c._id === categoryId);
+                          return category ? (
+                            <span key={categoryId} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-lg text-xs font-medium">
+                              {category.name}
+                              <button
+                                type="button"
+                                onClick={() => removeCategory(categoryId)}
+                                className="text-blue-600 hover:text-blue-800 ml-1"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Categories A-M */}
                     <div>
                       <p className="text-xs text-slate-600 mb-2 font-medium">A - M</p>
-                      <select
-                        multiple
-                        value={productForm.category}
-                        onChange={(e) => {
-                          const values = Array.from(e.target.selectedOptions, option => option.value);
-                          setProductForm({...productForm, category: values, SubCategory: []});
-                        }}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200/50 focus:border-primary-200 transition-all duration-200 min-h-[140px]"
-                      >
-                        {categoriesAM.map((category: any) => (
-                          <option key={category._id} value={category._id} className="py-2">
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="w-full border border-slate-200 rounded-xl p-2 min-h-[140px] max-h-[200px] overflow-y-auto bg-white">
+                        {categoriesAM.map((category: any) => {
+                          const isSelected = productForm.category.includes(category._id);
+                          return (
+                            <div
+                              key={category._id}
+                              onClick={() => toggleCategory(category._id)}
+                              className={`p-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-slate-50 ${
+                                isSelected 
+                                  ? 'bg-blue-100 text-blue-800 border border-blue-300 font-medium' 
+                                  : 'text-slate-700 hover:bg-blue-50'
+                              }`}
+                            >
+                              <span className="flex items-center justify-between">
+                                {category.name}
+                                {isSelected && (
+                                  <span className="text-blue-600 font-bold">✓</span>
+                                )}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                     {/* Categories N-Z */}
                     <div>
                       <p className="text-xs text-slate-600 mb-2 font-medium">N - Z</p>
-                      <select
-                        multiple
-                        value={productForm.category}
-                        onChange={(e) => {
-                          const values = Array.from(e.target.selectedOptions, option => option.value);
-                          setProductForm({...productForm, category: values, SubCategory: []});
-                        }}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200/50 focus:border-primary-200 transition-all duration-200 min-h-[140px]"
-                      >
-                        {categoriesNZ.map((category: any) => (
-                          <option key={category._id} value={category._id} className="py-2">
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="w-full border border-slate-200 rounded-xl p-2 min-h-[140px] max-h-[200px] overflow-y-auto bg-white">
+                        {categoriesNZ.map((category: any) => {
+                          const isSelected = productForm.category.includes(category._id);
+                          return (
+                            <div
+                              key={category._id}
+                              onClick={() => toggleCategory(category._id)}
+                              className={`p-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-slate-50 ${
+                                isSelected 
+                                  ? 'bg-blue-100 text-blue-800 border border-blue-300 font-medium' 
+                                  : 'text-slate-700 hover:bg-blue-50'
+                              }`}
+                            >
+                              <span className="flex items-center justify-between">
+                                {category.name}
+                                {isSelected && (
+                                  <span className="text-blue-600 font-bold">✓</span>
+                                )}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-500 mt-2">Hold Ctrl/Cmd to select multiple categories</p>
+                  <p className="text-xs text-slate-500 mt-2">Click to select/deselect categories from both columns</p>
                 </div>
 
                 {/* SubCategories - Full row with 2 columns */}
@@ -419,47 +518,87 @@ const AddEditProductPopup = ({
                         New SubCategory
                       </button>
                     </div>
+                    {/* Selected SubCategories Display */}
+                    {productForm.SubCategory.length > 0 && (
+                      <div className="mb-4 p-3 bg-green-50 rounded-xl border border-green-200">
+                        <p className="text-xs font-medium text-green-700 mb-2">Selected SubCategories:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {productForm.SubCategory.map((subCategoryId) => {
+                            const subCategory = localSubCategories.find((sc: any) => sc._id === subCategoryId);
+                            return subCategory ? (
+                              <span key={subCategoryId} className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-lg text-xs font-medium">
+                                {subCategory.name}
+                                <button
+                                  type="button"
+                                  onClick={() => removeSubCategory(subCategoryId)}
+                                  className="text-green-600 hover:text-green-800 ml-1"
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ) : null;
+                          })}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* SubCategories A-M */}
                       <div>
                         <p className="text-xs text-slate-600 mb-2 font-medium">A - M</p>
-                        <select
-                          multiple
-                          value={productForm.SubCategory}
-                          onChange={(e) => {
-                            const values = Array.from(e.target.selectedOptions, option => option.value);
-                            setProductForm({...productForm, SubCategory: values});
-                          }}
-                          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200/50 focus:border-primary-200 transition-all duration-200 min-h-[120px]"
-                        >
-                          {subCategoriesAM.map((subCategory: any) => (
-                            <option key={subCategory._id} value={subCategory._id} className="py-2">
-                              {subCategory.name}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="w-full border border-slate-200 rounded-xl p-2 min-h-[120px] max-h-[180px] overflow-y-auto bg-white">
+                          {subCategoriesAM.map((subCategory: any) => {
+                            const isSelected = productForm.SubCategory.includes(subCategory._id);
+                            return (
+                              <div
+                                key={subCategory._id}
+                                onClick={() => toggleSubCategory(subCategory._id)}
+                                className={`p-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-slate-50 ${
+                                  isSelected 
+                                    ? 'bg-green-100 text-green-800 border border-green-300 font-medium' 
+                                    : 'text-slate-700 hover:bg-green-50'
+                                }`}
+                              >
+                                <span className="flex items-center justify-between">
+                                  {subCategory.name}
+                                  {isSelected && (
+                                    <span className="text-green-600 font-bold">✓</span>
+                                  )}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                       {/* SubCategories N-Z */}
                       <div>
                         <p className="text-xs text-slate-600 mb-2 font-medium">N - Z</p>
-                        <select
-                          multiple
-                          value={productForm.SubCategory}
-                          onChange={(e) => {
-                            const values = Array.from(e.target.selectedOptions, option => option.value);
-                            setProductForm({...productForm, SubCategory: values});
-                          }}
-                          className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200/50 focus:border-primary-200 transition-all duration-200 min-h-[120px]"
-                        >
-                          {subCategoriesNZ.map((subCategory: any) => (
-                            <option key={subCategory._id} value={subCategory._id} className="py-2">
-                              {subCategory.name}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="w-full border border-slate-200 rounded-xl p-2 min-h-[120px] max-h-[180px] overflow-y-auto bg-white">
+                          {subCategoriesNZ.map((subCategory: any) => {
+                            const isSelected = productForm.SubCategory.includes(subCategory._id);
+                            return (
+                              <div
+                                key={subCategory._id}
+                                onClick={() => toggleSubCategory(subCategory._id)}
+                                className={`p-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-slate-50 ${
+                                  isSelected 
+                                    ? 'bg-green-100 text-green-800 border border-green-300 font-medium' 
+                                    : 'text-slate-700 hover:bg-green-50'
+                                }`}
+                              >
+                                <span className="flex items-center justify-between">
+                                  {subCategory.name}
+                                  {isSelected && (
+                                    <span className="text-green-600 font-bold">✓</span>
+                                  )}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 mt-2">Hold Ctrl/Cmd to select multiple subcategories</p>
+                    <p className="text-xs text-slate-500 mt-2">Click to select/deselect subcategories from both columns</p>
                   </div>
                 )}
 
@@ -796,6 +935,9 @@ const AddEditProductPopup = ({
         <AddCategoryPopup
           onClose={() => setShowCreateCategory(false)}
           onSubmit={(newCategory) => {
+            // Add to local state immediately
+            setLocalCategories(prev => [...prev, newCategory]);
+            
             if (onCategoryCreated) {
               onCategoryCreated(newCategory);
             }
@@ -808,9 +950,12 @@ const AddEditProductPopup = ({
       {/* Add SubCategory Popup */}
       {showCreateSubCategory && (
         <AddSubCategoryPopup
-          categories={categories}
+          categories={localCategories}
           onClose={() => setShowCreateSubCategory(false)}
           onSubmit={(newSubCategory) => {
+            // Add to local state immediately
+            setLocalSubCategories(prev => [...prev, newSubCategory]);
+            
             if (onSubCategoryCreated) {
               onSubCategoryCreated(newSubCategory);
             }
