@@ -12,10 +12,10 @@ import { uploadSingleImage } from "../middleware/uploadMiddleware.js";
 const routerSubCategory = Router();
 
 // Lấy tất cả subcategories
-routerSubCategory.get("/", AuthMiddleware, getSubCategories);
+routerSubCategory.get("/", getSubCategories);
 
 // Lấy subcategories theo category
-routerSubCategory.get("/category/:categoryId", AuthMiddleware, getSubCategoriesByCategory);
+routerSubCategory.get("/category/:categoryId", getSubCategoriesByCategory);
 
 // Tạo subcategory mới
 routerSubCategory.post(

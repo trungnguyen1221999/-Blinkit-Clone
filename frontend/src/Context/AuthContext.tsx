@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Kiểm tra auth (không xóa user từ localStorage nếu check fail)
+  // Kiểm tra auth (optional - không force redirect)
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -95,17 +95,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           await fetchUser(res.data.userId);
         }
       } catch (err) {
-        console.warn("checkAuth failed (keeps local user):", err);
-        navigate("/login");
-
-        // không setUser(null) — giữ user từ localStorage
+        console.warn("checkAuth failed (allows anonymous access):", err);
+        // Không redirect - cho phép truy cập anonymous
+        setIsAuthenticated(false);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
-    // Chỉ chạy checkAuth nếu bạn muốn; nếu chắc chắn login -> localStorage, bạn có thể comment dòng dưới
-    checkAuth();
+    // Chỉ check auth nếu có user trong localStorage
+    if (user) {
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   return (

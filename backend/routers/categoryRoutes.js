@@ -10,7 +10,7 @@ import { uploadSingleImage } from "../middleware/uploadMiddleware.js";
 
 const routerCategory = Router();
 
-routerCategory.get("/", AuthMiddleware, getCategories);
+routerCategory.get("/", getCategories);
 routerCategory.post(
   "/create",
   AuthMiddleware,
