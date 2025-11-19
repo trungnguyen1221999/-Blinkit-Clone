@@ -202,7 +202,7 @@ const AdminCategory = () => {
                         </div>
                         <div>
                           <p className="font-semibold text-slate-800">{cat.name}</p>
-                          <p className="text-xs text-slate-500">Category ID: #{cat._id.slice(-6)}</p>
+                          <p className="text-xs text-slate-500">Category ID: #{cat._id}</p>
                         </div>
                       </div>
                     </td>
