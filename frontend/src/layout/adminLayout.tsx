@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -13,6 +13,7 @@ import {
   Home,
 } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
+import logoutApi from "../api/userApi/logoutApi";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -20,7 +21,25 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, setIsAuthenticated, setUser } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logoutApi();
+      setIsAuthenticated(false);
+      setUser(null);
+      localStorage.removeItem("user");
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Force logout even if API call fails
+      setIsAuthenticated(false);
+      setUser(null);
+      localStorage.removeItem("user");
+      navigate("/");
+    }
+  };
 
   const menuItems = [
     {
@@ -143,7 +162,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             </div>
             <span className="font-medium text-sm">Home</span>
           </Link>
-          <button className="w-full flex items-center gap-3 px-3 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors group">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors group"
+          >
             <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200">
               <LogOut size={16} />
             </div>

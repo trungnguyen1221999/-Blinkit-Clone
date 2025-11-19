@@ -26,6 +26,7 @@ import AdminSubCategory from "./pages/admin/AdminSubCategory";
 import CategoryPage from "./pages/CategoryPage";
 import SubCategoryPage from "./pages/SubCategoryPage";
 import ProductsPage from "./pages/ProductsPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -123,107 +124,107 @@ const router = createBrowserRouter([
       {
         path: "/user/account/profile",
         element: (
-          <>
+          <ProtectedRoute>
             <Header />
             <UserLayout>
               <Profile />
             </UserLayout>
             <Footer />
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/user/account/change-password",
         element: (
-          <>
+          <ProtectedRoute>
             <Header />
             <UserLayout>
               <ChangePassword />
             </UserLayout>
             <Footer />
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/user/purchases",
         element: (
-          <>
+          <ProtectedRoute>
             <Header />
             <UserLayout>
               <Purchase />
             </UserLayout>
             <Footer />
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/admin/dashboard",
         element: (
-          <>
+          <ProtectedRoute>
             <AdminLayout>
               <AdminDashboard />
             </AdminLayout>
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/admin/customers",
         element: (
-          <>
+          <ProtectedRoute>
             <AdminLayout>
               <AdminCustomer />
             </AdminLayout>
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/admin/orders",
         element: (
-          <>
+          <ProtectedRoute>
             <AdminLayout>
               <AdminOrder />
             </AdminLayout>
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/admin/products",
         element: (
-          <>
+          <ProtectedRoute>
             <AdminLayout>
               <AdminProducts />
             </AdminLayout>
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/admin/users",
         element: (
-          <>
+          <ProtectedRoute>
             <AdminLayout>
               <AdminUsers />
             </AdminLayout>
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/admin/categories",
         element: (
-          <>
+          <ProtectedRoute>
             <AdminLayout>
               <AdminCategory />
             </AdminLayout>
-          </>
+          </ProtectedRoute>
         ),
       },
       {
         path: "/admin/sub-categories",
         element: (
-          <>
+          <ProtectedRoute>
             <AdminLayout>
               <AdminSubCategory />
             </AdminLayout>
-          </>
+          </ProtectedRoute>
         ),
       },
     ],

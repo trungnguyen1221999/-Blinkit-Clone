@@ -51,8 +51,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const [user, setUserState] = useState<User | null>(initUser);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!initUser);
-  const [loading, setLoading] = useState<boolean>(!!initUser); // nếu có init user, ta có thể set false sau check
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false); // Bắt đầu với false, sẽ check sau
+  const [loading, setLoading] = useState<boolean>(true); // Loading = true để check auth trước
 
   // wrapper setUser để luôn đồng bộ localStorage
   const setUser = (u: User | null) => {
@@ -80,36 +80,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Kiểm tra auth (optional - không force redirect)
+  // Kiểm tra auth state khi app load
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Kiểm tra có user trong localStorage không
+        const localUser = initUser();
+        if (!localUser) {
+          setLoading(false);
+          return;
+        }
+
+        // Verify với server nếu có user trong localStorage
         const res = await api.get("/user/check-auth", {
           withCredentials: true,
         });
-        const ok = !!res?.data?.success;
-        setIsAuthenticated(ok);
-        // Nếu bạn muốn: khi ok === true có thể fetchUser(res.data.userId)
-        if (ok && res.data.userId) {
-          // optional: keep in sync with server
+        
+        const isValid = !!res?.data?.success;
+        if (isValid && res.data.userId) {
+          // Token hợp lệ, fetch thông tin user mới nhất
           await fetchUser(res.data.userId);
+          setIsAuthenticated(true);
+        } else {
+          // Token không hợp lệ, clear localStorage
+          setIsAuthenticated(false);
+          setUser(null);
+          localStorage.removeItem("user");
         }
       } catch (err) {
-        console.warn("checkAuth failed (allows anonymous access):", err);
-        // Không redirect - cho phép truy cập anonymous
+        console.warn("Auth check failed:", err);
+        // Token expired hoặc lỗi, clear state
         setIsAuthenticated(false);
         setUser(null);
+        localStorage.removeItem("user");
       } finally {
         setLoading(false);
       }
     };
 
-    // Chỉ check auth nếu có user trong localStorage
-    if (user) {
-      checkAuth();
-    } else {
-      setLoading(false);
-    }
+    checkAuth();
   }, []);
 
   return (

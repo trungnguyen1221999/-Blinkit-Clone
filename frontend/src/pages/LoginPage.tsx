@@ -1,6 +1,6 @@
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,7 +27,11 @@ const loginSchema = z.object({
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading, setLoading, setIsAuthenticated, user, setUser } = useAuth();
+  
+  // Get the intended destination from location state
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || "/";
   const {
     register,
     handleSubmit,
@@ -49,7 +53,7 @@ const LoginPage = () => {
     },
     onSuccess: () => {
       toast.success("Login successful!");
-      navigate("/");
+      navigate(from, { replace: true }); // Redirect to intended page
       setLoading(false);
     },
   });
@@ -66,8 +70,8 @@ const LoginPage = () => {
           // 3. Lưu user vào context
           setUser(userData.data);
           console.log(user);
-          // 4. Navigate sau khi đã set user
-          navigate("/");
+          // 4. Navigate to intended destination
+          navigate(from, { replace: true });
         } catch (err) {
           console.error("Failed to fetch user after login:", err);
         }
