@@ -134,7 +134,7 @@ const AddEditProductPopup = ({
       onClick={onClose}
     >
       <div 
-        className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden"
+        className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -181,8 +181,8 @@ const AddEditProductPopup = ({
         </div>
 
         {/* Content */}
-        <form onSubmit={onSubmit} className="flex flex-col h-full max-h-[calc(95vh-120px)] ">
-          <div className="flex-1 overflow-y-auto p-8">
+        <form onSubmit={onSubmit} className="flex flex-col">
+          <div className="flex-1 overflow-y-auto p-8 max-h-[calc(95vh-240px)]">
             {/* Basic Info Tab */}
             {activeTab === 'basic' && (
               <div className="space-y-6">
@@ -476,8 +476,54 @@ const AddEditProductPopup = ({
                     </button>
                   </div>
 
+                  {/* Default Fields */}
                   <div className="space-y-3">
-                    {Object.entries(productForm.more_details).map(([key, value]) => (
+                    {/* Country of Origin */}
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        value="Country of origin/country of manufacture"
+                        readOnly
+                        className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed"
+                      />
+                      <input
+                        type="text"
+                        value={productForm.more_details["Country of origin/country of manufacture"] || ""}
+                        onChange={(e) => updateMoreDetail("Country of origin/country of manufacture", e.target.value)}
+                        placeholder="e.g., Norway, Vietnam, Thailand"
+                        className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200/50 focus:border-primary-200 transition-all duration-200"
+                      />
+                      <div className="w-10 flex items-center justify-center text-slate-400">
+                        <span className="text-xs">📍</span>
+                      </div>
+                    </div>
+
+                    {/* EAN Code */}
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        value="EAN code"
+                        readOnly
+                        className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed"
+                      />
+                      <input
+                        type="text"
+                        value={productForm.more_details["EAN code"] || ""}
+                        onChange={(e) => updateMoreDetail("EAN code", e.target.value)}
+                        placeholder="e.g., 2000448100001"
+                        className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-200/50 focus:border-primary-200 transition-all duration-200"
+                      />
+                      <div className="w-10 flex items-center justify-center text-slate-400">
+                        <span className="text-xs">🏷️</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Custom Additional Details */}
+                  <div className="space-y-3">
+                    {Object.entries(productForm.more_details)
+                      .filter(([key]) => key !== "Country of origin/country of manufacture" && key !== "EAN code")
+                      .map(([key, value]) => (
                       <div key={key} className="flex gap-3">
                         <input
                           type="text"
@@ -509,9 +555,11 @@ const AddEditProductPopup = ({
                     ))}
                   </div>
 
-                  {Object.keys(productForm.more_details).length === 0 && (
+                  {Object.entries(productForm.more_details)
+                    .filter(([key]) => key !== "Country of origin/country of manufacture" && key !== "EAN code")
+                    .length === 0 && (
                     <div className="text-center py-8 text-slate-500">
-                      <p>No additional details added yet.</p>
+                      <p>No custom details added yet.</p>
                       <p className="text-sm">Click "Add Detail" to include specifications, features, or other product information.</p>
                     </div>
                   )}
