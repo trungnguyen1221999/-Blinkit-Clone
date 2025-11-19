@@ -4,6 +4,7 @@ import logoMobo from "../assets/logo_mobile.png";
 import Search from "./Search";
 import Login from "./Login";
 import Cart from "./Cart";
+import ProductDropdown from "./ProductDropdown";
 
 const Header = () => {
   return (
@@ -22,6 +23,11 @@ const Header = () => {
         >
           <img src={logoMobo} alt="Blinkit Mobile Logo" className="w-full h-auto" />
         </Link>
+
+        {/* Products Dropdown */}
+        <div className="hidden sm:block">
+          <ProductDropdown />
+        </div>
 
         {/* Search Bar */}
         <div className="flex-1 max-w-2xl mx-4">

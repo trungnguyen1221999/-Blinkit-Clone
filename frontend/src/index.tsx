@@ -23,6 +23,9 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminCategory from "./pages/admin/AdminCategory";
 import AdminSubCategory from "./pages/admin/AdminSubCategory";
+import CategoryPage from "./pages/CategoryPage";
+import SubCategoryPage from "./pages/SubCategoryPage";
+import ProductsPage from "./pages/ProductsPage";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +45,30 @@ const router = createBrowserRouter([
         element: (
           <>
             <Header /> <SearchPage /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/category/:categoryId",
+        element: (
+          <>
+            <Header /> <CategoryPage /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/subcategory/:subCategoryId",
+        element: (
+          <>
+            <Header /> <SubCategoryPage /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/products",
+        element: (
+          <>
+            <Header /> <ProductsPage /> <Footer />
           </>
         ),
       },
