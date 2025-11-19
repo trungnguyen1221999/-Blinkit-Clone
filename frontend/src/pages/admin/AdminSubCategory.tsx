@@ -1,72 +1,112 @@
-import { useState } from "react";
-import { Edit, Trash2, Plus, FolderTree, Search, Tag } from "lucide-react";
-import type { SubCategory } from "../../components/category/SubCategoryPopup";
-import SubCategoryPopup from "../../components/category/SubCategoryPopup";
-import type { Category } from "../../components/category/CategoryTag";
+import { useEffect, useState, useRef } from "react";
+import { Edit, Trash2, Plus, FolderTree, Search, Tag, X } from "lucide-react";
+import type { SubCategory } from "../../api/subCategoryApi/subCategoryApi";
+import type { Category } from "../../components/category/AddCategoryPopup";
+import AddSubCategoryPopup from "../../components/category/AddSubCategoryPopup";
+import EditSubCategoryPopup from "../../components/category/EditSubCategoryPopup";
+import { useMutation } from "@tanstack/react-query";
+import {
+  getSubCategoriesApi,
+  deleteSubCategoryApi,
+} from "../../api/subCategoryApi/subCategoryApi";
+import { getCategoriesApi } from "../../api/categoryApi/categoryApi";
+import { toast } from "react-toastify";
 
 const AdminSubCategory = () => {
-  const [subCategories, setSubCategories] = useState<SubCategory[]>([
-    {
-      _id: "1",
-      name: "SubCategory 1",
-      image: "https://via.placeholder.com/60",
-      category: [{ _id: "c1", name: "Category 1" }],
-    },
-  ]);
-
-  const categories: Category[] = [
-    { _id: "c1", name: "Category 1" },
-    { _id: "c2", name: "Category 2" },
-    { _id: "c3", name: "Category 3" },
-  ];
-
-  const [showPopup, setShowPopup] = useState(false);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
   const [editingSub, setEditingSub] = useState<SubCategory | null>(null);
   const [deleteSub, setDeleteSub] = useState<SubCategory | null>(null);
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const hasLoaded = useRef(false);
 
-  // Open add popup
+  // Load subcategories
+  const getSubCategoriesMutation = useMutation<SubCategory[], any>({
+    mutationFn: getSubCategoriesApi,
+    onSuccess: (data) => {
+      setSubCategories(data);
+    },
+    onError: () => toast.error("Failed to load subcategories"),
+  });
+
+  // Load categories
+  const getCategoriesMutation = useMutation<Category[], any>({
+    mutationFn: getCategoriesApi,
+    onSuccess: (data) => {
+      setCategories(data);
+    },
+    onError: () => toast.error("Failed to load categories"),
+  });
+
+  // Delete subcategory
+  const deleteSubCategoryMutation = useMutation<void, any, string>({
+    mutationFn: deleteSubCategoryApi,
+    onSuccess: () => toast.success("SubCategory deleted successfully"),
+    onError: (err: any) => {
+      toast.error(
+        err?.response?.data?.message ||
+          err.message ||
+          "Failed to delete subcategory"
+      );
+    },
+  });
+
+  useEffect(() => {
+    if (!hasLoaded.current) {
+      hasLoaded.current = true;
+      getSubCategoriesMutation.mutate();
+      getCategoriesMutation.mutate();
+    }
+  }, []);
+
+  // Handlers
   const handleAddClick = () => {
-    setEditingSub(null);
-    setShowPopup(true);
+    setShowAddPopup(true);
   };
 
-  // Open edit popup
   const handleEdit = (sub: SubCategory) => {
     setEditingSub(sub);
-    setShowPopup(true);
+    setShowEditPopup(true);
   };
 
-  // Open delete popup
   const handleDelete = (sub: SubCategory) => {
     setDeleteSub(sub);
   };
 
-  // Confirm delete
   const confirmDelete = () => {
-    if (deleteSub) {
-      setSubCategories((prev) => prev.filter((s) => s._id !== deleteSub._id));
-      setDeleteSub(null);
-    }
+    if (!deleteSub) return;
+    setSubCategories((prev) => prev.filter((s) => s._id !== deleteSub._id));
+    deleteSubCategoryMutation.mutate(deleteSub._id);
+    setDeleteSub(null);
   };
 
-  // Cancel delete
   const cancelDelete = () => {
     setDeleteSub(null);
   };
 
-  // Add or update subcategory
-  const handleSaveSubCategory = (sub: SubCategory) => {
-    setSubCategories((prev) => {
-      const existIndex = prev.findIndex((s) => s._id === sub._id);
-      if (existIndex > -1) {
-        const newArr = [...prev];
-        newArr[existIndex] = sub;
-        return newArr;
-      }
-      return [...prev, sub];
-    });
-    setShowPopup(false);
+  const handleAddSubCategory = (subCat: SubCategory) => {
+    setSubCategories((prev) => [...prev, subCat]);
+    setShowAddPopup(false);
   };
+
+  const handleEditSubCategory = (subCat: SubCategory) => {
+    setSubCategories((prev) =>
+      prev.map((s) => (s._id === subCat._id ? subCat : s))
+    );
+    setShowEditPopup(false);
+    setEditingSub(null);
+  };
+
+  // Filter subcategories
+  const filteredSubCategories = subCategories.filter((sub) => {
+    const matchesSearch = sub.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = categoryFilter === "All" || 
+      sub.category.some(cat => cat._id === categoryFilter);
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="space-y-6">
@@ -97,6 +137,8 @@ const AdminSubCategory = () => {
                 <input
                   type="text"
                   placeholder="Search subcategories..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                   className="pl-10 pr-4 py-2.5 w-64 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 transition-colors text-sm bg-white shadow-sm h-[42px]"
                 />
               </div>
@@ -105,7 +147,11 @@ const AdminSubCategory = () => {
             {/* Category Filter */}
             <div className="flex flex-col gap-2">
               <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Filter by Parent</label>
-              <select className="min-w-[150px] border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 transition-colors bg-white shadow-sm h-[42px]">
+              <select 
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="min-w-[150px] border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 transition-colors bg-white shadow-sm h-[42px]"
+              >
                 <option value="All">All Categories</option>
                 {categories.map(cat => (
                   <option key={cat._id} value={cat._id}>{cat.name}</option>
@@ -141,8 +187,8 @@ const AdminSubCategory = () => {
                 <th className="p-4 text-center font-semibold text-slate-700">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
-              {subCategories.map((sub, idx) => (
+            <tbody className="divide-y divide-slash-100">
+              {filteredSubCategories.map((sub, idx) => (
                 <tr
                   key={sub._id}
                   className="hover:bg-slate-50 transition-all duration-200 group"
@@ -153,9 +199,9 @@ const AdminSubCategory = () => {
                   <td className="p-4">
                     <div className="flex items-center gap-4">
                       <div className="relative">
-                        {sub.image ? (
+                        {sub.image?.url ? (
                           <img
-                            src={sub.image}
+                            src={sub.image.url}
                             alt={sub.name}
                             className="w-16 h-16 object-cover rounded-xl border-2 border-white shadow-lg"
                           />
@@ -170,7 +216,6 @@ const AdminSubCategory = () => {
                       </div>
                       <div>
                         <h3 className="font-bold text-slate-800 text-lg">{sub.name}</h3>
-                        <p className="text-sm text-slate-500">SubCategory ID: {sub._id}</p>
                       </div>
                     </div>
                   </td>
@@ -194,16 +239,13 @@ const AdminSubCategory = () => {
                   </td>
                   <td className="p-4">
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                          ✓ Active
-                        </span>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                          SubCategory
+                      <div className="flex flex-col gap-1">
+                        <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 font-mono">
+                          ID: #{sub._id}
                         </span>
                       </div>
                       <p className="text-xs text-slate-500">
-                        Created: {new Date().toLocaleDateString("en-US")}
+                        Created: {sub.createdAt ? new Date(sub.createdAt).toLocaleDateString("en-US") : "N/A"}
                       </p>
                     </div>
                   </td>
@@ -233,7 +275,7 @@ const AdminSubCategory = () => {
       </div>
 
       {/* EMPTY STATE */}
-      {subCategories.length === 0 && (
+      {filteredSubCategories.length === 0 && (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
           <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <FolderTree className="text-slate-400" size={32} />
@@ -251,44 +293,75 @@ const AdminSubCategory = () => {
       )}
 
       {/* POPUPS */}
-      {showPopup && (
-        <SubCategoryPopup
+      {showAddPopup && (
+        <AddSubCategoryPopup
           categories={categories}
-          initialData={editingSub}
-          onClose={() => setShowPopup(false)}
-          onSubmit={handleSaveSubCategory}
+          onClose={() => setShowAddPopup(false)}
+          onSubmit={handleAddSubCategory}
         />
       )}
 
-      {/* Modern Delete Confirmation Popup */}
+      {showEditPopup && editingSub && (
+        <EditSubCategoryPopup
+          categories={categories}
+          subCategory={editingSub}
+          onClose={() => setShowEditPopup(false)}
+          onSubmit={handleEditSubCategory}
+        />
+      )}
+
+      {/* Delete Confirmation Popup */}
       {deleteSub && (
         <div
           onClick={cancelDelete}
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-2xl shadow-2xl p-8 w-[480px] max-w-[90%] flex flex-col relative border border-slate-200"
+            className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 w-[480px] max-w-full flex flex-col relative transform transition-all duration-200 scale-100"
           >
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Trash2 className="text-red-500" size={24} />
+            <button
+              onClick={cancelDelete}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <X size={18} />
+            </button>
+            
+            <div className="mb-8">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-red-500 text-2xl">⚠️</span>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-2 text-center">Delete SubCategory</h3>
+              <p className="text-slate-600 text-center">
+                Are you sure you want to delete this subcategory?
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-slate-800 text-center mb-2">Delete SubCategory</h3>
-            <p className="text-slate-600 text-center mb-8">
-              Are you sure you want to delete <strong>"{deleteSub.name}"</strong>? This action cannot be undone.
-            </p>
-            <div className="flex justify-center gap-4">
+            
+            <div className="bg-slate-50 rounded-xl p-4 mb-6">
+              <div className="text-center">
+                <p className="text-slate-500 text-sm mb-1">SubCategory Name</p>
+                <p className="font-semibold text-slate-800 text-lg">"{deleteSub.name}"</p>
+              </div>
+            </div>
+            
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+              <p className="text-amber-800 text-sm">
+                <strong>Warning:</strong> This action cannot be undone. All products in this subcategory will need to be reassigned.
+              </p>
+            </div>
+            
+            <div className="flex justify-center gap-3 pt-4 border-t border-slate-100">
               <button
                 onClick={cancelDelete}
-                className="px-6 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors font-medium text-slate-700"
+                className="px-6 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 hover:border-slate-400 transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-6 py-2.5 rounded-xl bg-red-500 text-white hover:bg-red-600 hover:shadow-lg transition-all duration-200 font-medium"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium min-w-[100px]"
               >
-                Delete SubCategory
+                Delete
               </button>
             </div>
           </div>

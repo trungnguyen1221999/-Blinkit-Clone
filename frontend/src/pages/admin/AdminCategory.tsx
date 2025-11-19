@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Edit, Trash2, Plus, Search, FolderOpen } from "lucide-react";
 import type { Category } from "../../components/category/AddCategoryPopup";
 import AddCategoryPopup from "../../components/category/AddCategoryPopup";
@@ -19,13 +19,13 @@ const AdminCategory = () => {
   const [editingCat, setEditingCat] = useState<Category | null>(null);
   const [deleteCat, setDeleteCat] = useState<Category | null>(null);
   const [search, setSearch] = useState("");
+  const hasLoaded = useRef(false);
 
   // Load categories
   const getCategoriesMutation = useMutation<Category[], any>({
     mutationFn: getCategoriesApi,
     onSuccess: (data) => {
       setCategories(data);
-      toast.success("Categories loaded successfully");
     },
     onError: () => toast.error("Failed to load categories"),
   });
@@ -73,7 +73,10 @@ const AdminCategory = () => {
   });
 
   useEffect(() => {
-    getCategoriesMutation.mutate();
+    if (!hasLoaded.current) {
+      hasLoaded.current = true;
+      getCategoriesMutation.mutate();
+    }
   }, []);
 
   const handleAddCategory = (cat: Category) => {
@@ -131,10 +134,7 @@ const AdminCategory = () => {
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                 Total Categories: <strong className="text-slate-700">{categories.length}</strong>
               </span>
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                Active: <strong className="text-slate-700">{categories.length}</strong>
-              </span>
+            
             </div>
           </div>
           
@@ -177,7 +177,7 @@ const AdminCategory = () => {
               <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
                 <th className="p-4 text-center font-semibold text-slate-700 w-16">#</th>
                 <th className="p-4 text-left font-semibold text-slate-700">Category</th>
-                <th className="p-4 text-left font-semibold text-slate-700">Name</th>
+                <th className="p-4 text-left font-semibold text-slate-700">Id</th>
                 <th className="p-4 text-center font-semibold text-slate-700">Actions</th>
               </tr>
             </thead>
@@ -202,13 +202,12 @@ const AdminCategory = () => {
                         </div>
                         <div>
                           <p className="font-semibold text-slate-800">{cat.name}</p>
-                          <p className="text-xs text-slate-500">Category ID: #{cat._id}</p>
                         </div>
                       </div>
                     </td>
                     <td className="p-4">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200">
-                        {cat.name}
+                        #{cat._id}
                       </span>
                     </td>
                     <td className="p-4">
