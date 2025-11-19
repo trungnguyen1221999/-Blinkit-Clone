@@ -4,11 +4,15 @@ const productSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, "Product name is required"],
+      trim: true,
+      unique: true,
     },
-    image: {
-      type: Array,
-      default: [],
-    },
+    images: [
+      {
+        url: { type: String, default: "" }, // link ảnh Cloudinary
+        public_id: { type: String, default: "" }, // dùng để xoá ảnh
+      }
+    ],
     category: [
       {
         type: mongoose.Schema.Types.ObjectId,

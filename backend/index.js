@@ -9,6 +9,7 @@ import { connectDB } from "./database/mongobd.js";
 import userRouter from "./routers/userRouter.js";
 import routerCategory from "./routers/categoryRoutes.js";
 import routerSubCategory from "./routers/subCategoryRoutes.js";
+import productRouter from "./routers/productRouter.js";
 
 // Load environment variables
 dotenv.config();
@@ -45,6 +46,7 @@ app.get("/", (req, res) => {
 app.use("/api/user", userRouter); // User routes
 app.use("/api/category", routerCategory); // Category routes
 app.use("/api/subcategory", routerSubCategory); // SubCategory routes
+app.use("/api/product", productRouter); // Product routes
 // Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);

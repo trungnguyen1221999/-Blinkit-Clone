@@ -23,11 +23,11 @@ const DeletePopup: React.FC<DeletePopupProps> = ({
   return (
     <div
       onClick={onCancel}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto border border-slate-200 animate-in slide-in-from-bottom-4 duration-300"
+        className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto animate-in slide-in-from-bottom-4 duration-300"
       >
         {/* Icon */}
         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">

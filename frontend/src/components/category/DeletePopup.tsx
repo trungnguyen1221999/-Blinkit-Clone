@@ -10,11 +10,11 @@ const DeletePopup = ({ itemName, onCancel, onConfirm }: DeletePopupProps) => {
   return (
     <div
       onClick={onCancel}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 w-[480px] max-w-full flex flex-col relative transform transition-all duration-200 scale-100"
+        className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 w-[480px] max-w-full flex flex-col relative transform transition-all duration-200 scale-100"
       >
         <button
           onClick={onCancel}

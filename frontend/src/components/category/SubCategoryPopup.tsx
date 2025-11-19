@@ -90,11 +90,11 @@ const SubCategoryPopup = ({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-lg shadow-lg p-8 w-[500px] max-w-[90%] flex flex-col relative"
+        className="bg-white/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-lg p-8 w-[500px] max-w-[90%] flex flex-col relative"
       >
         <button
           onClick={onClose}

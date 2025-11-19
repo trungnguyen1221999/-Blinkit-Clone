@@ -8,7 +8,7 @@ interface ImagePreviewPopupProps {
 const ImagePreviewPopup = ({ src, onClose }: ImagePreviewPopupProps) => (
   <div
     onClick={onClose}
-    className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+    className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
   >
     <div onClick={(e) => e.stopPropagation()} className="relative">
       <button
