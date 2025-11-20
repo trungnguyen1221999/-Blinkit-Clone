@@ -202,8 +202,8 @@ const ProductDropdown = ({ mobile = false }: ProductDropdownProps) => {
         onMouseEnter={() => setIsOpen(true)}
         className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-slate-700 hover:text-primary-600 hover:bg-slate-50 rounded-lg transition-all duration-200 group"
       >
-        <Package size={18} className="group-hover:text-primary-600" />
-        <span>Products</span>
+        <Package size={20} className="group-hover:text-primary-600" />
+        <span className='text-lg'>Shop by Category</span>
         <ChevronDown 
           size={16} 
           className={`transition-transform duration-200 ${

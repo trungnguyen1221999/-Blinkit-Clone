@@ -1,5 +1,6 @@
 
 import HeroSection from '../components/HeroSection';
+import SaleOffGrid from '../components/SaleOffGrid';
 import SubCategorySlideshow from '../components/SubCategorySlideshow';
 import CategorySlideshow from '../components/CategorySlideshow';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +16,8 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       <HeroSection />
-      
+      {/* Sale Off Grid */}
+      <SaleOffGrid />
       {/* SubCategory Slideshow */}
       <SubCategorySlideshow />
       
