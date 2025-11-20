@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import * as LucideIcons from 'lucide-react';
 import { ChevronLeft, ChevronRight, ShoppingCart, Star, Package } from 'lucide-react';
+import { customCategoryData } from '../data/customCategoryData';
 import { useQuery } from '@tanstack/react-query';
 import { getProductsByCategoryApi } from '../api/adminApi/productApi';
 import { Link } from 'react-router-dom';
@@ -225,10 +227,13 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
     );
   }
 
+  // Find custom data for this category
+  const custom = customCategoryData.find((c) => c._id === category._id);
+
   return (
     <div className="w-full">
-      {/* Hero Section - Square Flex Layout */}
-      <div className="bg-white rounded-t-3xl overflow-hidden">
+      {/* Hero Section - Unique per category */}
+      <div className={`${custom?.bgColor || 'bg-white'} rounded-t-3xl overflow-hidden`}>
         <div className={`flex flex-col items-center min-h-[500px] gap-6 md:gap-12 p-6 md:p-12 ${layout === 'desc-first' ? 'md:flex-row-reverse' : 'md:flex-row'}`}>
           {/* Image Side */}
           <div className="flex-1 flex justify-center items-center">
@@ -244,14 +249,27 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
               />
             </div>
           </div>
-          
           {/* Content Side */}
           <div className="flex-1 flex justify-center items-center">
             <div className="max-w-xl text-center md:text-left">
-
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-800 leading-tight mb-2">{category.name}</h1>
+              <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                {custom?.icon && (
+                  <span
+                    className={`inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full shadow-xl ring-2 ring-primary-200/60 mb-1 ${custom.bgColor || 'bg-primary-100'}`}
+                    style={{
+                      background: custom.bgColor?.includes('gradient') ? undefined : undefined,
+                    }}
+                  >
+                    {custom.icon && typeof custom.icon === 'function' && (
+                      // @ts-ignore
+                      <custom.icon size={38} strokeWidth={2.2} className="text-primary-600 drop-shadow-[0_2px_8px_rgba(0,0,0,0.18)]" style={{ filter: 'drop-shadow(0 0 6px rgba(0,0,0,0.10))' }} />
+                    )}
+                  </span>
+                )}
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-800 leading-tight">{custom?.title || category.name}</h1>
+              </div>
               <p className="text-lg text-slate-600 mb-4 leading-relaxed">
-                Discover premium quality products in our {category.name.toLowerCase()} collection. Shop with confidence!
+                {custom?.desc || `Discover premium quality products in our ${category.name.toLowerCase()} collection. Shop with confidence!`}
               </p>
               <div className="flex flex-wrap gap-3 mb-8 justify-center md:justify-start">
                 <span className="inline-flex items-center gap-2 bg-linear-to-r from-primary-100 via-primary-50 to-white text-primary-700 text-sm font-bold px-4 py-1.5 rounded-2xl shadow-lg border border-primary-200/30 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
@@ -263,7 +281,6 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
                   <span className="tracking-wide">100% Authentic</span>
                 </span>
               </div>
-
             </div>
           </div>
         </div>
