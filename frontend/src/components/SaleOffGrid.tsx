@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { getAllProductsApi } from '../api/adminApi/productApi';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Percent } from 'lucide-react';
+import {Percent } from 'lucide-react';
 import { useMemo } from 'react';
+import ProductCard from './ProductCard';
 
 interface Product {
   _id: string;
@@ -82,61 +83,9 @@ const SaleOffGrid = () => {
         </div>
         {/* Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {saleProducts.slice(0, 12).map((product) => {
-            const originalPrice = product.price;
-            const discount = typeof product.discount === 'number' ? product.discount : 0;
-            const discountedPrice = originalPrice * (1 - discount / 100);
-            return (
-              <Link
-                key={product._id}
-                to={`/product/${product._id}`}
-                className="group block h-full"
-              >
-                <div className="relative bg-white rounded-xl p-2 shadow-md hover:shadow-xl transition-all duration-300 transform group-hover:scale-105 overflow-hidden h-full flex flex-col border-2 border-primary-100 hover:border-primary-300">
-                  {/* Discount Badge */}
-                  <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-lg animate-bounce">
-                    -{discount}%
-                  </div>
-                  {/* Image */}
-                  <div className="relative mb-2 flex items-center justify-center overflow-hidden rounded-md bg-primary-50 min-h-[120px]" style={{ height: '140px' }}>
-                    <img
-                      src={product.images?.[0]?.url || '/images/placeholder-product.jpg'}
-                      alt={product.name}
-                      className="max-h-[120px] w-auto h-auto object-contain mx-auto group-hover:scale-110 transition-transform duration-500"
-                      style={{ maxHeight: '120px', width: 'auto', height: 'auto' }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop&crop=center';
-                      }}
-                    />
-                  </div>
-                  {/* Content */}
-                  <div className="text-center grow flex flex-col justify-between">
-                    <div>
-                      <h3 className="font-semibold text-slate-800 text-xs group-hover:text-primary-200 transition-colors duration-300 line-clamp-1 mb-1">
-                        {product.name}
-                      </h3>
-                      <p className="text-xs text-slate-500 mb-1 line-clamp-1">
-                        {product.unit}
-                      </p>
-                    </div>
-                    {/* Price */}
-                    <div className="mb-1">
-                      <span className="text-sm font-bold text-primary-200">
-                        ${discountedPrice.toFixed(2)}
-                      </span>
-                      <span className="text-xs text-slate-400 line-through ml-1">
-                        ${originalPrice.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="inline-flex items-center justify-center bg-primary-100 text-primary-700 px-2 py-1 rounded-full text-xs font-semibold mt-1">
-                      <span>Add to Cart</span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {saleProducts.slice(0, 12).map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
         </div>
       </div>
     </section>

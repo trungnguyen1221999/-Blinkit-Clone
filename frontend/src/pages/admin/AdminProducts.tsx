@@ -197,7 +197,7 @@ const AdminProducts = () => {
               </span>
               <span className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                Low Stock: <strong className="text-slate-700">{products.filter((p: any) => p.stock < 10).length}</strong>
+                Low Stock: <strong className="text-slate-700">{products.filter((p: any) => p.stock < 20).length}</strong>
               </span>
             </div>
           </div>

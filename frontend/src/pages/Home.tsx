@@ -61,12 +61,7 @@ const Home = () => {
         </section>
       )}
       
-      {/* Additional sections */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-slate-500">More amazing sections coming soon...</p>
-        </div>
-      </section>
+     
     </div>
   );
 };

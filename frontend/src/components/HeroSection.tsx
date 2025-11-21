@@ -40,18 +40,7 @@ const HeroSection = () => {
               Quality guaranteed, prices you'll love.
             </p>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="group bg-primary-200 hover:bg-primary-300 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-3">
-                <ShoppingCart size={24} className="group-hover:scale-110 transition-transform" />
-                <span>Start Shopping</span>
-              </button>
-              
-              <button className="group bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 hover:border-primary-200 px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-3">
-                <Truck size={24} className="text-primary-200 group-hover:scale-110 transition-transform" />
-                <span>How it Works</span>
-              </button>
-            </div>
+       
 
             {/* Features Row */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8">

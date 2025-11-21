@@ -27,6 +27,8 @@ import CategoryPage from "./pages/CategoryPage";
 import SubCategoryPage from "./pages/SubCategoryPage";
 import ProductsPage from "./pages/ProductsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SaleOffPageDetail from "./pages/SaleOffPageDetail";
+import ProductDetailPage from "./pages/ProductDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -225,6 +227,22 @@ const router = createBrowserRouter([
               <AdminSubCategory />
             </AdminLayout>
           </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/sale-off",
+        element: (
+          <>
+            <Header /> <SaleOffPageDetail /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/product/:id",
+        element: (
+          <>
+            <Header /> <ProductDetailPage /> <Footer />
+          </>
         ),
       },
     ],

@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import * as LucideIcons from 'lucide-react';
 import { ChevronLeft, ChevronRight, ShoppingCart, Star, Package } from 'lucide-react';
 import { customCategoryData } from '../data/customCategoryData';
 import { useQuery } from '@tanstack/react-query';
 import { getProductsByCategoryApi } from '../api/adminApi/productApi';
 import { Link } from 'react-router-dom';
+import ProductCard from "./ProductCard";
 
 interface Product {
   _id: string;
@@ -77,14 +77,13 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
   const [slidesToShow, setSlidesToShow] = useState(getSlidesToShow());
   
   // Update slides to show on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setSlidesToShow(getSlidesToShow());
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+ useEffect(() => {
+  const handleResize = () => {
+    setSlidesToShow(getSlidesToShow());
+  };
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
   
   // Calculate total pages needed
   const totalSlides = Math.ceil(publishedProducts.length / slidesToShow);
@@ -229,6 +228,7 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
 
   // Find custom data for this category
   const custom = customCategoryData.find((c) => c._id === category._id);
+  console.log('CategorySlideshow debug:', { categoryId: category._id, custom });
 
   return (
     <div className="w-full">
@@ -260,10 +260,16 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
                       background: custom.bgColor?.includes('gradient') ? undefined : undefined,
                     }}
                   >
-                    {custom.icon && typeof custom.icon === 'function' && (
-                      // @ts-ignore
-                      <custom.icon size={38} strokeWidth={2.2} className="text-primary-600 drop-shadow-[0_2px_8px_rgba(0,0,0,0.18)]" style={{ filter: 'drop-shadow(0 0 6px rgba(0,0,0,0.10))' }} />
-                    )}
+                    {custom?.icon && (
+  <span
+    className={`inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full shadow-xl ring-2 ring-primary-200/60 mb-1 ${custom.bgColor || 'bg-primary-100'}`}
+    style={{
+      background: custom.bgColor?.includes('gradient') ? undefined : undefined,
+    }}
+  >
+    <custom.icon size={38} strokeWidth={2.2} className="text-primary-600 drop-shadow-[0_2px_8px_rgba(0,0,0,0.18)]" style={{ filter: 'drop-shadow(0 0 6px rgba(0,0,0,0.10))' }} />
+  </span>
+)}
                   </span>
                 )}
                 <h1 className="text-2xl md:text-3xl font-bold text-slate-800 leading-tight">{custom?.title || category.name}</h1>
@@ -278,8 +284,7 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
                 </span>
                 <span className="inline-flex items-center gap-2 bg-linear-to-r from-green-200 via-green-50 to-white text-green-800 text-sm font-bold px-4 py-1.5 rounded-2xl shadow-lg border border-green-200/30 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
                   <Star size={18} className="text-green-500 drop-shadow-sm" />
-                  <span className="tracking-wide">100% Authentic</span>
-                </span>
+<span className="tracking-wide">{custom?.authenticityLabel || "100% Authentic"}</span>                </span>
               </div>
             </div>
           </div>
@@ -323,88 +328,15 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
                       slidesToShow === 4 ? 'grid-cols-4 pt-5' :
                       'grid-cols-6'
                     }`}>
-                      {pageItems.map((product) => {
-                        const originalPrice = product.price;
-                        // Only show discount if discount is a number and > 0
-                        const discount = typeof product.discount === 'number' ? product.discount : 0;
-                        const hasDiscount = discount > 0;
-                        const discountedPrice = hasDiscount ? originalPrice * (1 - discount / 100) : originalPrice;
-                        
-                        return (
-                          <Link 
-                            key={product._id}
-                            to={`/product/${product._id}`}
-                            className="group block h-full"
-                          >
-                            <div className="relative bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-all duration-300 transform group-hover:scale-105 overflow-hidden h-full flex flex-col">
-                              {/* Background Gradient */}
-                              <div className="absolute inset-0 bg-linear-to-br from-primary-200/5 to-primary-100/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                              
-                              {/* Discount Badge */}
-                              {hasDiscount && (
-                                <div className="absolute top-1 left-1 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full z-10">
-                                  -{product.discount}%
-                                </div>
-                              )}
-                              
-                              {/* Image Container */}
-                                <div className="relative mb-2 flex items-center justify-center overflow-hidden rounded-md bg-linear-to-br from-primary-50 to-primary-25 shrink-0 min-h-[120px]" style={{height:'140px'}}>
-                                <img
-                                  src={product.images?.[0]?.url || "/images/placeholder-product.jpg"}
-                                  alt={product.name}
-                                  className="max-h-[120px] w-auto h-auto object-contain mx-auto group-hover:scale-105 transition-transform duration-500"
-                                  style={{maxHeight:'120px', width:'auto', height:'auto'}}
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.src = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop&crop=center";
-                                  }}
-                                />
-                                
-                                {/* Hover Overlay */}
-                                <div className="absolute inset-2 bg-primary-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
-                                  <div className="bg-white shadow-lg rounded-full p-2 transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                                    <ShoppingCart size={16} className="text-primary-200" />
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Content */}
-                              <div className="text-center grow flex flex-col justify-between">
-                                <div>
-                                  <h3 className="font-semibold text-slate-800 text-xs group-hover:text-primary-200 transition-colors duration-300 line-clamp-1 mb-1">
-                                    {product.name}
-                                  </h3>
-                                  <p className="text-xs text-slate-500 mb-1 line-clamp-1">
-                                    {product.unit}
-                                  </p>
-                                </div>
-                                
-                                {/* Price */}
-                                <div className="mb-1">
-                                  {hasDiscount ? (
-                                    <div className="flex items-center justify-center gap-1">
-                                      <span className="text-sm font-bold text-primary-200">
-                                        ${discountedPrice.toFixed(2)}
-                                      </span>
-                                      <span className="text-xs text-slate-400 line-through">
-                                        ${originalPrice.toFixed(2)}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <span className="text-sm font-bold text-primary-200">
-                                      ${originalPrice.toFixed(2)}
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                <div className="inline-flex items-center justify-center bg-primary-200/10 text-black px-2 py-1 rounded-full text-xs font-semibold">
-                                  <span>Add to Cart</span>
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                        );
-                      })}
+                   {pageItems.map((product) => {
+  return (
+    <ProductCard
+      key={product._id}
+      product={product}
+      onAddToCart={() => console.log('Add to cart', product)}
+    />
+  );
+})}
                     </div>
                   );
                 })}
