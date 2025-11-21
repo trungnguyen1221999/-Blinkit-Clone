@@ -30,12 +30,21 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SaleOffPageDetail from "./pages/SaleOffPageDetail";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import AllSubCategoriesPage from "./pages/AllSubCategoriesPage";
+import CartPage from "./pages/CartPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "/cart",
+        element: (
+          <>
+            <Header /> <CartPage /> <Footer />
+          </>
+        ),
+      },
       {
         path: "",
         element: (

@@ -1,4 +1,5 @@
 import { Github, Heart } from "lucide-react";
+import Logo from "./Logo";
 
 const Footer = () => {
   return (
@@ -8,7 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Company Info */}
           <div className="md:col-span-2">
-            <h3 className="text-xl font-bold text-slate-800 mb-4">Blinkit</h3>
+            <h3 className="text-xl font-bold text-slate-800 mb-4"><Logo className="text-2xl" /></h3>
             <p className="text-slate-600 mb-4 max-w-md">
               Your one-stop shop for fresh groceries, daily essentials, and more. 
               Fast delivery, quality products, and unbeatable prices.

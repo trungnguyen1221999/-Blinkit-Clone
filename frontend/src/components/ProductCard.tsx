@@ -1,4 +1,8 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
+import { addToCartApi } from "../api/cartApi";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCartDrawer } from "./CartDrawerContext";
 
 // Helper: slugify string (safe)
 function slugify(str: any) {
@@ -31,9 +35,12 @@ interface ProductCardProps {
   onAddToCart?: (product: any) => void;
 }
 
-const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
+const ProductCard = ({ product }: ProductCardProps) => {
   const discount = typeof product.discount === 'number' ? product.discount : 0;
   const discountedPrice = product.price * (1 - discount / 100);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { openDrawer } = useCartDrawer();
 
   // Build SEO url (safe)
   const category = product.category && product.category[0] ? getCategoryName(product.category[0]) : 'unknown';
@@ -41,6 +48,26 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
   const nameSlug = slugify(product.name);
   const slug = `${nameSlug}-${product._id}`;
   const productUrl = `/products/${category}/${subcategory}/${slug}`;
+
+  const handleAddToCart = async () => {
+    let guestId = localStorage.getItem('guestId');
+    if (!guestId) {
+      guestId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem('guestId', guestId);
+    }
+    try {
+      if (user && user._id) {
+        await addToCartApi({ productId: product._id, quantity: 1, userId: user._id });
+      } else {
+        await addToCartApi({ productId: product._id, quantity: 1, guestId });
+      }
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      openDrawer();
+    } catch (err) {
+      // Optionally handle error
+      console.error('Add to cart failed', err);
+    }
+  };
 
   return (
     <div className="block bg-white rounded-lg shadow p-4 hover:shadow-lg flex flex-col relative">
@@ -85,7 +112,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
       </div>
       <button
         className="mt-auto px-3 py-1.5 bg-primary-100 text-primary-700 rounded hover:bg-primary-200 text-sm font-semibold transition-all"
-        onClick={() => onAddToCart ? onAddToCart(product) : console.log('Add to cart', product)}
+        onClick={handleAddToCart}
       >
         Add to Cart
       </button>

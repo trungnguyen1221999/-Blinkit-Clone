@@ -5,6 +5,11 @@ import { BadgePercent, Globe, Barcode, Info, Layers, ChevronDown, ChevronUp, Boo
 import { useState, useEffect } from 'react';
 import AddToCart from '../components/AddToCart';
 import ProductCard from '../components/ProductCard';
+import { useAuth } from "../Context/AuthContext";
+import { addToCartApi } from "../api/cartApi";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCartDrawer } from "../components/CartDrawerContext";
+import { useNavigate } from "react-router-dom";
 
 interface Product {
   _id: string;
@@ -56,6 +61,10 @@ const ProductDetailPage = () => {
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [mainImgIdx, setMainImgIdx] = useState(0);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { openDrawer } = useCartDrawer();
+  const navigate = useNavigate();
 
   // Fetch related products by category
   useEffect(() => {
@@ -191,7 +200,46 @@ const ProductDetailPage = () => {
                 )}
               </div>
             </div>
-            <AddToCart product={product} />
+            <AddToCart
+              product={product}
+              onAddToCart={async (product, quantity) => {
+                let guestId = localStorage.getItem('guestId');
+                if (!guestId) {
+                  guestId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+                  localStorage.setItem('guestId', guestId);
+                }
+                try {
+                  if (user && user._id) {
+                    await addToCartApi({ productId: product._id, quantity, userId: user._id });
+                  } else {
+                    await addToCartApi({ productId: product._id, quantity, guestId });
+                  }
+                  queryClient.invalidateQueries({ queryKey: ["cart"] });
+                  openDrawer();
+                } catch (err) {
+                  console.error('Add to cart failed', err);
+                }
+              }}
+              onBuyNow={async (product, quantity) => {
+                let guestId = localStorage.getItem('guestId');
+                if (!guestId) {
+                  guestId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+                  localStorage.setItem('guestId', guestId);
+                }
+                try {
+                  if (user && user._id) {
+                    await addToCartApi({ productId: product._id, quantity, userId: user._id });
+                  } else {
+                    await addToCartApi({ productId: product._id, quantity, guestId });
+                  }
+                  queryClient.invalidateQueries({ queryKey: ["cart"] });
+                  // Chuyển sang CartPage và truyền state để chọn sẵn sản phẩm này
+                  navigate("/cart", { state: { buyNowId: product._id } });
+                } catch (err) {
+                  console.error('Buy now failed', err);
+                }
+              }}
+            />
           </div>
         </div>
         {/* Description + More Details full width, but inside container */}

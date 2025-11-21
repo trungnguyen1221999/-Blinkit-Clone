@@ -1,5 +1,5 @@
-import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
+import Logo from "./Logo";
 
 const LoginHeader = () => {
   return (
@@ -9,11 +9,9 @@ const LoginHeader = () => {
           to="/" 
           className="hover:scale-105 transition-transform duration-200 group"
         >
-          <img 
-            src={logo} 
-            alt="Blinkit Logo" 
-            className="h-10 md:h-12 group-hover:brightness-110 transition-all duration-200" 
-          />
+          <span className="text-3xl md:text-4xl">
+            <Logo />
+          </span>
         </Link>
       </div>
     </header>

@@ -7,6 +7,7 @@ import ProductCard from './ProductCard';
 import { addToCartApi } from '../api/cartApi';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCartDrawer } from "./CartDrawerContext";
+import { useAuth } from "../Context/AuthContext";
 
 interface Product {
   _id: string;
@@ -24,6 +25,7 @@ interface Product {
 const SaleOffGrid = () => {
   const queryClient = useQueryClient();
   const { openDrawer } = useCartDrawer();
+  const { user } = useAuth();
 
   // Fetch all products
   const { data: products = [], isLoading } = useQuery({
@@ -46,18 +48,19 @@ const SaleOffGrid = () => {
   );
 
   const handleAddToCart = async (product: Product) => {
-    // Use guestId from localStorage or generate one if not present
     let guestId = localStorage.getItem('guestId');
     if (!guestId) {
-      guestId =
-        Math.random().toString(36).substring(2) +
-        Date.now().toString(36);
+      guestId = Math.random().toString(36).substring(2) + Date.now().toString(36);
       localStorage.setItem('guestId', guestId);
     }
     try {
-      await addToCartApi({ productId: product._id, quantity: 1, guestId });
+      if (user && user._id) {
+        await addToCartApi({ productId: product._id, quantity: 1, userId: user._id });
+      } else {
+        await addToCartApi({ productId: product._id, quantity: 1, guestId });
+      }
       queryClient.invalidateQueries({ queryKey: ["cart"] });
-      openDrawer(); // Mở CartDrawer khi add to cart thành công
+      openDrawer();
     } catch (err) {
       // Optionally handle error
       console.error('Add to cart failed', err);

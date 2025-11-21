@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png";
-import logoMobo from "../assets/logo_mobile.png";
+import Logo from "./Logo";
 import Search from "./Search";
 import Login from "./Login";
 import Cart from "./Cart";
@@ -12,17 +11,13 @@ const Header = () => {
       <div className="container mx-auto px-2 md:px-6 flex items-center justify-between h-16 md:h-20">
         {/* Left: Logo */}
         <div className="flex items-center gap-2 md:gap-4 min-w-[48px]">
-          <Link to="/" className="flex items-center">
-            <img
-              src={logo}
-              alt="Blinkit Logo"
-              className="hidden sm:block w-24 md:w-32 h-auto object-contain"
-            />
-            <img
-              src={logoMobo}
-              alt="Blinkit Mobile Logo"
-              className="block sm:hidden w-10 h-10 object-contain"
-            />
+          <Link to="/" className="flex items-center select-none">
+            <span className="hidden sm:block text-3xl md:text-4xl">
+              <Logo />
+            </span>
+            <span className="block sm:hidden text-2xl">
+              <Logo />
+            </span>
           </Link>
         </div>
 

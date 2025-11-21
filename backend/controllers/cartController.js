@@ -27,8 +27,11 @@ export const getCart = async (req, res) => {
     const { userId, guestId } = req.query;
     const ownerId = userId || guestId;
     if (!ownerId) return res.status(400).json({ message: 'Thiếu user/guest id' });
-    // Không dùng populate để loại trừ lỗi populate
-    const cart = await CartProductModels.find({ userId: ownerId });
+    // Sử dụng populate để trả về đầy đủ thông tin sản phẩm trong giỏ hàng
+    const cart = await CartProductModels.find({ userId: ownerId }).populate({
+      path: 'productId',
+      select: 'name images price discount unit',
+    });
     res.status(200).json(cart);
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy giỏ hàng', error: err.message });
