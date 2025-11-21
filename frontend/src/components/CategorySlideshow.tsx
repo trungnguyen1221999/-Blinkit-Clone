@@ -228,7 +228,6 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
 
   // Find custom data for this category
   const custom = customCategoryData.find((c) => c._id === category._id);
-  console.log('CategorySlideshow debug:', { categoryId: category._id, custom });
 
   return (
     <div className="w-full">
@@ -294,13 +293,13 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
       {/* Slideshow Section - Overlap on desktop/tablet only */}
       <div className="bg-white rounded-b-3xl md:-mt-16 md:relative md:z-10">
         <div className="pb-6 relative">
-          <Link
-            to={`/category/${category._id}`}
-            className="absolute top-0 right-4 z-20 inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-700 shadow hover:bg-primary-200 hover:text-primary-900 transition-all duration-200 border border-primary-200/40"
-            tabIndex={-1}
-          >
-            View More
-          </Link>
+         <Link
+  to={`/category/${slugify(category.name)}-${category._id}`}
+  className="absolute top-0 right-4 z-20 inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-700 shadow hover:bg-primary-200 hover:text-primary-900 transition-all duration-200 border border-primary-200/40"
+  tabIndex={-1}
+>
+  View More
+</Link>
           <div className="container mx-auto px-4">
             {/* Slideshow Container */}
             <div 
@@ -388,5 +387,13 @@ const CategorySlideshow = ({ category, layout = 'image-first' }: CategorySlidesh
     </div>
   );
 };
+function slugify(str: any) {
+  return String(str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+}
 
 export default CategorySlideshow;

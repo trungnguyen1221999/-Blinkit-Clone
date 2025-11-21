@@ -52,6 +52,16 @@ const router = createBrowserRouter([
         ),
       },
       {
+        // SEO: /category/:categoryName-:categoryId
+        path: "/category/:categoryName-:categoryId",
+        element: (
+          <>
+            <Header /> <CategoryPage /> <Footer />
+          </>
+        ),
+      },
+      {
+        // Hỗ trợ cả truy cập cũ: /category/:categoryId (không có tên, fallback)
         path: "/category/:categoryId",
         element: (
           <>
@@ -238,15 +248,28 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/product/:id",
+        path: "/products/:category/:subcategory/:slug",
         element: (
           <>
             <Header /> <ProductDetailPage /> <Footer />
           </>
         ),
       },
+      // {
+      //   path: "/product/:id",
+      //   element: (
+      //     <>
+      //       <Header /> <ProductDetailPage /> <Footer />
+      //     </>
+      //   ),
+      // },
     ],
   },
 ]);
 
 export default router;
+
+// Khi tạo link tới category, dùng dạng `/category/${slugify(category.name)}-${category._id}`
+// Ví dụ trong ProductDropdown, Navbar, CategorySlideshow, SearchPage, ...
+// VD:
+// <Link to={`/category/${slugify(category.name)}-${category._id}`}>{category.name}</Link>

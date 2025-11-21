@@ -23,12 +23,24 @@ interface Product {
   updatedAt: string;
 }
 
+// Helper to extract productId from slug (robust: always get last 24 hex chars)
+function extractProductId(slug: string): string | null {
+  if (!slug) return null;
+  // Always get last 24 hex chars (MongoDB ObjectId)
+  const match = slug.match(/([a-fA-F0-9]{24})$/);
+  return match ? match[1] : null;
+}
+
 const ProductDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  // Get params: category, subcategory, slug
+  const { category, subcategory, slug } = useParams<{ category: string; subcategory: string; slug: string }>();
+  // Extract productId from slug (robust)
+  const productId = slug ? extractProductId(slug) : null;
+
   const { data: product, isLoading, error } = useQuery<Product | undefined>({
-    queryKey: ['product', id],
-    queryFn: () => getProductByIdApi(id!),
-    enabled: !!id,
+    queryKey: ['product', productId],
+    queryFn: () => productId ? getProductByIdApi(productId) : Promise.resolve(undefined),
+    enabled: !!productId,
   });
   const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [mainImgIdx, setMainImgIdx] = useState(0);
@@ -87,7 +99,7 @@ const ProductDetailPage = () => {
                     key={img.public_id || idx}
                     src={img.url}
                     alt={product.name + ' ' + (idx + 1)}
-                    className={`w-16 h-16 object-contain rounded ${mainImgIdx === idx ? 'border-2 border-primary-200 ring-2 ring-primary-400' : 'border border-slate-200'} bg-white cursor-pointer transition ${mainImgIdx !== idx ? 'hover:border-primary-200 hover:ring-2 hover:ring-primary-400' : ''}`}
+                    className={`w-16 h-16 object-contain rounded ${mainImgIdx === idx ? 'border-2 border-primary-200 ' : 'border border-slate-200 hover:border-primary-200'} bg-white cursor-pointer transition`}
                     onMouseEnter={() => setMainImgIdx(idx)}
                     onClick={() => setMainImgIdx(idx)}
                   />

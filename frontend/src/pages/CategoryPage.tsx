@@ -1,21 +1,49 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getCategoriesApi } from '../api/categoryApi/categoryApi';
-import CategorySlideshow from '../components/CategorySlideshow';
+import { getProductsByCategoryApi } from '../api/adminApi/productApi';
+import { getSubCategoriesByCategoryApi } from '../api/subCategoryApi/subCategoryApi';
+import ProductCard from '../components/ProductCard';
+import { Package, Star } from 'lucide-react';
+import { customCategoryData } from '../data/customCategoryData';
 
 const CategoryPage = () => {
-  const { categoryId } = useParams();
-  
+  const params = useParams();
+  // Lấy id robust: nếu categoryId dài hơn 24 ký tự, tách 24 ký tự cuối (sau dấu - cuối cùng)
+  let categoryId = params.categoryId;
+  if (categoryId && categoryId.length > 24) {
+    const match = categoryId.match(/([a-f0-9]{24})$/);
+    if (match) categoryId = match[1];
+  }
   // Fetch all categories to get the specific one
-  const { data: categories = [], isLoading } = useQuery({
+  const { data: categories = [], isLoading: loadingCategories } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategoriesApi,
   });
-
-  // Find the current category
+  // Find the current category by id only
   const currentCategory = categories.find((cat: any) => cat._id === categoryId);
+  const categoryIdFromCategory = currentCategory?._id;
 
-  if (isLoading) {
+  // Fetch products for this category
+  const { data: products = [], isLoading: loadingProducts } = useQuery({
+    queryKey: ['products-by-category', categoryIdFromCategory],
+    queryFn: () => categoryIdFromCategory ? getProductsByCategoryApi(categoryIdFromCategory) : [],
+    enabled: !!categoryIdFromCategory,
+  });
+
+  // Fetch subcategories for this category (API riêng)
+  const { data: subCategories = [], isLoading: loadingSubCategories } = useQuery({
+    queryKey: ['subcategories-by-category', categoryIdFromCategory],
+    queryFn: () => categoryIdFromCategory ? getSubCategoriesByCategoryApi(categoryIdFromCategory) : [],
+    enabled: !!categoryIdFromCategory,
+  });
+
+  // Get custom data for this category
+  const custom = customCategoryData.find((c) => c._id === categoryId);
+  const CustomIcon = custom?.icon;
+  const bgColor = custom?.bgColor || 'bg-white';
+
+  if (loadingCategories || loadingProducts || loadingSubCategories) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-white">
         <div className="text-center">
@@ -44,13 +72,87 @@ const CategoryPage = () => {
     );
   }
 
+  // HERO SECTION (style giống CategorySlideshow, lấy hết custom)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-      <div className="container mx-auto px-4 py-8">
-        <CategorySlideshow category={currentCategory} />
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white mt-15">
+      <main className="container mx-auto px-0 md:px-4 pb-12">
+        <div className={`${bgColor} rounded-t-3xl overflow-hidden mb-0`}>
+          <div className="flex flex-col md:flex-row items-center min-h-[400px] gap-8 md:gap-12 p-6 md:p-12">
+            {/* Image Side */}
+            <div className="flex-1 flex justify-center items-center">
+              <img
+                src={currentCategory.image?.url || '/images/placeholder-product.jpg'}
+                alt={currentCategory.name}
+                className="h-auto max-h-80 w-auto object-contain hover:scale-105 transition-transform duration-700 bg-transparent"
+              />
+            </div>
+            {/* Content Side */}
+            <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                {CustomIcon && (
+                  <span className={`inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full shadow-xl ring-2 ring-primary-200/60 mb-1 ${bgColor}`}>
+                    <CustomIcon size={38} strokeWidth={2.2} className="text-primary-600 drop-shadow-[0_2px_8px_rgba(0,0,0,0.18)]" style={{ filter: 'drop-shadow(0 0 6px rgba(0,0,0,0.10))' }} />
+                  </span>
+                )}
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-800 leading-tight">{custom?.title || currentCategory.name}</h1>
+              </div>
+              <p className="text-lg text-slate-600 mb-4 leading-relaxed">{custom?.desc || currentCategory.description}</p>
+              <div className="flex flex-wrap gap-3 mb-4 justify-center md:justify-start">
+                <span className="inline-flex items-center gap-2 bg-primary-100 text-primary-700 text-sm font-bold px-4 py-1.5 rounded-2xl shadow border border-primary-200/30">
+                  <Package size={18} className="text-primary-400 drop-shadow-sm" />
+                  <span className="tracking-wide">{products.length} products</span>
+                </span>
+                <span className="inline-flex items-center gap-2 bg-green-100 text-green-800 text-sm font-bold px-4 py-1.5 rounded-2xl shadow border border-green-200/30">
+                  <Star size={18} className="text-green-500 drop-shadow-sm" />
+                  <span className="tracking-wide">{custom?.authenticityLabel || '100% Authentic'}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Subcategory Grid */}
+        {subCategories.length > 0 && (
+          <div className="mb-12 mt-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 px-4">
+              {subCategories.map((sub: any) => (
+                <Link
+                  key={sub._id || sub}
+                  to={`/subcategory/${slugify(sub.name)}-${sub._id}`}
+                  className="flex flex-col items-center bg-white rounded-xl shadow border border-slate-100 p-4 hover:shadow-lg transition cursor-pointer"
+                >
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-slate-50 flex items-center justify-center mb-2">
+                    <img src={sub.image?.url || '/images/placeholder-product.jpg'} alt={sub.name || sub} className="object-contain w-full h-full" />
+                  </div>
+                  <span className="text-base font-semibold text-slate-800 text-center line-clamp-2">{sub.name || sub}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* Product Grid */}
+        <h2 className="text-2xl font-bold text-primary-700 mb-4 px-4">Products</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 px-4">
+          {products.length === 0 ? (
+            <div className="col-span-full text-center text-slate-500 text-lg py-12">No products found in this category.</div>
+          ) : (
+            products.map((product: any) => (
+              <ProductCard key={product._id} product={product} />
+            ))
+          )}
+        </div>
+      </main>
     </div>
   );
 };
+
+// Helper: slugify string (safe)
+function slugify(str: any) {
+  return String(str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
+}
 
 export default CategoryPage;
