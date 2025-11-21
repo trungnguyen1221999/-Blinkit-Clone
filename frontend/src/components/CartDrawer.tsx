@@ -123,18 +123,18 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
                       {hasDiscount && (
                         <div className="flex items-center gap-1 mt-1 text-xs text-red-500 font-semibold">
                           <BadgePercent size={14} />
-                          <span>Save {((price - discountedPrice) * item.quantity).toFixed(2)}$</span>
+                          <span>Save <span className='mr-1'>€</span>{((price - discountedPrice) * item.quantity).toFixed(2)}</span>
                         </div>
                       )}
                     </div>
                     <div className="flex flex-col items-end min-w-[70px]">
                       {hasDiscount ? (
                         <>
-                          <span className="font-bold text-primary-600 text-base">${discountedPrice.toFixed(2)}</span>
-                          <span className="text-xs text-slate-400 line-through">${price.toFixed(2)}</span>
+                          <span className="font-bold text-primary-600 text-base"><span className='mr-1'>€</span>{discountedPrice.toFixed(2)}</span>
+                          <span className="text-xs text-slate-400 line-through"><span className='mr-1'>€</span>{price.toFixed(2)}</span>
                         </>
                       ) : (
-                        <span className="font-bold text-primary-600 text-base">${price.toFixed(2)}</span>
+                        <span className="font-bold text-primary-600 text-base"><span className='mr-1'>€</span>{price.toFixed(2)}</span>
                       )}
                     </div>
                   </li>
@@ -147,7 +147,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
         <div className="p-5 border-t border-slate-100 bg-white/90 flex flex-col gap-4">
           <div className="flex items-center justify-between mb-1">
             <span className="text-lg font-semibold text-slate-700">Total</span>
-            <span className="text-2xl font-extrabold text-primary-700 tracking-wide">${total.toFixed(2)}</span>
+            <span className="text-2xl font-extrabold text-primary-700 tracking-wide"><span className='mr-1'>€</span>{total.toFixed(2)}</span>
           </div>
           {save > 0 && (
             <div className="flex flex-col items-center my-2">
@@ -157,7 +157,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
                 <span className="flex-1 h-px bg-linear-to-l from-transparent via-green-200 to-transparent" />
               </div>
               <div className="mt-2 text-green-700 text-lg font-bold tracking-wide text-center">
-                You save <span className="inline-block px-2 py-0.5 bg-green-50 rounded font-extrabold text-green-800 text-xl  decoration-2 decoration-green-400">${save.toFixed(2)}</span> on this order
+                You save <span className="inline-block px-2 py-0.5 bg-green-50 rounded font-extrabold text-green-800 text-xl  decoration-2 decoration-green-400"><span className='mr-1'>€</span>{save.toFixed(2)}</span> on this order
               </div>
             </div>
           )}

@@ -186,15 +186,15 @@ const ProductDetailPage = () => {
                   <>
                     <span className="text-4xl font-extrabold text-primary-600 flex items-center gap-2">
                       <BadgePercent className="w-7 h-7 text-red-500" />
-                      <span className="text-5xl font-extrabold">${discountedPrice.toFixed(2)}</span>
+                      <span className="text-5xl font-extrabold"><span className="mr-1">€</span>{discountedPrice.toFixed(2)}</span>
                       <span className="text-lg font-normal text-slate-700">/{product.unit}</span>
                     </span>
-                    <span className="text-xl text-slate-400 line-through font-normal">${product.price.toFixed(2)}/<span className='text-base'>{product.unit}</span></span>
+                    <span className="text-xl text-slate-400 line-through font-normal"><span className="mr-1">€</span>{product.price.toFixed(2)}/<span className='text-base'>{product.unit}</span></span>
                     <span className="ml-2 text-xl text-red-500 font-extrabold">-{discount}%</span>
                   </>
                 ) : (
                   <span className="text-4xl font-extrabold text-primary-600">
-                    <span className="text-5xl font-extrabold">${product.price.toFixed(2)}</span>
+                    <span className="text-5xl font-extrabold"><span className="mr-1">€</span>{product.price.toFixed(2)}</span>
                     <span className="text-lg font-normal text-slate-700">/{product.unit}</span>
                   </span>
                 )}

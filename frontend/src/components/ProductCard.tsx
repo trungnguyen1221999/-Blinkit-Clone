@@ -70,7 +70,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <div className="block bg-white rounded-lg shadow p-4 hover:shadow-lg flex flex-col relative">
+    <div className="flex flex-col bg-white rounded-lg shadow p-4 hover:shadow-lg relative">
       {discount > 0 && (
         <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-lg animate-bounce">
           Sale
@@ -82,7 +82,6 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </Link>
       <div className="font-semibold text-slate-800 line-clamp-1 mb-1">{product.name}</div>
-      <div className="text-xs text-slate-500 line-clamp-1 mb-1">{product.unit}</div>
       {product.more_details && (
         <div className="mb-1 flex flex-row gap-2 flex-wrap">
           {product.more_details["Country of origin/country of manufacture"] && (
@@ -102,12 +101,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <div className="mb-2">
         {discount > 0 ? (
           <>
-            <span className="text-primary-600 font-bold text-base mr-1">${discountedPrice.toFixed(2)}</span>
-            <span className="text-xs text-slate-400 line-through">${product.price.toFixed(2)}</span>
+            <span className="text-primary-600 font-bold text-base mr-1">
+              <span className="mr-0.5">€</span>{discountedPrice.toFixed(2)}<span className="text-xs text-slate-700 font-normal">/{product.unit}</span>
+            </span>
+            <span className="text-xs text-slate-400 line-through">
+              <span className="mr-0.5">€</span>{product.price.toFixed(2)}<span className="text-xs text-slate-400 font-normal">/{product.unit}</span>
+            </span>
             <span className="ml-2 text-xs text-red-500 font-bold">-{discount}%</span>
           </>
         ) : (
-          <span className="text-primary-600 font-bold text-base">${product.price.toFixed(2)}</span>
+          <span className="text-primary-600 font-bold text-base">
+            <span className="mr-0.5">€</span>{product.price.toFixed(2)}<span className="text-xs text-slate-700 font-normal">/{product.unit}</span>
+          </span>
         )}
       </div>
       <button

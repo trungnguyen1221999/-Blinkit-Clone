@@ -164,13 +164,16 @@ const CartPage: React.FC = () => {
                     <div className="flex flex-col items-end min-w-[90px]">
                       {hasDiscount ? (
                         <>
-                          <span className="font-bold text-primary-600 text-base">${discountedPrice.toFixed(2)}</span>
-                          <span className="text-xs text-slate-400 line-through">${price.toFixed(2)}</span>
+                          <span className="font-bold text-primary-600 text-base">{hasDiscount ? (<><span className='mr-1'>€</span>{discountedPrice.toFixed(2)}</>) : (<><span className='mr-1'>€</span>{price.toFixed(2)}</>)}
+                          </span>
+                          {hasDiscount && (
+                            <span className="text-xs text-slate-400 line-through ml-1"><span className='mr-1'>€</span>{price.toFixed(2)}</span>
+                          )}
+                          <span className="text-xs text-slate-500 mt-1">Total: <span className='mr-1'>€</span>{(discountedPrice * item.quantity).toFixed(2)}</span>
                         </>
                       ) : (
-                        <span className="font-bold text-primary-600 text-base">${price.toFixed(2)}</span>
+                        <span className="font-bold text-primary-600 text-base"><span className='mr-1'>€</span>{price.toFixed(2)}</span>
                       )}
-                      <span className="text-xs text-slate-500 mt-1">Total: ${(discountedPrice * item.quantity).toFixed(2)}</span>
                     </div>
                   </li>
                 );
@@ -179,17 +182,18 @@ const CartPage: React.FC = () => {
             <div className="flex flex-col items-end gap-2">
               <div className="flex items-center gap-2 text-lg font-bold text-primary-700">
                 <span>Total:</span>
-                <span>${total.toFixed(2)}</span>
+                <span><span className='mr-1'>€</span>{total.toFixed(2)}</span>
               </div>
               {save > 0 && (
                 <div className="flex items-center gap-2 text-green-600 text-sm font-semibold">
                   <BadgePercent size={16} />
                   <span>You save</span>
-                  <span className="font-bold">${save.toFixed(2)}</span>
+                  <span className="font-bold"><span className='mr-1'>€</span>{save.toFixed(2)}</span>
                 </div>
               )}
               <button
-className={`mt-4 px-8 py-3 bg-primary-200 rounded-lg font-bold text-lg shadow hover:bg-primary-700 transition disabled:opacity-60 ${total === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}                disabled={total === 0}
+                className={`mt-4 px-8 py-3 bg-primary-200 rounded-lg font-bold text-lg shadow hover:bg-primary-700 transition disabled:opacity-60 ${total === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                disabled={total === 0}
               >
                 Checkout
               </button>
