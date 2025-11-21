@@ -29,6 +29,7 @@ import ProductsPage from "./pages/ProductsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SaleOffPageDetail from "./pages/SaleOffPageDetail";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import AllSubCategoriesPage from "./pages/AllSubCategoriesPage";
 
 const router = createBrowserRouter([
   {
@@ -252,6 +253,14 @@ const router = createBrowserRouter([
         element: (
           <>
             <Header /> <ProductDetailPage /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/subcategories",
+        element: (
+          <>
+            <Header /> <AllSubCategoriesPage /> <Footer />
           </>
         ),
       },

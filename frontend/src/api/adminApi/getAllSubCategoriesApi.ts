@@ -7,7 +7,8 @@ const getAllSubCategoriesApi = async () => {
       url: "/subcategory",
       method: "GET",
     });
-    return response;
+    // Return only the data array
+    return response.data;
   } catch (error) {
     throw error;
   }

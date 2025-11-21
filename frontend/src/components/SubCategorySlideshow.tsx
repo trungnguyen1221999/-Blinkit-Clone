@@ -32,7 +32,15 @@ const SubCategorySlideshow = () => {
     queryFn: getAllSubCategoriesApi,
   });
 
-  const subCategories: SubCategory[] = subCategoriesResponse?.data || [];
+  // Defensive: support both array and .data property for subCategoriesResponse
+  let subCategories: SubCategory[] = [];
+  if (Array.isArray(subCategoriesResponse)) {
+    subCategories = subCategoriesResponse;
+  } else if (subCategoriesResponse && Array.isArray((subCategoriesResponse as any).data)) {
+    subCategories = (subCategoriesResponse as any).data;
+  } else if (subCategoriesResponse && Array.isArray((subCategoriesResponse as any).results)) {
+    subCategories = (subCategoriesResponse as any).results;
+  }
   
   // Responsive slides to show
   const getSlidesToShow = () => {
@@ -49,15 +57,13 @@ const SubCategorySlideshow = () => {
   
   // Update slides to show on window resize
   useEffect(() => {
-    const handleResize = () => {
-      setSlidesToShow(getSlidesToShow());
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const handleResize = () => {
+    setSlidesToShow(getSlidesToShow());
+  };
   
-  // Calculate total pages needed
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
   const totalSlides = Math.ceil(subCategories.length / slidesToShow);
   const canSlide = subCategories.length > slidesToShow;
 
@@ -88,10 +94,7 @@ const SubCategorySlideshow = () => {
   const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
-
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;

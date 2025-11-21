@@ -50,7 +50,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
         </div>
       )}
       <Link to={productUrl}>
-        <div className="w-full aspect-square mb-2 rounded bg-slate-50 flex items-center justify-center overflow-hidden">
+        <div className="w-full aspect-square mb-2 flex items-center justify-center overflow-hidden">
           <img src={product.images?.[0]?.url || "/images/placeholder-product.jpg"} alt={product.name} className="object-contain w-full h-full" />
         </div>
       </Link>
