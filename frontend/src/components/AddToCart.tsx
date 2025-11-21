@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShoppingCart, Zap } from 'lucide-react';
+import { ShoppingCart, Plus } from 'lucide-react';
 
 interface AddToCartProps {
   product: any;
@@ -49,13 +49,13 @@ const AddToCart = ({ product, quantity = 1, setQuantity, onAddToCart, onBuyNow }
         className="flex items-center gap-2 px-6 py-3 bg-primary-200 hover:bg-primary-300 text-black rounded-full font-bold text-base shadow transition-all w-full sm:w-auto justify-center"
         onClick={handleAdd}
       >
-        <ShoppingCart className="w-5 h-5" /> Add to Cart
+        <Plus className="w-5 h-5" /> Add to Cart
       </button>
       <button
         className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full font-bold text-base shadow transition-all w-full sm:w-auto justify-center"
         onClick={handleBuyNow}
       >
-        <Zap className="w-5 h-5" /> Buy Now
+        <ShoppingCart className="w-5 h-5" /> Buy Now
       </button>
     </div>
   );

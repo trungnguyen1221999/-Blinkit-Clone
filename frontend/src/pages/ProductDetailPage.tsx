@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getProductByIdApi, getProductsByCategoryApi } from '../api/adminApi/productApi';
-import { BadgePercent, Globe, Barcode, Info, Layers, ChevronDown, ChevronUp, BookOpen, List } from 'lucide-react';
+import { BadgePercent, Globe, Barcode, Info, Layers, ChevronDown, ChevronUp, BookOpen, List, ShoppingCart, Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddToCart from '../components/AddToCart';
 import ProductCard from '../components/ProductCard';
@@ -21,6 +21,17 @@ interface Product {
   publish: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+// --- Helper: slugify ---
+function slugify(str: any = '') {
+  if (typeof str !== 'string') return '';
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 // Helper to extract productId from slug (robust: always get last 24 hex chars)
@@ -82,6 +93,47 @@ const ProductDetailPage = () => {
   return (
     <>
       <section className="w-full min-h-screen bg-white pb-16">
+        {/* --- Breadcrumbs --- */}
+        <div className="container mx-auto px-4 pt-8 pb-2">
+          <nav
+            className="text-xs md:text-sm text-slate-500 flex items-center gap-2 mb-4 overflow-x-hidden whitespace-nowrap max-w-full md:max-w-none"
+            aria-label="Breadcrumb"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+            tabIndex={0}
+          >
+            {Array.isArray(product.category) && product.category.length > 0 && (
+              <>
+                {product.category.map((cat: any, idx: number) => (
+                  <span key={typeof cat === 'object' ? cat._id : cat} className="flex items-center">
+                    {idx > 0 && <span className="mx-1">&gt;</span>}
+                    <a
+                      href={`/category/${typeof cat === 'object' ? slugify(cat.name) + '-' + cat._id : cat}`}
+                      className="text-primary-700 hover:underline font-semibold"
+                    >
+                      {typeof cat === 'object' ? cat.name : cat}
+                    </a>
+                  </span>
+                ))}
+                <span className="mx-1">&gt;</span>
+              </>
+            )}
+            {Array.isArray(product.SubCategory) && product.SubCategory.length > 0 && (
+              <>
+                {product.SubCategory.map((subCat: any, idx: number) => (
+                  <span key={typeof subCat === 'object' ? subCat._id : subCat} className="flex items-center">
+                    {idx > 0 && <span className="mx-1">&gt;</span>}
+                    <a
+                      href={`/subcategory/${typeof subCat === 'object' ? slugify(subCat.name) + '-' + subCat._id : slugify(subCat)}`}
+                      className="text-primary-700 hover:underline font-semibold"
+                    >
+                      {typeof subCat === 'object' ? subCat.name : subCat}
+                    </a>
+                  </span>
+                ))}
+              </>
+            )}
+          </nav>
+        </div>
         <div className="container mx-auto px-4 py-12 flex flex-col md:flex-row gap-16 items-start">
           {/* Image */}
           <div className="flex-1 flex flex-col items-center md:items-start">
@@ -115,7 +167,7 @@ const ProductDetailPage = () => {
                   {product.name}
                 </h1>
                 {product.stock < 20 && (
-                  <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-4 py-1 rounded-full text-base font-bold animate-pulse">
+                  <span className="flex gap-2 w-fit items-center gap-1 bg-red-50 text-red-700 px-4 py-1 rounded-full text-base font-bold animate-pulse">
                     <Info className="w-5 h-5 text-red-500" /> Low Stock
                   </span>
                 )}
