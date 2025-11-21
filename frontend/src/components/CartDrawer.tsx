@@ -168,9 +168,13 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
           >
             Go to Cart Page
           </Link>
-          <button className="w-full py-2 bg-primary-200 rounded-lg font-semibold hover:bg-primary-700 transition shadow">
+          <Link
+            to="/checkout"
+            className="w-full py-2 bg-primary-200 rounded-lg font-semibold hover:bg-primary-700 transition shadow text-center block mt-2"
+            onClick={onClose}
+          >
             Checkout
-          </button>
+          </Link>
         </div>
       </div>
     </>

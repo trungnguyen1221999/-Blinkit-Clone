@@ -4,7 +4,7 @@ import { getCartApi, removeFromCartApi, updateCartQuantityApi } from "../api/car
 import { useAuth } from "../Context/AuthContext";
 import { Trash2, Minus, Plus, BadgePercent, ShoppingCart } from "lucide-react";
 import SaleOffGrid from "../components/SaleOffGrid";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 
 const CartPage: React.FC = () => {
   const { user } = useAuth();
@@ -191,12 +191,16 @@ const CartPage: React.FC = () => {
                   <span className="font-bold"><span className='mr-1'>€</span>{save.toFixed(2)}</span>
                 </div>
               )}
-              <button
-                className={`mt-4 px-8 py-3 bg-primary-200 rounded-lg font-bold text-lg shadow hover:bg-primary-700 transition disabled:opacity-60 ${total === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                disabled={total === 0}
+              <Link
+                to={total === 0 ? '#' : "/checkout"}
+                state={selectedIds.length > 0 ? { selectedIds } : undefined}
+                className={`mt-4 px-8 py-3 bg-primary-200 rounded-lg font-bold text-lg shadow hover:bg-primary-700 transition disabled:opacity-60 ${total === 0 ? 'cursor-not-allowed' : 'cursor-pointer'} text-center block`}
+                tabIndex={total === 0 ? -1 : 0}
+                aria-disabled={total === 0}
+                onClick={e => { if (total === 0) e.preventDefault(); }}
               >
                 Checkout
-              </button>
+              </Link>
             </div>
           </>
         )}

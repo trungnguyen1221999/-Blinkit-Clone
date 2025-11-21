@@ -31,6 +31,7 @@ import SaleOffPageDetail from "./pages/SaleOffPageDetail";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import AllSubCategoriesPage from "./pages/AllSubCategoriesPage";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
 
 const router = createBrowserRouter([
   {
@@ -270,6 +271,14 @@ const router = createBrowserRouter([
         element: (
           <>
             <Header /> <AllSubCategoriesPage /> <Footer />
+          </>
+        ),
+      },
+      {
+        path: "/checkout",
+        element: (
+          <>
+            <LoginHeader /> <CheckoutPage /> <Footer />
           </>
         ),
       },
