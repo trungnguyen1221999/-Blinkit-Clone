@@ -10,6 +10,7 @@ import userRouter from "./routers/userRouter.js";
 import routerCategory from "./routers/categoryRoutes.js";
 import routerSubCategory from "./routers/subCategoryRoutes.js";
 import productRouter from "./routers/productRouter.js";
+import cartRouter from "./routers/cartRouter.js"; // Import cartRouter
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +48,7 @@ app.use("/api/user", userRouter); // User routes
 app.use("/api/category", routerCategory); // Category routes
 app.use("/api/subcategory", routerSubCategory); // SubCategory routes
 app.use("/api/product", productRouter); // Product routes
+app.use("/api/cart", cartRouter); // Cart routes
 // Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);

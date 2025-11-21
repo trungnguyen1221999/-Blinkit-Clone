@@ -1,9 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { getAllProductsApi } from '../api/adminApi/productApi';
 import { Link } from 'react-router-dom';
-import {Percent } from 'lucide-react';
+import { Percent } from 'lucide-react';
 import { useMemo } from 'react';
 import ProductCard from './ProductCard';
+import { addToCartApi } from '../api/cartApi';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCartDrawer } from "./CartDrawerContext";
 
 interface Product {
   _id: string;
@@ -19,6 +22,9 @@ interface Product {
 }
 
 const SaleOffGrid = () => {
+  const queryClient = useQueryClient();
+  const { openDrawer } = useCartDrawer();
+
   // Fetch all products
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['products', 'all'],
@@ -26,11 +32,37 @@ const SaleOffGrid = () => {
   });
 
   // Filter only published products with discount > 0
-  const saleProducts: Product[] = useMemo(() => (
-    Array.isArray(products)
-      ? products.filter((product: Product) => product.publish && typeof product.discount === 'number' && product.discount > 0)
-      : []
-  ), [products]);
+  const saleProducts: Product[] = useMemo(
+    () =>
+      Array.isArray(products)
+        ? products.filter(
+            (product: Product) =>
+              product.publish &&
+              typeof product.discount === 'number' &&
+              product.discount > 0
+          )
+        : [],
+    [products]
+  );
+
+  const handleAddToCart = async (product: Product) => {
+    // Use guestId from localStorage or generate one if not present
+    let guestId = localStorage.getItem('guestId');
+    if (!guestId) {
+      guestId =
+        Math.random().toString(36).substring(2) +
+        Date.now().toString(36);
+      localStorage.setItem('guestId', guestId);
+    }
+    try {
+      await addToCartApi({ productId: product._id, quantity: 1, guestId });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      openDrawer(); // Mở CartDrawer khi add to cart thành công
+    } catch (err) {
+      // Optionally handle error
+      console.error('Add to cart failed', err);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -84,7 +116,7 @@ const SaleOffGrid = () => {
         {/* Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
           {saleProducts.slice(0, 12).map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
           ))}
         </div>
       </div>

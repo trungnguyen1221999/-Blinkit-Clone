@@ -2,6 +2,8 @@ import { useAuth } from "../Context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { User, Settings, Lock, ShoppingBag, Shield, Edit3 } from "lucide-react";
+import CartDrawer from "../components/CartDrawer";
+import { useCartDrawer } from "../components/CartDrawerContext";
 
 interface UserLayoutProps {
   children: React.ReactNode;
@@ -10,6 +12,7 @@ interface UserLayoutProps {
 const UserLayout = ({ children }: UserLayoutProps) => {
   const { user } = useAuth();
   const location = useLocation();
+  const { open, closeDrawer } = useCartDrawer();
   const [activeMenu, setActiveMenu] = useState<string>("");
 
   useEffect(() => {
@@ -186,6 +189,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col">
+        <CartDrawer open={open} onClose={closeDrawer} />
         {/* Content */}
         <div className="flex-1 p-4 md:p-8 bg-gradient-to-br from-slate-50/50 to-white">
           <div className="max-w-4xl mx-auto">
