@@ -1,6 +1,18 @@
 # Blinkit Clone
 
-A full-stack e-commerce web application built with React, TypeScript, Node.js, Express, and MongoDB. Includes admin dashboard, product management, order flow, customer management, and revenue tracking.
+A full-stack e-commerce web application built with React, TypeScript, Node.js, Express, and MongoDB.  
+Includes admin dashboard, product management, order flow, customer management, and revenue tracking.  
+
+## Live Demo
+Note: open both frontend & backend 
+- **Frontend:** [https://kaiblinkit.netlify.app/](https://kaiblinkit.netlify.app/) (Deployed for free on Netlify)  
+- **Backend:** [https://blinkit-clone-d0u0.onrender.com/](https://blinkit-clone-d0u0.onrender.com/) (Deployed for free on Render)
+
+
+![Blinkit Clone Preview](https://kaiblinkit.netlify.app/screenshot.png) <!-- Thay bằng link ảnh thực tế nếu có -->
+
+---
+
 
 ---
 
@@ -29,15 +41,14 @@ A full-stack e-commerce web application built with React, TypeScript, Node.js, E
 
 ---
 
-
 ## Main Technologies
-- React, TypeScript, Tailwind CSS
-- Node.js, Express, MongoDB, Mongoose
-- JWT, Resend, Cloudinary
-- Lucide React Icons, React Hook Form, Zod
+- **Frontend:** React, TypeScript, Tailwind CSS  
+- **Backend:** Node.js, Express, MongoDB, Mongoose  
+- **Authentication & Security:** JWT, Resend  
+- **Media:** Cloudinary  
+- **UI & Forms:** Lucide React Icons, React Hook Form, Zod
 
 ---
-
 
 ## Author
 - [trungnguyen1221999](https://github.com/trungnguyen1221999)
