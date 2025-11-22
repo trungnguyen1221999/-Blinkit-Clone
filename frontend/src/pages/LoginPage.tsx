@@ -38,6 +38,10 @@ const LoginPage = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: 'trungnguyen122199@gmail.com',
+      password: '123456',
+    },
   });
 
   const loginMutation = useMutation({
