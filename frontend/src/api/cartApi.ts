@@ -5,7 +5,6 @@ export async function resetCartApi({ userId, guestId }: { userId?: string; guest
   const res = await api.post('/cart/reset', payload, { withCredentials: true });
   return res.data;
 }
-import axios from 'axios';
 import api from './api';
 
 export interface AddToCartParams {

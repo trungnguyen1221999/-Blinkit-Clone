@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth, type User } from "../Context/AuthContext";
+import { useAuth } from "../Context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import changeNameApi from "../api/userApi/changeNameApi";
 import changeAvatarApi from "../api/userApi/changeAvatarApi";
 import getUserApi from "../api/userApi/getUserApi";
-import { User2, Camera, Save, Shield } from "lucide-react";
+import { Camera, Save, Shield } from "lucide-react";
 
 // Zod Schema
 const profileSchema = z.object({

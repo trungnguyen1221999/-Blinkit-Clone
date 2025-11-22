@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { getAllProductsApi } from '../api/adminApi/productApi';
-import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 
 interface Product {

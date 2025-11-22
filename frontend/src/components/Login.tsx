@@ -1,9 +1,8 @@
-import { FaRegUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { useState, useRef } from "react";
 import logoutApi from "../api/userApi/logoutApi";
-import { User, ShoppingBag, Settings, Shield, LogOut, ChevronDown } from "lucide-react";
+import { User, ShoppingBag, Shield, LogOut, ChevronDown } from "lucide-react";
 
 const LoginDropdown = () => {
   const { isAuthenticated, user, setIsAuthenticated, setUser } = useAuth();

@@ -34,7 +34,6 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const navigate = useNavigate();
   // lazy init để tránh gọi localStorage trên server hoặc parse sai
   const initUser = (): User | null => {
     try {

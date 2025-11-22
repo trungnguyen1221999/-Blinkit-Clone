@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Users,
@@ -25,20 +25,12 @@ const AdminDashboard = () => {
     queryFn: getAllProductsApi,
   });
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: getAllUserApi,
-  });
 
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategoriesApi,
   });
 
-  const { data: subCategories = [] } = useQuery({
-    queryKey: ['sub-categories'],
-    queryFn: getSubCategoriesApi,
-  });
 
   const [filterType, setFilterType] = useState<'today' | 'all' | 'month' | 'year' | 'range'>('today');
   const [range, setRange] = useState<{ start: string; end: string }>({ start: '', end: '' });

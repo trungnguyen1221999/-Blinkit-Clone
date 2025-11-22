@@ -1,4 +1,4 @@
-import { ShoppingCart, Truck, Clock, Star } from 'lucide-react';
+import { ShoppingCart, Clock, Star } from 'lucide-react';
 
 const HeroSection = () => {
   return (

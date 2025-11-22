@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, ShoppingCart, Star, Package } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Package } from 'lucide-react';
 import { customCategoryData } from '../data/customCategoryData';
 import { useQuery } from '@tanstack/react-query';
 import { getProductsByCategoryApi } from '../api/adminApi/productApi';

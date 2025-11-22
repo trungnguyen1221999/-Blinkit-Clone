@@ -31,7 +31,7 @@ interface Product {
 
 const SaleOffSlideshow = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isAutoPlaying] = useState(true);
   const slideIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Fetch all products

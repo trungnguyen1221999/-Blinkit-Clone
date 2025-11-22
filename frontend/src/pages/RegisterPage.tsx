@@ -61,7 +61,7 @@ const RegisterPage = () => {
           "Registration failed. Please try again."
       ); // ❌ Hiển thị toast lỗi
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       toast.success("Registration successful! 🎉"); // ✅ Hiển thị toast thành công
       queryClient.setQueryData(["register_email"], variables.email);
       navigate("/verify-email");

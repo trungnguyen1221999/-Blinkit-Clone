@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getProductByIdApi, getProductsByCategoryApi } from '../api/adminApi/productApi';
-import { BadgePercent, Globe, Barcode, Info, Layers, ChevronDown, ChevronUp, BookOpen, List, ShoppingCart, Plus } from 'lucide-react';
+import { BadgePercent, Globe, Barcode, Info, Layers, ChevronDown, ChevronUp, BookOpen, List } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import AddToCart from '../components/AddToCart';
 import ProductCard from '../components/ProductCard';
@@ -49,7 +49,7 @@ function extractProductId(slug: string): string | null {
 
 const ProductDetailPage = () => {
   // Get params: category, subcategory, slug
-  const { category, subcategory, slug } = useParams<{ category: string; subcategory: string; slug: string }>();
+  const { slug } = useParams<{ slug: string }>();
   // Extract productId from slug (robust)
   const productId = slug ? extractProductId(slug) : null;
 
