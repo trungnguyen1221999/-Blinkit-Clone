@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -23,6 +23,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, setIsAuthenticated, setUser } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -69,8 +70,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   return (
     <div className="h-screen max-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex overflow-hidden">
-      {/* Modern Sidebar */}
-      <aside className="w-72 bg-white shadow-xl border-r border-slate-200 flex flex-col relative overflow-hidden">
+      {/* Sidebar: hidden on mobile, slide-in */}
+      <aside
+        className={`
+          fixed inset-0 z-40 md:static md:z-auto md:flex w-72 bg-white shadow-xl border-r border-slate-200 flex-col overflow-hidden transition-transform duration-300
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0
+        `}
+        style={{ display: sidebarOpen || window.innerWidth >= 768 ? "flex" : "none" }}
+      >
         {/* Header with logo */}
         <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-primary-200 to-primary-100">
           <div className="flex items-center gap-3">
@@ -175,12 +183,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col max-h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col max-h-screen overflow-hidden md:ml-0">
         {/* Top Header Bar */}
-        <header className="bg-white shadow-sm border-b border-slate-200 px-8 py-4">
+        <header className="bg-white shadow-sm border-b border-slate-200 px-4 py-4 md:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-px h-6 bg-slate-200"></div>
+              {/* Hamburger for mobile */}
+              <button
+                className="md:hidden p-2 rounded-lg bg-slate-100 hover:bg-slate-200"
+                onClick={() => setSidebarOpen((open) => !open)}
+                aria-label="Open sidebar"
+              >
+                <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              </button>
+              <div className="w-px h-6 bg-slate-200 hidden md:block"></div>
               <div className="text-sm text-slate-500">
                 {new Date().toLocaleDateString('en-US', { 
                   weekday: 'long', 
@@ -190,7 +206,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 })}
               </div>
             </div>
-            
             <div className="flex items-center gap-4">
               {/* Profile Dropdown */}
               <div className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer">
@@ -207,8 +222,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </div>
         </header>
 
+        {/* Overlay for sidebar on mobile */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/30 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar overlay"
+          />
+        )}
+
         {/* Content */}
-        <div className="flex-1 p-8 bg-gradient-to-br from-slate-50/50 to-white overflow-y-auto">
+        <div className="flex-1 p-2 md:p-8 bg-gradient-to-br from-slate-50/50 to-white overflow-y-auto">
           <div className="max-w-7xl mx-auto h-full">
             {children}
           </div>

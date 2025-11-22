@@ -109,14 +109,14 @@ const AdminSubCategory = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="p-2 md:p-8 space-y-6">
       {/* HEADER SECTION */}
       <div className="bg-gradient-to-r from-white to-slate-50 rounded-2xl shadow-sm border border-slate-200 p-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold text-slate-800 mb-2">SubCategory Management</h1>
             <p className="text-slate-600">Organize products with detailed subcategory classifications</p>
-            <div className="mt-4 flex items-center gap-4 text-sm text-slate-500">
+            <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-500">
               <span className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                 Total SubCategories: <strong className="text-slate-700">{subCategories.length}</strong>
@@ -176,7 +176,7 @@ const AdminSubCategory = () => {
 
       {/* TABLE */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl shadow-md bg-white">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">

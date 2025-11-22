@@ -255,8 +255,8 @@ const AdminProducts = () => {
 
       {/* TABLE */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
+        <div className="rounded-xl shadow-md bg-white">
+          <table className=" max-w-screen overflow-x-auto md:overflow-x-visible  w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
                 <th className="p-4 text-left font-semibold text-slate-700">Product</th>

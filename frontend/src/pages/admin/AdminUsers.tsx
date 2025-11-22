@@ -157,7 +157,7 @@ const AdminUsers = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="p-2 md:p-8 space-y-6">
       {/* HEADER SECTION */}
       <div className="bg-gradient-to-r from-white to-slate-50 rounded-2xl shadow-sm border border-slate-200 p-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -236,7 +236,7 @@ const AdminUsers = () => {
 
       {/* TABLE */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl shadow-md bg-white">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">

@@ -8,9 +8,9 @@ const AdminCustomer = () => {
   });
 
   return (
-    <div className="p-8">
+    <div className="p-2 md:p-8">
       <h1 className="text-2xl font-bold mb-6 text-slate-800">Customers Dashboard</h1>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-xl shadow-md bg-white">
         <table className="min-w-full bg-white rounded-xl shadow-md">
           <thead>
             <tr className="bg-slate-100 text-slate-700">
