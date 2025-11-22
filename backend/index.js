@@ -30,7 +30,10 @@ app.use(express.json()); // parse JSON body
 app.use(cookieParser(process.env.COOKIE_SECRET)); // parse cookies
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // frontend URL
+    origin: [
+      'http://localhost:5173',
+      'https://kaiblinkit.netlify.app'
+    ],
     credentials: true, // allow sending cookies
   })
 );
