@@ -1,19 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Plus, 
-  Users, 
-  Package, 
-  ShoppingBag, 
-  DollarSign, 
-  TrendingUp, 
-  TrendingDown,
-  Eye,
+import {
+  Users,
+  Package,
+  ShoppingBag,
+  Euro,
   Calendar,
-  Clock,
-  Star,
   AlertCircle,
-  CheckCircle,
   ListOrdered,
   ChartColumnStacked
 } from 'lucide-react';
@@ -22,6 +15,8 @@ import { getAllProductsApi } from '../../api/adminApi/productApi';
 import { getAllUserApi } from '../../api/adminApi/getAllUserApi';
 import { getCategoriesApi } from '../../api/categoryApi/categoryApi';
 import { getSubCategoriesApi } from '../../api/subCategoryApi/subCategoryApi';
+import { getRevenueApi } from '../../api/adminApi/revenueApi';
+import StatCard from './dashboard/StatCard';
 
 const AdminDashboard = () => {
   // Queries for data
@@ -45,19 +40,32 @@ const AdminDashboard = () => {
     queryFn: getSubCategoriesApi,
   });
 
+  const [filterType, setFilterType] = useState<'today' | 'all' | 'month' | 'year' | 'range'>('today');
+  const [range, setRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
+
+  // Revenue queries
+  const { data: filteredRevenueData = { totalRevenue: 0, orders: [] }, refetch: refetchFilteredRevenue } = useQuery({
+    queryKey: ['revenue', filterType, range],
+    queryFn: () => {
+      if (filterType === 'today') return getRevenueApi({ type: 'day' });
+      if (filterType === 'month') return getRevenueApi({ type: 'month' });
+      if (filterType === 'year') return getRevenueApi({ type: 'year' });
+      if (filterType === 'range' && range.start && range.end) return getRevenueApi({ startDate: range.start, endDate: range.end });
+      return getRevenueApi(); // all time
+    },
+    refetchInterval: 10000,
+  });
+
   // Calculate statistics
   const totalProducts = products?.length || 0;
-  const totalUsers = users?.length || 0;
   const totalCategories = categories?.length || 0;
-  const totalSubCategories = subCategories?.length || 0;
   const publishedProducts = products?.filter((p: any) => p.publish)?.length || 0;
   const lowStockProducts = products?.filter((p: any) => (p.stock || 0) < 10)?.length || 0;
   
-  // Mock revenue data (you can replace with real API calls)
-  const todayRevenue = 12450.75;
-  const monthlyRevenue = 345620.80;
-  const totalOrders = 1245;
-  const pendingOrders = 23;
+  // Replace mock revenue data with real API data
+  const todayRevenue = filteredRevenueData.totalRevenue;
+  const allTimeRevenue = filteredRevenueData.totalRevenue;
+  const totalOrders = filteredRevenueData.orders.length;
 
   // Quick action buttons
   const quickActions = [
@@ -97,54 +105,6 @@ const AdminDashboard = () => {
       textColor: 'text-orange-600',
       bgColor: 'bg-orange-50'
     }
-  ];
-
-  // Statistics cards
-  const statsCards = [
-    {
-      title: 'Total Revenue',
-      value: `$${(monthlyRevenue || 0).toLocaleString()}`,
-      change: '+12.5%',
-      changeType: 'positive',
-      icon: <DollarSign size={24} />,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
-    },
-    {
-      title: 'Today Revenue',
-      value: `$${(todayRevenue || 0).toLocaleString()}`,
-      change: '+8.2%',
-      changeType: 'positive',
-      icon: <TrendingUp size={24} />,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
-    },
-    {
-      title: 'Total Orders',
-      value: (totalOrders || 0).toLocaleString(),
-      change: '+15.3%',
-      changeType: 'positive',
-      icon: <ShoppingBag size={24} />,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
-    },
-    {
-      title: 'Total Users',
-      value: (totalUsers || 0).toLocaleString(),
-      change: '+6.8%',
-      changeType: 'positive',
-      icon: <Users size={24} />,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
-    }
-  ];
-
-  // Recent activity (mock data)
-  const recentActivity = [
-    { id: 1, action: 'New user registered', user: 'John Doe', time: '5 minutes ago', type: 'user' },
-    { id: 2, action: 'Product added', user: 'Admin', time: '15 minutes ago', type: 'product' },
-    { id: 3, action: 'Order completed', user: 'Jane Smith', time: '30 minutes ago', type: 'order' },
-    { id: 4, action: 'Category created', user: 'Admin', time: '1 hour ago', type: 'category' }
   ];
 
   return (
@@ -191,35 +151,44 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statsCards.map((stat, index) => (
-          <div key={index} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">{stat.title}</p>
-                <p className="text-2xl font-bold text-slate-800 mt-2">{stat.value}</p>
-                <div className="flex items-center mt-2">
-                  {stat.changeType === 'positive' ? (
-                    <TrendingUp size={16} className="text-green-500 mr-1" />
-                  ) : (
-                    <TrendingDown size={16} className="text-red-500 mr-1" />
-                  )}
-                  <span className={`text-sm font-medium ${
-                    stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                  }`}>
-                    {stat.change}
-                  </span>
-                  <span className="text-sm text-slate-500 ml-1">vs last month</span>
-                </div>
-              </div>
-              <div className={`p-3 rounded-xl ${stat.bgColor} ${stat.color}`}>
-                {stat.icon}
-              </div>
-            </div>
+      {/* Revenue Overview */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+          <h3 className="text-xl font-semibold text-slate-800 mb-6">Revenue Overview</h3>
+          {/* Filter UI */}
+          <div className="flex items-center gap-4 mb-4">
+            <label className="font-semibold">Revenue Filter:</label>
+            <select value={filterType} onChange={e => setFilterType(e.target.value as any)} className="border rounded px-2 py-1">
+              <option value="today">Today Revenue</option>
+              <option value="all">All Time</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+              <option value="range">Custom Range</option>
+            </select>
+            {filterType === 'range' && (
+              <>
+                <input type="date" value={range.start} onChange={e => setRange(r => ({ ...r, start: e.target.value }))} className="border rounded px-2 py-1 ml-2" />
+                <span className="mx-2">to</span>
+                <input type="date" value={range.end} onChange={e => setRange(r => ({ ...r, end: e.target.value }))} className="border rounded px-2 py-1" />
+              </>
+            )}
           </div>
-        ))}
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 justify-center items-center">
+            <StatCard
+              title={filterType === 'today' ? 'Today Revenue' : filterType === 'all' ? 'All Time Revenue' : filterType === 'month' ? 'This Month Revenue' : filterType === 'year' ? 'This Year Revenue' : 'Custom Range Revenue'}
+              value={`€${filteredRevenueData.totalRevenue.toLocaleString()}`}
+              icon={<Euro size={48} />}
+              color="text-green-700"
+              bgColor="from-green-100 to-green-300"
+            />
+            <StatCard
+              title={filterType === 'today' ? 'Today Orders' : filterType === 'all' ? 'All Time Orders' : filterType === 'month' ? 'This Month Orders' : filterType === 'year' ? 'This Year Orders' : 'Custom Range Orders'}
+              value={filteredRevenueData.orders.length.toLocaleString()}
+              icon={<ShoppingBag size={48} />}
+              color="text-purple-700"
+              bgColor="from-purple-100 to-purple-300"
+            />
+          </div>
+        </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Inventory Overview */}
@@ -259,64 +228,10 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-          <h3 className="text-xl font-semibold text-slate-800 mb-6">Recent Activity</h3>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-3">
-                <div className={`p-2 rounded-lg ${
-                  activity.type === 'user' ? 'bg-blue-100 text-blue-600' :
-                  activity.type === 'product' ? 'bg-green-100 text-green-600' :
-                  activity.type === 'order' ? 'bg-purple-100 text-purple-600' :
-                  'bg-orange-100 text-orange-600'
-                }`}>
-                  {activity.type === 'user' ? <Users size={16} /> :
-                   activity.type === 'product' ? <Package size={16} /> :
-                   activity.type === 'order' ? <ShoppingBag size={16} /> :
-                   <ListOrdered size={16} />}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-slate-800">{activity.action}</p>
-                  <p className="text-xs text-slate-500">by {activity.user}</p>
-                  <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
-                    <Clock size={12} />
-                    {activity.time}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+       
       </div>
 
-      {/* System Status */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-        <h3 className="text-xl font-semibold text-slate-800 mb-6">System Status</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl border border-green-200">
-            <CheckCircle className="text-green-600" size={24} />
-            <div>
-              <p className="font-medium text-green-800">System Online</p>
-              <p className="text-sm text-green-600">All services running normally</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
-            <Eye className="text-blue-600" size={24} />
-            <div>
-              <p className="font-medium text-blue-800">Active Sessions</p>
-              <p className="text-sm text-blue-600">156 users online</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl border border-purple-200">
-            <Star className="text-purple-600" size={24} />
-            <div>
-              <p className="font-medium text-purple-800">Server Performance</p>
-              <p className="text-sm text-purple-600">Excellent (98.5%)</p>
-            </div>
-          </div>
-        </div>
-      </div>
+     
     </div>
   );
 };

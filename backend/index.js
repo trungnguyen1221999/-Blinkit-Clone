@@ -51,7 +51,11 @@ app.use("/api/category", routerCategory); // Category routes
 app.use("/api/subcategory", routerSubCategory); // SubCategory routes
 app.use("/api/product", productRouter); // Product routes
 app.use("/api/cart", cartRouter); // Cart routes
+import revenueRouter from "./routers/revenueRoutes.js";
+import customerRouter from "./routers/customerRoutes.js";
 app.use("/api/order", orderRouter);
+app.use("/api/revenue", revenueRouter);
+app.use("/api/customer", customerRouter);
 // Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);

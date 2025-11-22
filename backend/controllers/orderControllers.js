@@ -73,6 +73,26 @@ export const createOrder = async (req, res) => {
         { new: true }
       );
     }
+    // Tạo customer nếu chưa có
+    const { fullName, email, phone, address } = rest;
+    const { CustomerModels } = await import('../models/customerModels.js');
+    let customerQuery = userId ? { userId } : { guestId };
+    let exist = await CustomerModels.findOne(customerQuery);
+    if (!exist) {
+      const newCustomer = new CustomerModels({
+        userId,
+        guestId,
+        name: fullName,
+        email,
+        phone,
+        address,
+        orders: [order._id]
+      });
+      await newCustomer.save();
+    } else {
+      // Nếu đã có thì push thêm order vào orders
+      await CustomerModels.findByIdAndUpdate(exist._id, { $push: { orders: order._id } });
+    }
     res.status(201).json(order);
   } catch (err) {
     res.status(400).json({ error: err.message });
