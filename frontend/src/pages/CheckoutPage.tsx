@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCartApi, removeFromCartApi, updateCartQuantityApi } from "../api/cartApi";
 import { useAuth } from "../Context/AuthContext";
-import { Trash2, Minus, Plus, BadgePercent, User, ShoppingCart, CreditCard } from "lucide-react";
+import { Trash2, Minus, Plus, BadgePercent, ShoppingCart } from "lucide-react";
 import BillingForm from "../components/BillingForm";
+import { createAbandonOrderApi } from "../api/orderApi";
 
 
 import { useLocation } from "react-router-dom";
 
 const CheckoutPage: React.FC = () => {
+  const [abandonOrder, setAbandonOrder] = useState<any>(null);
   const { user } = useAuth();
   const guestIdRaw = !user ? localStorage.getItem("guestId") : undefined;
   const guestId = guestIdRaw ?? undefined;
@@ -22,11 +24,39 @@ const CheckoutPage: React.FC = () => {
     enabled: !!user?._id || !!guestId,
   });
 
-  // If coming from CartPage with selectedIds, filter cart
-  const selectedIds: string[] | undefined = location.state?.selectedIds;
-  const displayCart = selectedIds && Array.isArray(selectedIds) && selectedIds.length > 0
-    ? cart.filter((item: any) => selectedIds.includes(item._id))
-    : cart;
+
+
+  let total = 0;
+  let totalSave = 0;
+  let originalTotal = 0;
+
+  // Move useEffect after total and displayCart are defined
+  useEffect(() => {
+    const createAbandon = async () => {
+      if (user?._id && displayCart.length > 0) {
+        try {
+          const res = await createAbandonOrderApi({
+            userId: user._id,
+            cartProducts: displayCart.map(item => ({
+              _id: item.productId?._id || item.productId,
+              name: item.productId?.name || 'Product',
+              image: item.productId?.images?.[0]?.url,
+              quantity: item.quantity,
+              price: (() => {
+                const price = item.productId?.price || 0;
+                const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
+                return discount > 0 ? price * (1 - discount / 100) : price;
+              })(),
+            })),
+            totalAmt: total,
+          });
+          setAbandonOrder(res);
+        } catch {}
+      }
+    };
+    createAbandon();
+    // eslint-disable-next-line
+  }, [user?._id, total]);
 
   const updateQuantityMutation = useMutation({
     mutationFn: ({ cartItemId, quantity }: { cartItemId: string; quantity: number }) =>
@@ -45,19 +75,24 @@ const CheckoutPage: React.FC = () => {
       }),
   });
 
-  let total = 0;
-  let totalSave = 0;
-  let originalTotal = 0;
-  displayCart.forEach((item: any) => {
-    const price = item.productId?.price || 0;
-    const discount = typeof item.productId?.discount === "number" ? item.productId.discount : 0;
-    const discountedPrice = discount > 0 ? price * (1 - discount / 100) : price;
-    total += discountedPrice * item.quantity;
-    originalTotal += price * item.quantity;
-    if (discount > 0) {
-      totalSave += (price - discountedPrice) * item.quantity;
-    }
-  });
+  // Only one block for cart selection and totals
+  const selectedIds: string[] | undefined = location.state?.selectedIds;
+  const displayCart = selectedIds && Array.isArray(selectedIds) && selectedIds.length > 0
+    ? cart.filter((item: any) => selectedIds.includes(item._id))
+    : cart;
+
+  if (displayCart && displayCart.length > 0) {
+    displayCart.forEach((item: any) => {
+      const price = item.productId?.price || 0;
+      const discount = typeof item.productId?.discount === "number" ? item.productId.discount : 0;
+      const discountedPrice = discount > 0 ? price * (1 - discount / 100) : price;
+      total += discountedPrice * item.quantity;
+      originalTotal += price * item.quantity;
+      if (discount > 0) {
+        totalSave += (price - discountedPrice) * item.quantity;
+      }
+    });
+  }
 
   return (
     <>
@@ -73,6 +108,7 @@ const CheckoutPage: React.FC = () => {
                   total={total}
                   totalSave={totalSave}
                   products={displayCart.map(item => ({
+                    _id: item.productId?._id || item.productId,
                     name: item.productId?.name || 'Product',
                     image: item.productId?.images?.[0]?.url,
                     quantity: item.quantity,
@@ -82,6 +118,7 @@ const CheckoutPage: React.FC = () => {
                       return discount > 0 ? price * (1 - discount / 100) : price;
                     })(),
                   }))}
+                  abandonOrder={abandonOrder}
                 />
               </section>
             

@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
     orderHistory: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "order",
+        ref: "Order",
       },
     ],
     forgot_password_opt: {

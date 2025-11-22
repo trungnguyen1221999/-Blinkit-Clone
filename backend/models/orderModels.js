@@ -15,21 +15,23 @@ const orderSchema = new mongoose.Schema(
       required: [true, "Order ID is required"],
       unique: true,
     },
-    productId: {
+    productId: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
-    },
-    product_detail: {
+    }],
+    product_detail: [{
       name: String,
       image: Array,
-    },
+      quantity: Number,
+      price: Number
+    }],
     paymentId: {
       type: String,
       unique: true,
     },
     payment_status: {
       type: String,
-      enum: ["Pending", "Completed", "Failed", "Refunded"],
+      enum: ["Pending", "Completed", "Failed", "Refunded", "Abandon Checkout"],
       default: "Pending",
     },
     delivery_address: {

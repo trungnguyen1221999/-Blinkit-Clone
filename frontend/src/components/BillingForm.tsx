@@ -1,3 +1,11 @@
+
+export type ProductCheckout = {
+  _id: string;
+  name: string;
+  image?: string;
+  quantity: number;
+  price: number;
+};
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -35,7 +43,16 @@ export type CheckoutFormValues = {
   nameOnCard: string;
 };
 
-const BillingForm = ({ products = [], total = 0, totalSave = 0 }) => {
+import { completeAbandonOrderApi } from "../api/orderApi";
+
+interface BillingFormProps {
+  products?: ProductCheckout[];
+  total?: number;
+  totalSave?: number;
+  abandonOrder?: any;
+}
+
+const BillingForm: React.FC<BillingFormProps> = ({ products = [], total = 0, totalSave = 0, abandonOrder }) => {
   const [orderDetail, setOrderDetail] = useState(null);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -69,47 +86,47 @@ const BillingForm = ({ products = [], total = 0, totalSave = 0 }) => {
   // Add your submit handler here
   const onSubmit = async (data: any) => {
     try {
-      // Call your order API
-      let payload;
-      // Tạo orderId, paymentId, và invoice_receipt ngẫu nhiên
+      // Generate orderId, paymentId, and invoice_receipt
       const orderId = `ORD-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
       const paymentId = `PAY-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
       const invoice_receipt = `INV-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-      if (user?._id) {
-        payload = {
-          ...data,
-          products,
-          total,
-          totalSave,
-          userId: user._id,
-          orderId,
+      const product_detail = products.map(p => ({
+        name: p.name || "",
+        image: p.image ? [p.image] : [],
+        quantity: p.quantity || 1,
+        price: p.price || 0,
+      }));
+      const productId = products.map(p => p._id);
+      const subTotalAmt = products.reduce((sum, p) => sum + (p.price || 0), 0);
+      let payload = {
+        ...data,
+        product_detail,
+        productId,
+        subTotalAmt,
+        totalAmt: total,
+        payment_status: "Completed",
+        orderId,
+        paymentId,
+        invoice_receipt,
+      };
+      if (user?._id) payload.userId = user._id;
+      if (guestId) payload.guestId = guestId;
+
+      // If abandonOrder exists, complete it instead of creating a new order
+      let response;
+      if (abandonOrder && abandonOrder.orderId) {
+        response = await completeAbandonOrderApi({
+          orderId: abandonOrder.orderId,
           paymentId,
           invoice_receipt,
-        };
-      } else if (guestId) {
-        payload = {
+          payment_status: "Completed",
           ...data,
-          products,
-          total,
-          totalSave,
-          guestId,
-          orderId,
-          paymentId,
-          invoice_receipt,
-        };
+        });
       } else {
-        setError("No userId or guestId found");
-        return;
+        response = await createOrderApi(payload);
       }
-      const response = await createOrderApi(payload);
       setOrderDetail(response);
       reset();
-      // Reset cart in React Query
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      // Clear cart in localStorage (for guest)
-      localStorage.removeItem("cart");
-      // Reset cart in backend
-      await resetCartApi({ userId: user?._id, guestId });
     } catch (err: any) {
       setError(err?.message || "Payment failed");
     }
@@ -123,7 +140,21 @@ const BillingForm = ({ products = [], total = 0, totalSave = 0 }) => {
           total={total}
           totalSave={totalSave}
           products={products}
-          onClose={() => setOrderDetail(null)}
+          onClose={async () => {
+            setOrderDetail(null);
+            // Reset cart in React Query
+            queryClient.invalidateQueries({ queryKey: ["cart"] });
+            // Clear cart in localStorage (for guest)
+            localStorage.removeItem("cart");
+            // Reset cart in backend
+            await resetCartApi({ userId: user?._id, guestId });
+            // Redirect
+            if (user?._id) {
+              window.location.href = "/user/purchases";
+            } else {
+              window.location.href = "/";
+            }
+          }}
         />
       )}
       {error && (

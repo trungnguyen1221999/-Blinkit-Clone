@@ -116,7 +116,10 @@ const OrderSuccessPopup: React.FC<OrderSuccessPopupProps> = ({
 
         <button
           className="mt-8 px-8 py-3 rounded-xl bg-gradient-to-r from-green-500 via-emerald-400 to-green-600 text-white font-extrabold shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl w-full"
-          onClick={() => (window.location.href = "/")}
+          onClick={() => {
+            onClose();
+            window.location.href = "/";
+          }}
         >
           Back to Home
         </button>
