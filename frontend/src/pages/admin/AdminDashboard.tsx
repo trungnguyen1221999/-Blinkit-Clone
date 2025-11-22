@@ -44,7 +44,7 @@ const AdminDashboard = () => {
   const [range, setRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
 
   // Revenue queries
-  const { data: filteredRevenueData = { totalRevenue: 0, orders: [] }, refetch: refetchFilteredRevenue } = useQuery({
+  const { data: filteredRevenueData = { totalRevenue: 0, orders: [] } } = useQuery({
     queryKey: ['revenue', filterType, range],
     queryFn: () => {
       if (filterType === 'today') return getRevenueApi({ type: 'day' });
@@ -63,9 +63,6 @@ const AdminDashboard = () => {
   const lowStockProducts = products?.filter((p: any) => (p.stock || 0) < 10)?.length || 0;
   
   // Replace mock revenue data with real API data
-  const todayRevenue = filteredRevenueData.totalRevenue;
-  const allTimeRevenue = filteredRevenueData.totalRevenue;
-  const totalOrders = filteredRevenueData.orders.length;
 
   // Quick action buttons
   const quickActions = [
