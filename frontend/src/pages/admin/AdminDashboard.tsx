@@ -12,9 +12,7 @@ import {
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllProductsApi } from '../../api/adminApi/productApi';
-import { getAllUserApi } from '../../api/adminApi/getAllUserApi';
 import { getCategoriesApi } from '../../api/categoryApi/categoryApi';
-import { getSubCategoriesApi } from '../../api/subCategoryApi/subCategoryApi';
 import { getRevenueApi } from '../../api/adminApi/revenueApi';
 import StatCard from './dashboard/StatCard';
 

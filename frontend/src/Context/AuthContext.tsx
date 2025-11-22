@@ -9,7 +9,6 @@ import {
 import api from "../api/api";
 import getUserApi from "../api/userApi/getUserApi";
 import logoutApi from "../api/userApi/logoutApi";
-import { useNavigate } from "react-router-dom";
 
 export type User = {
   _id: string;

@@ -124,7 +124,7 @@ const Profile = () => {
       <div className="bg-gradient-to-r from-white to-slate-50 rounded-2xl shadow-sm border border-slate-200 p-8">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-gradient-to-br from-primary-200 to-primary-100 rounded-2xl flex items-center justify-center shadow-lg">
-            <User2 className="text-white" size={28} />
+            {/* User icon removed, use avatar or placeholder if needed */}
           </div>
           <div>
             <h1 className="text-3xl font-bold text-slate-800 mb-2">My Profile</h1>
@@ -147,7 +147,6 @@ const Profile = () => {
           {/* Name Section */}
           <div className="space-y-3">
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 uppercase tracking-wide">
-              <User2 size={16} className="text-slate-500" />
               Full Name
             </label>
             <input
