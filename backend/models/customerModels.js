@@ -27,6 +27,14 @@ const customerSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    city: {
+      type: String,
+      required: false,
+    },
+    postalCode: {
+      type: String,
+      required: false,
+    },
     orders: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",

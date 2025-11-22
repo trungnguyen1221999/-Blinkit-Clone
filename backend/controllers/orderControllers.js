@@ -74,7 +74,7 @@ export const createOrder = async (req, res) => {
       );
     }
     // Tạo customer nếu chưa có
-    const { fullName, email, phone, address } = rest;
+    const { fullName, email, phone, address, city, postalCode } = rest;
     const { CustomerModels } = await import('../models/customerModels.js');
     let customerQuery = userId ? { userId } : { guestId };
     let exist = await CustomerModels.findOne(customerQuery);
@@ -86,6 +86,8 @@ export const createOrder = async (req, res) => {
         email,
         phone,
         address,
+        city,
+        postalCode,
         orders: [order._id]
       });
       await newCustomer.save();
