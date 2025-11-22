@@ -4,6 +4,11 @@ const orderSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: false, // Không bắt buộc, cho phép guest
+    },
+    guestId: {
+      type: String,
+      required: false, // Nếu là guest thì lưu guestId
     },
     orderId: {
       type: String,

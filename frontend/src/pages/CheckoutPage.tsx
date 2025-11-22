@@ -69,7 +69,20 @@ const CheckoutPage: React.FC = () => {
               <h1 className="text-3xl font-bold text-primary-200 mb-8 tracking-tight">Checkout</h1>
               {/* Billing */}
               <section className="mb-10">
-                <BillingForm />
+                <BillingForm
+                  total={total}
+                  totalSave={totalSave}
+                  products={displayCart.map(item => ({
+                    name: item.productId?.name || 'Product',
+                    image: item.productId?.images?.[0]?.url,
+                    quantity: item.quantity,
+                    price: (() => {
+                      const price = item.productId?.price || 0;
+                      const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
+                      return discount > 0 ? price * (1 - discount / 100) : price;
+                    })(),
+                  }))}
+                />
               </section>
             
             </div>

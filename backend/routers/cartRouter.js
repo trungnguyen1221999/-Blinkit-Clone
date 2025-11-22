@@ -1,7 +1,10 @@
+
 import express from 'express';
-import { addToCart, getCart, removeFromCart, updateCartQuantity } from '../controllers/cartController.js';
+import { addToCart, getCart, removeFromCart, updateCartQuantity, resetCart } from '../controllers/cartController.js';
 
 const router = express.Router();
+// Reset toàn bộ giỏ hàng
+router.post('/reset', resetCart);
 
 // Thêm vào giỏ (không cần đăng nhập)
 router.post('/add', addToCart);

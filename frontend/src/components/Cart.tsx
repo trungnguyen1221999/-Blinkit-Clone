@@ -12,7 +12,7 @@ const Cart = () => {
   const guestIdRaw = !user ? localStorage.getItem("guestId") : undefined;
   const guestId = guestIdRaw ?? undefined;
   const queryKey = ["cart", user?._id || guestId || "guest"];
-  const { data: cart = [], isLoading, error } = useQuery({
+  const { data: cart = [], error } = useQuery({
     queryKey,
     queryFn: () => getCartApi({ userId: user?._id, guestId }),
     enabled: !!user?._id || !!guestId,

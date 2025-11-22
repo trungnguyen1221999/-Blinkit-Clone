@@ -1,3 +1,15 @@
+// Reset toàn bộ giỏ hàng cho userId hoặc guestId
+export const resetCart = async (req, res) => {
+  try {
+    const { userId, guestId } = req.body;
+    const ownerId = userId || guestId;
+    if (!ownerId) return res.status(400).json({ message: 'Thiếu user/guest id' });
+    await CartProductModels.deleteMany({ userId: ownerId });
+    res.status(200).json({ message: 'Đã reset giỏ hàng thành công' });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi reset giỏ hàng', error: err.message });
+  }
+};
 import { CartProductModels } from '../models/cartProductModel.js';
 
 // Thêm sản phẩm vào giỏ (userId hoặc guestId)

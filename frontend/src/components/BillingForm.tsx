@@ -1,157 +1,156 @@
-import React from "react";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { createOrderApi } from "../api/orderApi";
+import { resetCartApi } from "../api/cartApi";
+import { useAuth } from "../Context/AuthContext";
+import OrderSuccessPopup from "./OrderSuccessPopup";
+import OrderErrorPopup from "./OrderErrorPopup";
+import FullNameField from "./billingFields/FullNameField";
+import EmailField from "./billingFields/EmailField";
+import PhoneField from "./billingFields/PhoneField";
+import AddressField from "./billingFields/AddressField";
+import CityField from "./billingFields/CityField";
+import CountryField from "./billingFields/CountryField";
+import PostalCodeField from "./billingFields/PostalCodeField";
+import CardNumberField from "./billingFields/CardNumberField";
+import ExpiryField from "./billingFields/ExpiryField";
+import CVVField from "./billingFields/CVVField";
+import NameOnCardField from "./billingFields/NameOnCardField";
 
-import * as z from "zod";
+// Add your validation schema and types as needed
+// import { billingSchema } from "../utils/billingSchema";
 
-const checkoutSchema = z.object({
-  fullName: z.string().min(2, "Full Name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(7, "Phone number is required").max(20, "Phone number is too long"),
-  address: z.string().min(2, "Address is required"),
-  city: z.string().min(2, "City is required"),
-  country: z.string().min(2, "Country is required"),
-  postalCode: z.string().min(2, "Postal Code is required"),
-  cardNumber: z.string().min(16, "Card number is required").max(19, "Card number is too long"),
-  expiry: z.string().min(4, "Expiry is required"),
-  cvv: z.string().min(3, "CVV is required").max(4, "CVV is too long"),
-  nameOnCard: z.string().min(2, "Name on card is required"),
-});
+export type CheckoutFormValues = {
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  country: string;
+  postalCode: string;
+  cardNumber: string;
+  expiry: string;
+  cvv: string;
+  nameOnCard: string;
+};
 
-type CheckoutFormValues = z.infer<typeof checkoutSchema>;
-
-
-const FINNISH_CITIES = [
-  "Helsinki", "Espoo", "Tampere", "Vantaa", "Oulu", "Turku", "Jyväskylä", "Lahti", "Kuopio", "Pori", "Lappeenranta", "Kotka", "Joensuu", "Hämeenlinna", "Vaasa", "Rovaniemi"
-];
-
-
-const BillingForm: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<CheckoutFormValues>({
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: { country: "Finland" }
+const BillingForm = ({ products = [], total = 0, totalSave = 0 }) => {
+  const [orderDetail, setOrderDetail] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  // Use guestId if not logged in (same logic as Cart)
+  const guestIdRaw = !user ? localStorage.getItem("guestId") : undefined;
+  const guestId = guestIdRaw ?? undefined;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<CheckoutFormValues>({
+    // resolver: zodResolver(billingSchema),
+    mode: "onBlur",
+    defaultValues: {
+      fullName: "Kai",
+      email: "test@example.com",
+      phone: "0401234567",
+      address: "123 Main St",
+      city: "Helsinki",
+      country: "Finland",
+      postalCode: "00100",
+      cardNumber: "4242 4242 4242 4242",
+      expiry: "12/25",
+      cvv: "123",
+      nameOnCard: "Kai",
+    },
   });
 
-  const onSubmit = (data: CheckoutFormValues) => {
-    // handle full checkout submit
-    console.log(data);
+  // Add your submit handler here
+  const onSubmit = async (data: any) => {
+    try {
+      // Call your order API
+      let payload;
+      // Tạo orderId, paymentId, và invoice_receipt ngẫu nhiên
+      const orderId = `ORD-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const paymentId = `PAY-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const invoice_receipt = `INV-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+      if (user?._id) {
+        payload = {
+          ...data,
+          products,
+          total,
+          totalSave,
+          userId: user._id,
+          orderId,
+          paymentId,
+          invoice_receipt,
+        };
+      } else if (guestId) {
+        payload = {
+          ...data,
+          products,
+          total,
+          totalSave,
+          guestId,
+          orderId,
+          paymentId,
+          invoice_receipt,
+        };
+      } else {
+        setError("No userId or guestId found");
+        return;
+      }
+      const response = await createOrderApi(payload);
+      setOrderDetail(response);
+      reset();
+      // Reset cart in React Query
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      // Clear cart in localStorage (for guest)
+      localStorage.removeItem("cart");
+      // Reset cart in backend
+      await resetCartApi({ userId: user?._id, guestId });
+    } catch (err: any) {
+      setError(err?.message || "Payment failed");
+    }
   };
 
   return (
-    <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
-      {/* Billing Fields */}
-      <label className="flex flex-col gap-2 text-slate-700 font-semibold">
-        Full Name
-        <input {...register("fullName")}
-          type="text"
-          placeholder="Full Name"
-          className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
+    <>
+      {orderDetail && (
+        <OrderSuccessPopup
+          orderDetail={orderDetail}
+          total={total}
+          totalSave={totalSave}
+          products={products}
+          onClose={() => setOrderDetail(null)}
         />
-        {errors.fullName && <span className="text-red-500 text-sm">{errors.fullName.message}</span>}
-      </label>
-      <label className="flex flex-col gap-2 text-slate-700 font-semibold">
-        Email
-        <input {...register("email")}
-          type="email"
-          placeholder="Email"
-          className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
+      )}
+      {error && (
+        <OrderErrorPopup
+          error={error}
+          onClose={() => setError(null)}
         />
-        {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
-      </label>
-      <label className="flex flex-col gap-2 text-slate-700 font-semibold">
-        Phone Number
-        <input {...register("phone")}
-          type="tel"
-          placeholder="Phone Number"
-          className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
-        />
-        {errors.phone && <span className="text-red-500 text-sm">{errors.phone.message}</span>}
-      </label>
-      <label className="flex flex-col gap-2 text-slate-700 font-semibold">
-        Address
-        <input {...register("address")}
-          type="text"
-          placeholder="Address"
-          className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
-        />
-        {errors.address && <span className="text-red-500 text-sm">{errors.address.message}</span>}
-      </label>
-      <div className="flex gap-4">
-        <label className="flex-1 flex flex-col gap-2 text-slate-700 font-semibold">
-          City
-          <select {...register("city")}
-            className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base">
-            <option value="">Select City</option>
-            {FINNISH_CITIES.map(city => (
-              <option key={city} value={city}>{city}</option>
-            ))}
-          </select>
-          {errors.city && <span className="text-red-500 text-sm">{errors.city.message}</span>}
-        </label>
-        <label className="flex-1 flex flex-col gap-2 text-slate-700 font-semibold">
-          Country
-          <input {...register("country")}
-            type="text"
-            placeholder="Country"
-            className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
-            readOnly
-          />
-          {errors.country && <span className="text-red-500 text-sm">{errors.country.message}</span>}
-        </label>
-      </div>
-      <label className="flex flex-col gap-2 text-slate-700 font-semibold">
-        Postal Code
-        <input {...register("postalCode")}
-          type="text"
-          placeholder="Postal Code"
-          className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
-        />
-        {errors.postalCode && <span className="text-red-500 text-sm">{errors.postalCode.message}</span>}
-      </label>
-   
-      <label className="flex flex-col gap-2 text-slate-700 font-semibold">
-        Card Number
-        <input {...register("cardNumber")}
-          type="text"
-          placeholder="1234 5678 9012 3456"
-          maxLength={19}
-          className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base tracking-widest"
-        />
-        {errors.cardNumber && <span className="text-red-500 text-sm">{errors.cardNumber.message}</span>}
-      </label>
-      <div className="flex gap-4">
-        <label className="flex-1 flex flex-col gap-2 text-slate-700 font-semibold">
-          Expiry
-          <input {...register("expiry")}
-            type="text"
-            placeholder="MM/YY"
-            maxLength={5}
-            className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
-          />
-          {errors.expiry && <span className="text-red-500 text-sm">{errors.expiry.message}</span>}
-        </label>
-        <label className="flex-1 flex flex-col gap-2 text-slate-700 font-semibold">
-          CVV
-          <input {...register("cvv")}
-            type="password"
-            maxLength={4}
-            placeholder="123"
-            className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
-          />
-          {errors.cvv && <span className="text-red-500 text-sm">{errors.cvv.message}</span>}
-        </label>
-      </div>
-      <label className="flex flex-col gap-2 text-slate-700 font-semibold">
-        Name on Card
-        <input {...register("nameOnCard")}
-          type="text"
-          placeholder="Cardholder Name"
-          className="rounded-lg border border-slate-200 px-4 py-3 bg-[#f6f7f9] focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition outline-none text-base"
-        />
-        {errors.nameOnCard && <span className="text-red-500 text-sm">{errors.nameOnCard.message}</span>}
-      </label>
-      <button type="submit" className="mt-2 py-3 rounded-lg bg-linear-to-r from-green-500 to-emerald-600 text-white font-bold text-lg shadow-lg hover:from-green-600 hover:to-emerald-700 transition">Pay Now</button>
-    </form>
+      )}
+      <form onSubmit={handleSubmit(onSubmit)} className="p-6 flex flex-col gap-4 bg-white rounded-xl shadow-md">
+        <FullNameField register={register} errors={errors} />
+        <EmailField register={register} errors={errors} />
+        <PhoneField register={register} errors={errors} />
+        <AddressField register={register} errors={errors} />
+        <div className="flex gap-4">
+          <CityField register={register} errors={errors} />
+          <CountryField register={register} errors={errors} />
+        </div>
+        <PostalCodeField register={register} errors={errors} />
+        <CardNumberField register={register} errors={errors} />
+        <div className="flex gap-4">
+          <ExpiryField register={register} errors={errors} />
+          <CVVField register={register} errors={errors} />
+        </div>
+        <NameOnCardField register={register} errors={errors} />
+        <button type="submit" className="mt-4 py-4 px-8 rounded-xl bg-linear-to-r from-green-500 to-emerald-600 text-white font-bold text-xl shadow-lg hover:from-green-600 hover:to-emerald-700 transition w-full">Pay Now</button>
+      </form>
+    </>
   );
 };
 

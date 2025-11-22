@@ -2,7 +2,7 @@ import { ShoppingCart, Truck, Clock, Star } from 'lucide-react';
 
 const HeroSection = () => {
   return (
-    <section className="relative bg-gradient-to-br from-slate-50 via-white to-primary-50/30 py-12 md:py-20 overflow-hidden">
+    <section className="container mx-auto relative bg-gradient-to-br from-slate-50 via-white to-primary-50/30 py-12 md:py-20 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-10 left-10 w-20 h-20 bg-primary-200 rounded-full blur-xl"></div>
@@ -77,9 +77,9 @@ const HeroSection = () => {
           </div>
 
           {/* Image Side */}
-          <div className="relative">
+          <div className="relative flex lg:justify-end">
             {/* Hero Image Container */}
-            <div className="relative aspect-square max-w-lg mx-auto">
+            <div className="relative aspect-square max-w-lg w-full lg:max-w-xl">
               {/* Main Image Container */}
               <div className="w-full h-full rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary-50 to-primary-100/30 p-4">
                 <div className="w-full h-full rounded-2xl overflow-hidden bg-white shadow-lg">

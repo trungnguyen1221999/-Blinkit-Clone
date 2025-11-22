@@ -1,3 +1,11 @@
+// Reset cart (remove all items for userId or guestId)
+export async function resetCartApi({ userId, guestId }) {
+  const payload = {};
+  if (userId) payload.userId = userId;
+  if (guestId) payload.guestId = guestId;
+  const res = await axios.post('/api/cart/reset', payload, { withCredentials: true });
+  return res.data;
+}
 import axios from 'axios';
 
 // Add to cart (works for both user and guest)

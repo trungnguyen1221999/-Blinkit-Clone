@@ -21,7 +21,7 @@ const AdminCategory = () => {
   const [search, setSearch] = useState("");
   const hasLoaded = useRef(false);
 
-  // Load categories
+  // Load categoriescd
   const getCategoriesMutation = useMutation<Category[], any>({
     mutationFn: getCategoriesApi,
     onSuccess: (data) => {

@@ -1,3 +1,10 @@
+export async function resetCartApi({ userId, guestId }: { userId?: string; guestId?: string }): Promise<{ message: string }> {
+  const payload: any = {};
+  if (userId) payload.userId = userId;
+  if (guestId) payload.guestId = guestId;
+  const res = await api.post('/cart/reset', payload, { withCredentials: true });
+  return res.data;
+}
 import axios from 'axios';
 import api from './api';
 
