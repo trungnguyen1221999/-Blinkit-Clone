@@ -285,7 +285,7 @@ const ProductDetailPage = () => {
       </section>
       {/* Related Products List */}
       {relatedProducts.length > 0 && (
-        <div className="w-full container mx-auto mt-12">
+        <div className="w-full container mx-auto mt-12 ml-3">
           <h3 className="text-2xl font-extrabold mb-4 text-slate-900 text-left">Related Products</h3>
           <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary-200 text-left justify-start items-stretch">
             {relatedProducts.map((product) => (
