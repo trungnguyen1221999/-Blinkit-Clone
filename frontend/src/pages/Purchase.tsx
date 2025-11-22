@@ -88,7 +88,7 @@ const Purchase = () => {
                 <h3 className="text-[14px] font-bold text-slate-700 mb-2">Products</h3>
                 {Array.isArray(order.product_detail) && order.product_detail.length > 0 ? (
                   <ul className="divide-y divide-slate-100">
-                    {order.product_detail.map((product, idx) => (
+                    {(Array.isArray(order.product_detail) ? order.product_detail : []).map((product: ProductDetail, idx: number) => (
                       <li key={idx} className="flex items-center gap-4 py-3">
                         <img src={product.image?.[0] || "/images/placeholder-product.jpg"} alt={product.name || "Product"} className="w-12 h-12 object-contain rounded-lg bg-slate-100" />
                         <div className="flex-1 min-w-0">

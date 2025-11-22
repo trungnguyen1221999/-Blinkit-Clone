@@ -1,5 +1,4 @@
 import React from 'react';
-import { Euro, ShoppingBag } from 'lucide-react';
 
 interface StatCardProps {
   title: string;
