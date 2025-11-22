@@ -2,7 +2,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import { AuthProvider } from "./Context/AuthContext";
 import { CartDrawerProvider, useCartDrawer } from "./components/CartDrawerContext";
 import CartDrawer from "./components/CartDrawer";
-import React from "react";
 import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
