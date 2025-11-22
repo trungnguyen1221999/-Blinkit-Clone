@@ -80,7 +80,12 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
           ) : error ? (
             <div className="text-center text-red-500 py-12">Error loading cart</div>
           ) : cart.length === 0 ? (
-            <div className="text-center text-slate-400 py-12">Your cart is empty</div>
+            <div className="text-center text-slate-500 py-12 text-lg font-semibold">
+              Your cart is empty.<br />
+              Start shopping now and discover great deals!
+              <br />
+             
+            </div>
           ) : (
             <ul className="space-y-5">
               {cart.map((item: any) => {
@@ -144,38 +149,42 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
           )}
         </div>
         {/* Footer */}
-        <div className="p-5 border-t border-slate-100 bg-white/90 flex flex-col gap-4">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-lg font-semibold text-slate-700">Total</span>
-            <span className="text-2xl font-extrabold text-primary-700 tracking-wide"><span className='mr-1'>€</span>{total.toFixed(2)}</span>
-          </div>
-          {save > 0 && (
-            <div className="flex flex-col items-center my-2">
-              <div className="w-full flex items-center gap-2 justify-center">
-                <span className="flex-1 h-px bg-linear-to-r from-transparent via-green-200 to-transparent" />
-                <BadgePercent size={22} className="text-green-600" />
-                <span className="flex-1 h-px bg-linear-to-l from-transparent via-green-200 to-transparent" />
-              </div>
-              <div className="mt-2 text-green-700 text-lg font-bold tracking-wide text-center">
-                You save <span className="inline-block px-2 py-0.5 bg-green-50 rounded font-extrabold text-green-800 text-xl  decoration-2 decoration-green-400"><span className='mr-1'>€</span>{save.toFixed(2)}</span> on this order
-              </div>
+        {cart.length > 0 ? (
+          <div className="p-5 border-t border-slate-100 bg-white/90 flex flex-col gap-4">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-lg font-semibold text-slate-700">Total</span>
+              <span className="text-2xl font-extrabold text-primary-700 tracking-wide"><span className='mr-1'>€</span>{total.toFixed(2)}</span>
             </div>
-          )}
-          <Link
-            to="/cart"
-            className="w-full py-2 bg-primary-50 text-primary-700 rounded-lg font-semibold hover:bg-primary-100 transition text-center border border-primary-100"
-            onClick={onClose}
-          >
-            Go to Cart Page
-          </Link>
-          <Link
-            to="/checkout"
-            className="w-full py-2 bg-primary-200 rounded-lg font-semibold hover:bg-primary-700 transition shadow text-center block mt-2"
-            onClick={onClose}
-          >
-            Checkout
-          </Link>
-        </div>
+            {save > 0 && (
+              <div className="flex flex-col items-center my-2">
+                <div className="w-full flex items-center gap-2 justify-center">
+                  <span className="flex-1 h-px bg-linear-to-r from-transparent via-green-200 to-transparent" />
+                  <BadgePercent size={22} className="text-green-600" />
+                  <span className="flex-1 h-px bg-linear-to-l from-transparent via-green-200 to-transparent" />
+                </div>
+                <div className="mt-2 text-green-700 text-lg font-bold tracking-wide text-center">
+                  You save <span className="inline-block px-2 py-0.5 bg-green-50 rounded font-extrabold text-green-800 text-xl  decoration-2 decoration-green-400"><span className='mr-1'>€</span>{save.toFixed(2)}</span> on this order
+                </div>
+              </div>
+            )}
+            <Link
+              to="/cart"
+              className="w-full py-2 bg-primary-50 text-primary-700 rounded-lg font-semibold hover:bg-primary-100 transition text-center border border-primary-100"
+              onClick={onClose}
+            >
+              Go to Cart Page
+            </Link>
+            <Link
+              to="/checkout"
+              className="w-full py-2 bg-primary-200 rounded-lg font-semibold hover:bg-primary-700 transition shadow text-center block mt-2"
+              onClick={onClose}
+            >
+              Checkout
+            </Link>
+          </div>
+        ) : (
+          <div></div>
+        )}
       </div>
     </>
   );
