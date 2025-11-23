@@ -42,7 +42,7 @@ const SaleOffGrid = () => {
               product.publish &&
               typeof product.discount === 'number' &&
               product.discount > 0
-                  {(Array.isArray([...Array(4)]) ? [...Array(4)] : []).map((_, i) => (
+          )
         : [],
     [products]
   );
@@ -87,7 +87,6 @@ const SaleOffGrid = () => {
   }
 
   if (!saleProducts.length) return null;
-                {(Array.isArray(saleProducts) ? saleProducts.slice(0, 12) : []).map((product) => (
   return (
     <section className="w-full py-12 relative rounded-3xl shadow-2xl my-8 overflow-hidden">
       {/* Impressive background gradient and pattern */}

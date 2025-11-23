@@ -37,17 +37,20 @@ const CheckoutPage: React.FC = () => {
         try {
           const res = await createAbandonOrderApi({
             userId: user._id,
-            cartProducts: Array.isArray(displayCart) ? displayCart.map(item => ({
-              _id: item.productId?._id || item.productId,
-              name: item.productId?.name || 'Product',
-              image: item.productId?.images?.[0]?.url,
-              quantity: item.quantity,
-              price: (() => {
-                const price = item.productId?.price || 0;
-                const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
-                return discount > 0 ? price * (1 - discount / 100) : price;
-              })(),
-            })),
+            cartProducts: Array.isArray(displayCart)
+              ? displayCart.map(item => ({
+                  _id: item.productId?._id || item.productId,
+                  name: item.productId?.name || 'Product',
+                  image: item.productId?.images?.[0]?.url,
+                  quantity: item.quantity,
+                  price: (() => {
+                    const price = item.productId?.price || 0;
+                    const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
+                    return discount > 0 ? price * (1 - discount / 100) : price;
+                  })(),
+                })
+              )
+              : [],
             totalAmt: total,
           });
           setAbandonOrder(res);
@@ -107,17 +110,20 @@ const CheckoutPage: React.FC = () => {
                 <BillingForm
                   total={total}
                   totalSave={totalSave}
-                  products={Array.isArray(displayCart) ? displayCart.map(item => ({
-                    _id: item.productId?._id || item.productId,
-                    name: item.productId?.name || 'Product',
-                    image: item.productId?.images?.[0]?.url,
-                    quantity: item.quantity,
-                    price: (() => {
-                      const price = item.productId?.price || 0;
-                      const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
-                      return discount > 0 ? price * (1 - discount / 100) : price;
-                    })(),
-                  }))}
+                  products={Array.isArray(displayCart)
+                    ? displayCart.map(item => ({
+                        _id: item.productId?._id || item.productId,
+                        name: item.productId?.name || 'Product',
+                        image: item.productId?.images?.[0]?.url,
+                        quantity: item.quantity,
+                        price: (() => {
+                          const price = item.productId?.price || 0;
+                          const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
+                          return discount > 0 ? price * (1 - discount / 100) : price;
+                        })(),
+                      })
+                    )
+                    : []}
                   abandonOrder={abandonOrder}
                 />
               </section>
