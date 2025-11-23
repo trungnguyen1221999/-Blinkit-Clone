@@ -94,7 +94,7 @@ const AdminSubCategory = () => {
 
   const handleEditSubCategory = (subCat: SubCategory) => {
     setSubCategories((prev) =>
-      prev.map((s) => (s._id === subCat._id ? subCat : s))
+      (Array.isArray(prev) ? prev : []).map((s) => (s._id === subCat._id ? subCat : s))
     );
     setShowEditPopup(false);
     setEditingSub(null);
@@ -153,7 +153,7 @@ const AdminSubCategory = () => {
                 className="min-w-[150px] border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 transition-colors bg-white shadow-sm h-[42px]"
               >
                 <option value="All">All Categories</option>
-                {categories.map(cat => (
+                {(Array.isArray(categories) ? categories : []).map(cat => (
                   <option key={cat._id} value={cat._id}>{cat.name}</option>
                 ))}
               </select>
@@ -188,7 +188,7 @@ const AdminSubCategory = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slash-100">
-              {filteredSubCategories.map((sub, idx) => (
+              {(Array.isArray(filteredSubCategories) ? filteredSubCategories : []).map((sub, idx) => (
                 <tr
                   key={sub._id}
                   className="hover:bg-slate-50 transition-all duration-200 group"
@@ -222,7 +222,7 @@ const AdminSubCategory = () => {
                   <td className="p-4">
                     <div className="space-y-1">
                       {sub.category.length > 0 ? (
-                        sub.category.map((cat, catIdx) => (
+                        (Array.isArray(sub.category) ? sub.category : []).map((cat, catIdx) => (
                           <span
                             key={catIdx}
                             className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200 mr-2"

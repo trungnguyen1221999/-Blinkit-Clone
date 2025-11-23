@@ -56,7 +56,7 @@ const AdminOrder = () => {
             ) : orders.length === 0 ? (
               <tr><td colSpan={6} className="py-8 text-center text-slate-500">No orders found.</td></tr>
             ) : (
-              orders.map((o: any) => (
+              (Array.isArray(orders) ? orders : []).map((o: any) => (
                 <tr key={o._id} className="border-b border-slate-100 hover:bg-slate-50">
                   <td className="py-3 px-4 font-semibold text-slate-800">{o.orderId}</td>
                   <td className="py-3 px-4">
@@ -70,7 +70,7 @@ const AdminOrder = () => {
                   <td className="py-3 px-4">
                     {Array.isArray(o.product_detail) ? (
                       <ul className="list-disc ml-4">
-                        {o.product_detail.map((p: any, idx: number) => (
+                        {(Array.isArray(o.product_detail) ? o.product_detail : []).map((p: any, idx: number) => (
                           <li key={idx} className="flex items-center gap-2 text-sm text-slate-700">
                             <img src={p.image?.[0] || '/images/placeholder-product.jpg'} alt={p.name} className="w-8 h-8 object-contain rounded bg-slate-100 border" />
                             <span>{p.name}</span>

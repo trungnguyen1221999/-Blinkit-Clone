@@ -37,7 +37,7 @@ const CheckoutPage: React.FC = () => {
         try {
           const res = await createAbandonOrderApi({
             userId: user._id,
-            cartProducts: displayCart.map(item => ({
+            cartProducts: Array.isArray(displayCart) ? displayCart.map(item => ({
               _id: item.productId?._id || item.productId,
               name: item.productId?.name || 'Product',
               image: item.productId?.images?.[0]?.url,
@@ -107,7 +107,7 @@ const CheckoutPage: React.FC = () => {
                 <BillingForm
                   total={total}
                   totalSave={totalSave}
-                  products={displayCart.map(item => ({
+                  products={Array.isArray(displayCart) ? displayCart.map(item => ({
                     _id: item.productId?._id || item.productId,
                     name: item.productId?.name || 'Product',
                     image: item.productId?.images?.[0]?.url,
@@ -136,7 +136,7 @@ const CheckoutPage: React.FC = () => {
                 <div className="text-center text-slate-400 py-8">Your cart is empty</div>
               ) : (
                 <ul className="divide-y divide-slate-100 mb-4">
-                  {displayCart.map((item: any) => {
+                  {(Array.isArray(displayCart) ? displayCart : []).map((item: any) => {
                     const price = item.productId?.price || 0;
                     const discount = typeof item.productId?.discount === "number" ? item.productId.discount : 0;
                     const discountedPrice = discount > 0 ? price * (1 - discount / 100) : price;

@@ -86,7 +86,7 @@ const SaleOffSlideshow = () => {
         <div className="container mx-auto px-4">
           <div className="h-8 bg-slate-200 rounded-lg w-64 mx-auto animate-pulse mb-8"></div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
+            {(Array.isArray([...Array(4)]) ? [...Array(4)] : []).map((_, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 shadow-lg animate-pulse">
                 <div className="w-full h-32 bg-slate-200 rounded-xl mb-4"></div>
                 <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
@@ -131,7 +131,7 @@ const SaleOffSlideshow = () => {
             className="flex transition-transform duration-700 ease-out"
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
-            {Array.from({ length: totalSlides }).map((_, pageIndex) => {
+            {(Array.isArray(Array.from({ length: totalSlides })) ? Array.from({ length: totalSlides }) : []).map((_, pageIndex) => {
               const startIndex = pageIndex * slidesToShow;
               const pageItems = saleProducts.slice(startIndex, startIndex + slidesToShow);
               return (
@@ -145,7 +145,7 @@ const SaleOffSlideshow = () => {
                       : 'grid-cols-6'
                   }`}
                 >
-                  {pageItems.map((product) => {
+                  {(Array.isArray(pageItems) ? pageItems : []).map((product) => {
                     const originalPrice = product.price;
                     const discount = typeof product.discount === 'number' ? product.discount : 0;
                     const discountedPrice = originalPrice * (1 - discount / 100);

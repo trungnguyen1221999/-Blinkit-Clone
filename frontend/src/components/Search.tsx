@@ -88,7 +88,7 @@ const Search = () => {
         {/* Suggestion Dropdown */}
         {isFocused && value.trim() && filteredSuggestions.length > 0 && (
           <div className="absolute left-0 top-full mt-2 w-full bg-white border border-slate-200 rounded-xl shadow-lg z-30 max-h-80 overflow-y-auto">
-            {filteredSuggestions.slice(0, 8).map((product) => {
+            {(Array.isArray(filteredSuggestions) ? filteredSuggestions.slice(0, 8) : []).map((product) => {
               const discount =
                 typeof product.discount === "number" ? product.discount : 0;
               const discountedPrice = product.price * (1 - discount / 100);

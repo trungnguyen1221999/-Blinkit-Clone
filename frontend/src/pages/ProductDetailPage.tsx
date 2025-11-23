@@ -263,7 +263,7 @@ const ProductDetailPage = () => {
               </button>
               {showMoreDetails && (
                 <ul id="more-details-section" className="flex flex-col gap-3 mt-2">
-                  {Object.entries(moreDetails).map(([key, value]) => {
+                  {(Object.entries(moreDetails) ? Object.entries(moreDetails) : []).map(([key, value]) => {
                     let icon = <Layers className="w-5 h-5 text-primary-400" />;
                     if (/ean/i.test(key)) icon = <Barcode className="w-5 h-5 text-primary-400" />;
                     else if (/origin|country/i.test(key)) icon = <Globe className="w-5 h-5 text-primary-400" />;

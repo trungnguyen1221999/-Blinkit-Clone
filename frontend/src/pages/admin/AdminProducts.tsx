@@ -144,8 +144,8 @@ const AdminProducts = () => {
     setEditingProduct(product);
     setProductForm({
       name: product.name || '',
-      category: (product.category || []).map(c => c._id),
-      SubCategory: (product.SubCategory || []).map(s => s._id),
+      category: (Array.isArray(product.category) ? product.category : []).map(c => c._id),
+      SubCategory: (Array.isArray(product.SubCategory) ? product.SubCategory : []).map(s => s._id),
       unit: product.unit || '',
       stock: product.stock || 0,
       price: product.price || 0,
@@ -154,7 +154,7 @@ const AdminProducts = () => {
       more_details: product.more_details || {},
       publish: product.publish === true
     });
-    setImagePreviewUrls((product.images || []).map(img => img.url));
+    setImagePreviewUrls((Array.isArray(product.images) ? product.images : []).map(img => img.url));
     setShowProductPopup(true);
   };
 
@@ -227,7 +227,7 @@ const AdminProducts = () => {
                 className="min-w-[150px] border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200/20 focus:border-primary-200 transition-colors bg-white shadow-sm h-[42px]"
               >
                 <option value="">All Categories</option>
-                {categories.map((category: any) => (
+                {(Array.isArray(categories) ? categories : []).map((category: any) => (
                   <option key={category._id} value={category._id}>
                     {category.name}
                   </option>
@@ -269,7 +269,7 @@ const AdminProducts = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredProducts.map((product: Product) => (
+              {(Array.isArray(filteredProducts) ? filteredProducts : []).map((product: Product) => (
                 <tr
                   key={product._id}
                   className="hover:bg-slate-50 transition-all duration-200 group"
@@ -317,7 +317,7 @@ const AdminProducts = () => {
                   </td>
                   <td className="p-4">
                     <div className="flex flex-wrap gap-1">
-                      {(product.category || []).map((cat, index) => (
+                      {(Array.isArray(product.category) ? product.category : []).map((cat, index) => (
                         <span key={index} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
                           {cat?.name || 'Unknown Category'}
                         </span>

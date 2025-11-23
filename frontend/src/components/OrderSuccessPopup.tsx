@@ -82,7 +82,7 @@ const OrderSuccessPopup: React.FC<OrderSuccessPopupProps> = ({
         <div className="w-full mt-6">
           <h3 className="text-xl font-bold text-slate-700 mb-3">Order Details</h3>
           <ul className="divide-y divide-slate-100">
-            {products.map((item, idx) => (
+            {(Array.isArray(products) ? products : []).map((item, idx) => (
               <li key={idx} className="flex items-center gap-4 py-4">
                 <img
                   src={item.image || "/images/placeholder-product.jpg"}

@@ -126,13 +126,13 @@ const ProductDropdown = ({ mobile = false }: ProductDropdownProps) => {
               <div className="flex-1 overflow-y-auto">
                 {categoriesLoading ? (
                   <div className="space-y-3">
-                    {[...Array(8)].map((_, i) => (
+                    {(Array.isArray([...Array(8)]) ? [...Array(8)] : []).map((_, i) => (
                       <div key={i} className="h-8 bg-slate-200 rounded animate-pulse" />
                     ))}
                   </div>
                 ) : (
                   <ul className="space-y-2">
-                    {categories.map((category: Category) => (
+                    {(Array.isArray(categories) ? categories : []).map((category: Category) => (
                       <li key={category._id}>
                         <button
                           className="flex items-center w-full text-left px-2 py-2 rounded hover:bg-primary-50 text-slate-700 font-medium"
@@ -154,7 +154,7 @@ const ProductDropdown = ({ mobile = false }: ProductDropdownProps) => {
                         {/* Subcategories */}
                         {expandedCategory === category._id && subCategories[category._id] && (
                           <ul className="ml-7 mt-1 space-y-1">
-                            {subCategories[category._id].map((subCategory: SubCategory) => (
+                            {(Array.isArray(subCategories[category._id]) ? subCategories[category._id] : []).map((subCategory: SubCategory) => (
                               <li key={subCategory._id}>
                                 <Link
                                   to={`/subcategory/${subCategory._id}`}
@@ -233,7 +233,7 @@ const ProductDropdown = ({ mobile = false }: ProductDropdownProps) => {
               {categoriesLoading ? (
                 <div className="p-8">
                   <div className="animate-pulse grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                    {[...Array(10)].map((_, i) => (
+                    {(Array.isArray([...Array(10)]) ? [...Array(10)] : []).map((_, i) => (
                       <div key={i} className="bg-linear-to-br from-slate-50 to-slate-100 rounded-2xl p-4 h-32 flex flex-col items-center justify-center space-y-2">
                         <div className="w-12 h-12 bg-slate-200 rounded-xl"></div>
                         <div className="h-3 bg-slate-200 rounded-full w-3/4"></div>

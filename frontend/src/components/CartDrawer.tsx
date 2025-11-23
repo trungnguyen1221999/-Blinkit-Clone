@@ -88,7 +88,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
             </div>
           ) : (
             <ul className="space-y-5">
-              {cart.map((item: any) => {
+              {(Array.isArray(cart) ? cart : []).map((item: any) => {
                 const price = item.productId?.price || 0;
                 const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
                 const hasDiscount = discount > 0;

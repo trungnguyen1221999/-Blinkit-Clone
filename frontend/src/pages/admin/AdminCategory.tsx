@@ -56,7 +56,7 @@ const AdminCategory = () => {
     onSuccess: (updatedCat) => {
       console.log("Category updated successfully:", updatedCat);
       setCategories((prev) =>
-        prev.map((c) => (c._id === updatedCat._id ? updatedCat : c))
+        (Array.isArray(prev) ? prev : []).map((c) => (c._id === updatedCat._id ? updatedCat : c))
       );
       toast.success("Category updated successfully");
       setShowEditPopup(false);
@@ -182,7 +182,7 @@ const AdminCategory = () => {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredCategories.length > 0 ? (
-                filteredCategories.map((cat, idx) => (
+                (Array.isArray(filteredCategories) ? filteredCategories : []).map((cat, idx) => (
                   <tr
                     key={cat._id}
                     className="hover:bg-slate-50 transition-all duration-200 group"

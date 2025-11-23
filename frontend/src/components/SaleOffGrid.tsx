@@ -42,7 +42,7 @@ const SaleOffGrid = () => {
               product.publish &&
               typeof product.discount === 'number' &&
               product.discount > 0
-          )
+                  {(Array.isArray([...Array(4)]) ? [...Array(4)] : []).map((_, i) => (
         : [],
     [products]
   );
@@ -73,7 +73,7 @@ const SaleOffGrid = () => {
         <div className="container mx-auto px-4">
           <div className="h-8 bg-slate-200 rounded-lg w-64 mx-auto animate-pulse mb-8"></div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
+            {(Array.isArray([...Array(4)]) ? [...Array(4)] : []).map((_, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 shadow-lg animate-pulse">
                 <div className="w-full h-32 bg-slate-200 rounded-xl mb-4"></div>
                 <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
@@ -87,7 +87,7 @@ const SaleOffGrid = () => {
   }
 
   if (!saleProducts.length) return null;
-
+                {(Array.isArray(saleProducts) ? saleProducts.slice(0, 12) : []).map((product) => (
   return (
     <section className="w-full py-12 relative rounded-3xl shadow-2xl my-8 overflow-hidden">
       {/* Impressive background gradient and pattern */}
@@ -118,7 +118,7 @@ const SaleOffGrid = () => {
         </div>
         {/* Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {saleProducts.slice(0, 12).map((product) => (
+          {(Array.isArray(saleProducts) ? saleProducts.slice(0, 12) : []).map((product) => (
             <ProductCard key={product._id} product={product} onAddToCart={handleAddToCart} />
           ))}
         </div>

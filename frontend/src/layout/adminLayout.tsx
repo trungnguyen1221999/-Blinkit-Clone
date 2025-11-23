@@ -131,7 +131,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 px-3">
             Main Menu
           </h4>
-          {menuItems.map((item) => {
+          {(Array.isArray(menuItems) ? menuItems : []).map((item) => {
             const isActive = location.pathname.startsWith(item.path);
             return (
               <Link

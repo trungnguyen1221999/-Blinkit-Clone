@@ -83,7 +83,7 @@ const AdminUsers = () => {
   const deleteUserMutation = useMutation({
     mutationFn: async (ids: string | string[]) => {
       if (Array.isArray(ids))
-        await Promise.all(ids.map((_id) => deleteUserApi(_id)));
+        await Promise.all((Array.isArray(ids) ? ids : []).map((_id) => deleteUserApi(_id)));
       else await deleteUserApi(ids);
     },
     onSuccess: () => {
@@ -116,7 +116,7 @@ const AdminUsers = () => {
       setSelectedUsers([]);
       setSelectAll(false);
     } else {
-      setSelectedUsers(currentUsers.map((u) => u._id));
+      setSelectedUsers((Array.isArray(currentUsers) ? currentUsers : []).map((u) => u._id));
       setSelectAll(true);
     }
   };
@@ -262,7 +262,7 @@ const AdminUsers = () => {
             </thead>
 
             <tbody className="divide-y divide-slate-100">
-              {currentUsers.map((user, idx) => (
+              {(Array.isArray(currentUsers) ? currentUsers : []).map((user, idx) => (
                 <tr
                   key={user._id}
                   className={`hover:bg-slate-50 transition-all duration-200 group ${
