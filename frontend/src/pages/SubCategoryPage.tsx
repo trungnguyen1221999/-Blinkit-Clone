@@ -95,7 +95,7 @@ const SubCategoryPage = () => {
         {/* --- TEXT --- */}
         <div className="flex-1 flex flex-col justify-center px-6 md:px-0 py-8 md:py-0 text-left">
           <div className="w-fit bg-primary-100/60 font-semibold px-4 py-1 rounded-full text-xs mb-4 border border-primary-100 shadow flex items-center gap-2">
-            {currentSubCategory.category?.map((cat: any, index: number) => (
+            {(Array.isArray(currentSubCategory.category) ? currentSubCategory.category : []).map((cat: any, index: number) => (
               <span key={cat._id}>
                 {index > 0 && ' / '}
                 <Link
