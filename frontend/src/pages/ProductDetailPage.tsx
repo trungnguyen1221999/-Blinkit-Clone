@@ -112,7 +112,7 @@ const ProductDetailPage = () => {
           >
             {Array.isArray(product.category) && product.category.length > 0 && (
               <>
-                {product.category.map((cat: any, idx: number) => (
+                {(Array.isArray(product.category) ? product.category : []).map((cat: any, idx: number) => (
                   <span key={typeof cat === 'object' ? cat._id : cat} className="flex items-center">
                     {idx > 0 && <span className="mx-1">&gt;</span>}
                     <a
@@ -128,7 +128,7 @@ const ProductDetailPage = () => {
             )}
             {Array.isArray(product.SubCategory) && product.SubCategory.length > 0 && (
               <>
-                {product.SubCategory.map((subCat: any, idx: number) => (
+                {(Array.isArray(product.SubCategory) ? product.SubCategory : []).map((subCat: any, idx: number) => (
                   <span key={typeof subCat === 'object' ? subCat._id : subCat} className="flex items-center">
                     {idx > 0 && <span className="mx-1">&gt;</span>}
                     <a
@@ -155,7 +155,7 @@ const ProductDetailPage = () => {
             </div>
             {product.images && product.images.length > 1 && (
               <div className="w-full max-w-lg flex gap-2 mt-2">
-                {product.images.map((img, idx) => (
+                {(Array.isArray(product.images) ? product.images : []).map((img, idx) => (
                   <img
                     key={img.public_id || idx}
                     src={img.url}
@@ -288,7 +288,7 @@ const ProductDetailPage = () => {
         <div className="w-full container mx-auto mt-12 ml-3">
           <h3 className="text-2xl font-extrabold mb-4 text-slate-900 text-left">Related Products</h3>
           <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary-200 text-left justify-start items-stretch">
-            {relatedProducts.map((product) => (
+            {(Array.isArray(relatedProducts) ? relatedProducts : []).map((product) => (
               <div key={product._id} className="min-w-[200px] max-w-[220px] flex items-stretch">
                 <ProductCard product={product} />
               </div>

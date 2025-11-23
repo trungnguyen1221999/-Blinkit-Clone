@@ -67,7 +67,7 @@ const CartPage: React.FC = () => {
   };
   const handleSelectAll = () => {
     if (allSelected) setSelectedIds([]);
-    else setSelectedIds(cart.map((item: any) => item._id));
+    else setSelectedIds(Array.isArray(cart) ? cart.map((item: any) => item._id) : []);
   };
 
   return (
@@ -105,7 +105,7 @@ const CartPage: React.FC = () => {
               )}
             </div>
             <ul className="space-y-0 mb-8">
-              {cart.map((item: any, idx: number) => {
+              {(Array.isArray(cart) ? cart : []).map((item: any, idx: number) => {
                 const price = item.productId?.price || 0;
                 const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
                 const hasDiscount = discount > 0;

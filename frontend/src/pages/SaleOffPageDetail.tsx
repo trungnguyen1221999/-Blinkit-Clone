@@ -62,7 +62,7 @@ const SaleOffPageDetail = () => {
       {/* Product Grid */}
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {saleProducts.map((product) => (
+          {(Array.isArray(saleProducts) ? saleProducts : []).map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>

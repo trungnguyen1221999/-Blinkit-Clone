@@ -59,7 +59,7 @@ const SearchPage = () => {
         <h2 className="text-xl font-semibold mb-2">Products</h2>
         {filteredProducts.length ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {filteredProducts.map((product) => {
+            {(Array.isArray(filteredProducts) ? filteredProducts : []).map((product) => {
               return (
                 <ProductCard
                   key={product._id}
@@ -77,7 +77,7 @@ const SearchPage = () => {
         <h2 className="text-xl font-semibold mb-2">Categories</h2>
         {filteredCategories.length ? (
           <div className="flex flex-wrap gap-3">
-            {filteredCategories.map((cat) => (
+            {(Array.isArray(filteredCategories) ? filteredCategories : []).map((cat) => (
               <Link key={cat._id} to={`/category/${cat._id}`} className="bg-primary-100 text-primary-700 px-4 py-2 rounded-full font-semibold shadow hover:bg-primary-200">
                 {cat.name}
               </Link>
@@ -91,7 +91,7 @@ const SearchPage = () => {
         <h2 className="text-xl font-semibold mb-2">Subcategories</h2>
         {filteredSubCategories.length ? (
           <div className="flex flex-wrap gap-3">
-            {filteredSubCategories.map((sub) => (
+            {(Array.isArray(filteredSubCategories) ? filteredSubCategories : []).map((sub) => (
               <Link key={sub._id} to={`/subcategory/${sub._id}`} className="bg-green-100 text-green-700 px-4 py-2 rounded-full font-semibold shadow hover:bg-green-200">
                 {sub.name}
               </Link>

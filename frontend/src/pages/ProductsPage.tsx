@@ -36,7 +36,7 @@ const ProductsPage = () => {
 
       {products.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product: any) => (
+          {(Array.isArray(products) ? products : []).map((product: any) => (
             <div key={product._id} className="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
               <div className="text-center">
                 <Package size={24} className="mx-auto text-slate-400 mb-3" />
