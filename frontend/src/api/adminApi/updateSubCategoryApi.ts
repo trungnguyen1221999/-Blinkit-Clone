@@ -16,7 +16,7 @@ const updateSubCategoryApi = async (id: string, data: UpdateSubCategoryData) => 
     
     if (data.category) {
       // Append multiple categories
-      data.category.forEach(categoryId => {
+      Array.isArray(data.category) && data.category.forEach(categoryId => {
         formData.append("category[]", categoryId);
       });
     }

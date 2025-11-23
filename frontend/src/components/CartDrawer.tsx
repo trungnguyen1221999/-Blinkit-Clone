@@ -36,7 +36,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ open, onClose }) => {
   // Calculate total and save amount
   let total = 0;
   let save = 0;
-  cart.forEach((item: any) => {
+  Array.isArray(cart) && cart.forEach((item: any) => {
     const price = item.productId?.price || 0;
     const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;
     const hasDiscount = discount > 0;

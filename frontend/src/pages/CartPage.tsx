@@ -38,7 +38,7 @@ const CartPage: React.FC = () => {
 
   // Multi-remove
   const handleRemoveSelected = () => {
-    selectedIds.forEach((id) => removeMutation.mutate(id));
+    Array.isArray(selectedIds) && selectedIds.forEach((id) => removeMutation.mutate(id));
     setSelectedIds([]);
   };
 
@@ -51,7 +51,7 @@ const CartPage: React.FC = () => {
   // Calculate total and save for selected items only
   let total = 0;
   let save = 0;
-  cart.forEach((item: any) => {
+  Array.isArray(cart) && cart.forEach((item: any) => {
     if (!selectedIds.includes(item._id)) return;
     const price = item.productId?.price || 0;
     const discount = typeof item.productId?.discount === 'number' ? item.productId.discount : 0;

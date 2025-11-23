@@ -100,7 +100,7 @@ const AddSubCategoryPopup = ({
     formData.append("image", selectedFile);
     
     // Append categories
-    selectedCategories.forEach(categoryId => {
+    Array.isArray(selectedCategories) && selectedCategories.forEach(categoryId => {
       formData.append("category[]", categoryId);
     });
 

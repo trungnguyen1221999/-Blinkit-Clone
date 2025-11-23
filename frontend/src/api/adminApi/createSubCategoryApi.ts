@@ -12,7 +12,7 @@ const createSubCategoryApi = async (data: CreateSubCategoryData) => {
     formData.append("name", data.name);
     
     // Append multiple categories
-    data.category.forEach(categoryId => {
+    Array.isArray(data.category) && data.category.forEach(categoryId => {
       formData.append("category[]", categoryId);
     });
     

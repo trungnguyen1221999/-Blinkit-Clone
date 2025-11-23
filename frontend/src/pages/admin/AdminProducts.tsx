@@ -129,7 +129,7 @@ const AdminProducts = () => {
     formData.append("publish", productForm.publish.toString());
     
     // Add images
-    selectedImages.forEach((image) => {
+    Array.isArray(selectedImages) && selectedImages.forEach((image) => {
       formData.append("images", image);
     });
 

@@ -82,7 +82,7 @@ const CheckoutPage: React.FC = () => {
     : cart;
 
   if (displayCart && displayCart.length > 0) {
-    displayCart.forEach((item: any) => {
+    Array.isArray(displayCart) && displayCart.forEach((item: any) => {
       const price = item.productId?.price || 0;
       const discount = typeof item.productId?.discount === "number" ? item.productId.discount : 0;
       const discountedPrice = discount > 0 ? price * (1 - discount / 100) : price;
