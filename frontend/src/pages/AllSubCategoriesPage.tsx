@@ -51,7 +51,7 @@ const AllSubCategoriesPage = () => {
           >
             <option value="all">All Categories</option>
             {categories.length > 0 ? (
-              categories.map((cat: any) => (
+              (Array.isArray(categories) ? categories : []).map((cat: any) => (
                 <option key={cat._id} value={cat._id}>
                   {cat.name}
                 </option>
@@ -63,7 +63,7 @@ const AllSubCategoriesPage = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {filteredSubCategories.map((subCategory: any) => (
+        {(Array.isArray(filteredSubCategories) ? filteredSubCategories : []).map((subCategory: any) => (
           <Link
             key={subCategory._id}
             to={`/subcategory/${subCategory._id}`}

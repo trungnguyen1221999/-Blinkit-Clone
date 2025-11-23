@@ -36,7 +36,7 @@ const Home = () => {
             
             {/* Display all categories with alternating layouts */}
             <div className="space-y-16">
-              {categories.map((category: any, index: number) => (
+              {(Array.isArray(categories) ? categories : []).map((category: any, index: number) => (
                 <div key={category._id} className="bg-white rounded-3xl shadow-lg overflow-hidden">
                   <CategorySlideshow 
                     category={category} 

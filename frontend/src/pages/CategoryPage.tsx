@@ -114,7 +114,7 @@ const CategoryPage = () => {
         {subCategories.length > 0 && (
           <div className="mb-12 mt-8">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 px-4">
-              {subCategories.map((sub: any) => (
+              {(Array.isArray(subCategories) ? subCategories : []).map((sub: any) => (
                 <Link
                   key={sub._id || sub}
                   to={`/subcategory/${slugify(sub.name)}-${sub._id}`}

@@ -68,7 +68,7 @@ const Purchase = () => {
             </Link>
           </div>
         ) : (
-          orders.map((order: any) => (
+          (Array.isArray(orders) ? orders : []).map((order: any) => (
             <div key={order._id} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
                 <div className="space-y-1">
