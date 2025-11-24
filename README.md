@@ -15,7 +15,7 @@ Includes a complete admin dashboard, real-time order flow, customer management, 
 ---
 ## 📸 Preview
 
-## Reset password via email verification code**
+### Reset password via email verification code
 ![Blinkit Clone](https://i.imgur.com/z5XK3UR.png)
 ![Blinkit Clone](https://i.imgur.com/JZIZaQS.png)
 
