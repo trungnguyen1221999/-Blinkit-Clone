@@ -1,3 +1,6 @@
+import api from './api';
+
+
 export async function resetCartApi({ userId, guestId }: { userId?: string; guestId?: string }): Promise<{ message: string }> {
   const payload: any = {};
   if (userId) payload.userId = userId;
@@ -5,7 +8,6 @@ export async function resetCartApi({ userId, guestId }: { userId?: string; guest
   const res = await api.post('/cart/reset', payload, { withCredentials: true });
   return res.data;
 }
-import api from './api';
 
 export interface AddToCartParams {
   productId: string;
