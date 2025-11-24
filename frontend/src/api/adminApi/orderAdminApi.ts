@@ -1,6 +1,6 @@
-import axios from "axios";
+import api from "../api";
 
 export const getOrdersAdminApi = async (params?: { type?: string; startDate?: string; endDate?: string }) => {
-  const res = await axios.get("/api/order", { params });
+  const res = await api.get("/order", { params });
   return res.data;
 };

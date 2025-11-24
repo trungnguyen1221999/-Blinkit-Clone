@@ -1,6 +1,6 @@
-import axios from "axios";
+import api from "../api";
 
 export const getRevenueApi = async (params?: { type?: string; startDate?: string; endDate?: string }) => {
-  const res = await axios.get("/api/revenue", { params });
+  const res = await api.get("/revenue", { params });
   return res.data;
 };
