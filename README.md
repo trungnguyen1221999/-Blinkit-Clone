@@ -11,10 +11,28 @@ Note: Since I’m using free hosting, you need to open both the frontend and bac
 
 Reset password via email verification code.
 
-![Blinkit Clone Preview](https://i.imgur.com/z5XK3UR.png) <!-- Thay bằng link ảnh thực tế nếu có -->
+![Blinkit Clone Preview](https://i.imgur.com/z5XK3UR.png) 
+![Blinkit Clone Preview](https://i.imgur.com/JZIZaQS.png) 
 
----
+Admin Dashboard
+![Blinkit Clone Preview](https://i.imgur.com/4OMQh0M.png) 
+![Blinkit Clone Preview](https://i.imgur.com/1G5hLXg.png) 
+![Blinkit Clone Preview](https://i.imgur.com/h81BxO8.png) 
+![Blinkit Clone Preview](https://i.imgur.com/zYEVqf1.png) 
+![Blinkit Clone Preview](https://i.imgur.com/ckzJvAs.png) 
 
+Customers & Orders
+![Blinkit Clone Preview](https://i.imgur.com/jZeQeSq.png) 
+![Blinkit Clone Preview](https://i.imgur.com/gB8AnUp.png) 
+
+Cart & Checkout
+![Blinkit Clone Preview](https://i.imgur.com/b4IFQ0x.png) 
+![Blinkit Clone Preview](https://i.imgur.com/ctJRshV.png) 
+![Blinkit Clone Preview](https://i.imgur.com/kkMwDYO.png) 
+![Blinkit Clone Preview](https://i.imgur.com/JZFfVQ6.png) 
+
+Purchase history
+![Blinkit Clone Preview](https://i.imgur.com/bTVhC1S.png) 
 
 ---
 
