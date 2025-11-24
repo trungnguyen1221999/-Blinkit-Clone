@@ -9,9 +9,9 @@ Includes admin dashboard, product management, order flow, customer management, a
 Note: Since I’m using free hosting, you need to open both the frontend and backend links to see the data properly.
 
 
+Reset password via email verification code.
 
-
-![Blinkit Clone Preview](https://kaiblinkit.netlify.app/screenshot.png) <!-- Thay bằng link ảnh thực tế nếu có -->
+![Blinkit Clone Preview](https://i.imgur.com/z5XK3UR.png) <!-- Thay bằng link ảnh thực tế nếu có -->
 
 ---
 
