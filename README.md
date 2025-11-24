@@ -4,9 +4,11 @@ A full-stack e-commerce web application built with React, TypeScript, Node.js, E
 Includes admin dashboard, product management, order flow, customer management, and revenue tracking.  
 
 ## Live Demo
-Note: open both frontend & backend 
-- **Frontend:** [https://kaiblinkit.netlify.app/](https://kaiblinkit.netlify.app/) (Deployed for free on Netlify)  
-- **Backend:** [https://blinkit-clone-d0u0.onrender.com/](https://blinkit-clone-d0u0.onrender.com/) (Deployed for free on Render)
+- **Frontend:** [https://kaiblinkit.netlify.app/](https://kaiblinkit.netlify.app/) 
+- **Backend:** [https://blinkit-clone-d0u0.onrender.com/](https://blinkit-clone-d0u0.onrender.com/) 
+Note: Since I’m using free hosting, you need to open both the frontend and backend links to see the data properly.
+
+
 
 
 ![Blinkit Clone Preview](https://kaiblinkit.netlify.app/screenshot.png) <!-- Thay bằng link ảnh thực tế nếu có -->
