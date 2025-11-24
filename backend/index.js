@@ -32,7 +32,8 @@ app.use(
   cors({
     origin: [
       'http://localhost:5173',
-      'https://kaiblinkit.netlify.app'
+      'https://kaiblinkit.netlify.app',
+      'https://kai-blinkit.onrender.com'
     ],
     credentials: true, // allow sending cookies
   })
