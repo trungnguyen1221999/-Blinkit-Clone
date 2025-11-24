@@ -1,6 +1,6 @@
-import axios from "axios";
+import api from "../api";
 
 export const getCustomersApi = async () => {
-  const res = await axios.get("/api/customer");
+  const res = await api.get("/api/customer");
   return res.data;
 };
