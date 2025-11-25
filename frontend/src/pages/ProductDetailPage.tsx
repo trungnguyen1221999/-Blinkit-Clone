@@ -285,14 +285,17 @@ const ProductDetailPage = () => {
       </section>
       {/* Related Products List */}
       {relatedProducts.length > 0 && (
-        <div className="w-full container mx-auto mt-12 ml-3">
-          <h3 className="text-2xl font-extrabold mb-4 text-slate-900 text-left">Related Products</h3>
-          <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary-200 text-left justify-start items-stretch">
-            {(Array.isArray(relatedProducts) ? relatedProducts : []).map((product) => (
-              <div key={product._id} className="min-w-[200px] max-w-[220px] flex items-stretch">
-                <ProductCard product={product} />
-              </div>
-            ))}
+        <div className="w-full  mt-12 ml-3">
+
+          <div className='container mx-auto'>
+            <h3 className="text-2xl font-extrabold mb-4 text-slate-900 text-left">Related Products</h3>
+            <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary-200 text-left justify-start items-stretch">
+              {(Array.isArray(relatedProducts) ? relatedProducts : []).map((product) => (
+                <div key={product._id} className="min-w-[200px] max-w-[220px] flex items-stretch">
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
