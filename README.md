@@ -13,6 +13,10 @@ Includes a complete admin dashboard, real-time order flow, customer management, 
 > ⚠️ *Free hosting:* Please open both links once so the backend wakes up and data loads correctly.
 
 ---
+
+## Improvement version by using Redis and Docker :
+https://github.com/trungnguyen1221999/-Blinkit-Project-Redis-Docker
+
 ## 📸 Preview
 
 ### Reset password via email verification code
